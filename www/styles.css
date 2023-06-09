@@ -1,0 +1,45 @@
+
+@media (max-width: 767px){
+  .navbar-header, navbar-header{
+    display: flex;
+    justify-content: left;
+  }
+  button[class="navbar-toggle collapsed"],
+  button[class="navbar-toggle"]{
+    margin-left: 20px;
+  }
+}
+
+@media (min-width: 1000px) {
+
+  .navbar-header, navbar-header{
+    font-size: 0px;
+    width: 0px;
+  }
+
+  ul[id="navigation_bar"]{
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+/*
+  .nav>li:has(a[data-value="Handlung 1"]){
+    background-color: red;
+  }
+*/
+
+  .nav>li:has(a[data-value="Handlung 2"]){
+    margin-right: 15%;
+  }
+
+  .nav>li:has(a[data-value="Stories"]){
+    margin-left: 15%;
+  }
+/*
+  .nav>li:has(a[data-value="Studies"]){
+    background-color: orange;
+  }
+*/
+}
+
