@@ -1,4 +1,39 @@
 
+.navbar{
+  margin-bottom: 0;
+}
+.sidebar_button,
+.sidebar_dynamic_button{
+  color: black;
+  width: 110px;
+  margin: 5px;
+  border-radius: 0px;,
+}
+
+.btn:focus {
+  outline: none!important;
+}
+
+.btn-warning.sidebar_button {
+  color: white;
+  background-color: #195365;
+  border-color: #195365;
+}
+
+.btn-warning.sidebar_button:hover,
+.btn-warning.sidebar_button:hover:active{
+  background-color: #195365cc;
+  border-color: #195365cc;
+}
+
+.sidebar_dynamic_button{
+  width: 100%;
+  text-align: left;
+  margin: 0 5px;
+  border-color: #ffffff00;
+}
+
+/*
 @media (max-width: 767px){
   .navbar-header, navbar-header{
     display: flex;
@@ -27,7 +62,7 @@
   .nav>li:has(a[data-value="Handlung 1"]){
     background-color: red;
   }
-*/
+
 
   .nav>li:has(a[data-value="Handlung 2"]){
     margin-right: 15%;
@@ -36,10 +71,10 @@
   .nav>li:has(a[data-value="Stories"]){
     margin-left: 15%;
   }
-/*
+
   .nav>li:has(a[data-value="Studies"]){
     background-color: orange;
   }
-*/
 }
+*/
 
