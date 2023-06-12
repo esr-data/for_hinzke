@@ -1,14 +1,14 @@
 #' Missing description
 #' @noRd
 
-module_studies_ui <- function(id = "studies", label = "m_studies", type = "all") {
+module_reader_ui <- function(id = "reader", label = "m_home") {
   ns <- NS(id)
   tagList(
     fluidPage(
-      h2(paste("Studies", type, "!"))
-
-
-
+      column(
+        width = 10,
+        h2("Home!")
+      )
     )
   )
 }
@@ -16,7 +16,7 @@ module_studies_ui <- function(id = "studies", label = "m_studies", type = "all")
 #' Missing description
 #' @noRd
 
-module_studies_server <- function(id = "studies", con, type = "all") {
+module_reader_server <- function(id = "reader", con) {
   moduleServer(
     id,
     function(input, output, session) {

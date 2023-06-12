@@ -1,11 +1,11 @@
 #' Missing description
 #' @noRd
 
-module_monitor_ui <- function(id = "monitor", label = "m_monitor") {
+module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all") {
   ns <- NS(id)
   tagList(
     fluidPage(
-      titlePanel("Monitor"),
+      titlePanel(paste("Monitor", type, "!")),
       navlistPanel(
         "Header A",
         tabPanel("Component 1"),
@@ -23,7 +23,7 @@ module_monitor_ui <- function(id = "monitor", label = "m_monitor") {
 #' Missing description
 #' @noRd
 
-module_monitor_server <- function(id = "monitor", con) {
+module_monitor_server <- function(id = "monitor", con, type = "all") {
   moduleServer(
     id,
     function(input, output, session) {

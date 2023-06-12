@@ -5,10 +5,10 @@ module_home_ui <- function(id = "home", label = "m_home") {
   ns <- NS(id)
   tagList(
     fluidPage(
-      h2("Home!")
-
-
-
+      column(
+        width = 10,
+        h2("Home!")
+      )
     )
   )
 }

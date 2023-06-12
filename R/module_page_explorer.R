@@ -1,11 +1,11 @@
 #' Missing description
 #' @noRd
 
-module_explorer_ui <- function(id = "explorer", label = "m_explorer") {
+module_explorer_ui <- function(id = "explorer", label = "m_explorer", type = "all") {
   ns <- NS(id)
   tagList(
     fluidPage(
-      h2("Explorer!")
+      h2(paste("Explorer", type, "!"))
 
 
 
@@ -16,7 +16,7 @@ module_explorer_ui <- function(id = "explorer", label = "m_explorer") {
 #' Missing description
 #' @noRd
 
-module_explorer_server <- function(id = "explorer", con) {
+module_explorer_server <- function(id = "explorer", con, type = "all") {
   moduleServer(
     id,
     function(input, output, session) {

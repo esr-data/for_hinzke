@@ -3,19 +3,37 @@
 
 draw_ui <- function(){
   tagList(
-    #tags$style("navbar-header,.navbar-header{margin-right: 30%!important;}"),
-    #HTML("<style>.container-fluid{padding:0;margin:0;}</style>"),
     tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")),
-    navigation_bar,
     title = NULL,
-    router_ui(
-      route("/",           module_home_ui()),
-      route("stories",     module_stories_ui()),
-      route("monitor",     module_monitor_ui()),
-      route("explorer",    module_explorer_ui()),
-      route("studies",     module_studies_ui()),
-      route("handlung_1",  module_handlung_1_ui()),
-      route("handlung_2",  module_handlung_2_ui())
+    # navigation_bar,
+    fluidPage(
+      style = "padding:0;",
+      column(
+        width = 2,
+        style = "background-color: white;",
+        draw_sidebar()
+      ),
+      column(
+        style = "min-height:90vh; background-color: #F2F2F2;",
+        width = 10,
+        router_ui(
+          route("/",                   module_home_ui()),
+          route("stories",             module_stories_ui()),
+          route("monitor",             module_monitor_ui()),
+          route("explorer",            module_explorer_ui()),
+          route("studies",             module_studies_ui()),
+          route("handlung1",           module_handlung_1_ui()),
+          route("handlung2",           module_handlung_2_ui()),
+          route("handlung1_stories",   module_stories_ui(type = "handlung1",  id = "stories_handlung1")),
+          route("handlung1_monitor",   module_monitor_ui(type = "handlung1",  id = "monitor_handlung1")),
+          route("handlung1_explorer",  module_explorer_ui(type = "handlung1", id = "explorer_handlung1")),
+          route("handlung1_studies",   module_studies_ui(type = "handlung1",  id = "studies_handlung1")),
+          route("handlung2_stories",   module_stories_ui(type = "handlung2",  id = "stories_handlung2")),
+          route("handlung2_monitor",   module_monitor_ui(type = "handlung2",  id = "monitor_handlung2")),
+          route("handlung2_explorer",  module_explorer_ui(type = "handlung2", id = "explorer_handlung2")),
+          route("handlung2_studies",   module_studies_ui(type = "handlung2",  id = "studies_handlung2"))
+        )
+      )
     ),
     draw_footer()
   )
@@ -26,17 +44,13 @@ draw_ui <- function(){
 
 navigation_bar <-
   navbarPage(
-    title = NULL,
+    title       = "Platzhalter",
     windowTitle = "SV dataVerse",
-    id    = "navigation_bar",
-    selected = "SV Data",
-    tabPanel("Handlung 1", icon = icon("graduation-cap")),
-    tabPanel("Handlung 2", icon = icon("lightbulb") ),
-    tabPanel("SV Data",    icon = icon("chart-simple")),
-    tabPanel("Stories",    icon = icon("newspaper")),
-    tabPanel("Monitor",    icon = icon("chart-pie")),
-    tabPanel("Explorer",   icon = icon("magnifying-glass")),
-    tabPanel("Studies",    icon = icon("square-poll-vertical")),
+    id          = "navigation_bar",
+    selected    = "SV Data",
+    # tabPanel("SV Data",    icon = icon("chart-simple")),
+    # tabPanel("Handlung 1", icon = icon("graduation-cap")),
+    # tabPanel("Handlung 2", icon = icon("lightbulb")),
     fluid       = TRUE,
     collapsible = TRUE
   )
@@ -56,4 +70,35 @@ draw_footer <- function() {
   footer <-
     HTML('<footer class="main-footer" data-fixed="false"></footer>')
   return(footer)
+}
+
+draw_sidebar <- function(){
+  tagList(
+    br(),
+    h4("Title", class = "sidebar_title_main", style = "margin-top: 10px;"),
+    h4("------"),
+    h4("Handlungsfelder", class = "sidebar_title", style = "margin-top: 40px;"),
+    div(
+      style = "background-color: white;",
+      bsButton("sb_handlung1",  label = "Handlung 1",  class = "sidebar_button", icon = icon("newspaper")),
+      bsButton("sb_handlung2",  label = "Handlung 2",  class = "sidebar_button", icon = icon("chart-pie")),
+    ),
+    h4("Formate", class = "sidebar_title", style = "margin-top: 40px;"),
+    div(
+      style = "background-color: white;",
+      bsButton("sb_stories",  label = "Stories",  class = "sidebar_button", icon = icon("newspaper")),
+      bsButton("sb_monitor",  label = "Monitor",  class = "sidebar_button", icon = icon("chart-pie")),
+      bsButton("sb_explorer", label = "Explorer", class = "sidebar_button", icon = icon("magnifying-glass")),
+      bsButton("sb_studies",  label = "Studies",  class = "sidebar_button", icon = icon("square-poll-vertical")),
+    ),
+    h4("Inhalt", class = "sidebar_title", style = "margin-top: 40px;"),
+    uiOutput("sidebar_dynamic"),
+    h4("Sonstiges", class = "sidebar_title", style = "margin-top: 40px;"),
+    div(
+      style = "background-color: white;",
+      bsButton("sb_sonstige1",  label = "Sonstige 1",  class = "sidebar_button", icon = icon("database")),
+      bsButton("sb_sonstige2",  label = "sonstige 2",  class = "sidebar_button", icon = icon("database")),
+    ),
+    div(style = "margin: 80px;")
+  )
 }

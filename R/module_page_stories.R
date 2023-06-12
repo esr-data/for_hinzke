@@ -1,11 +1,12 @@
 #' Missing description
 #' @noRd
 
-module_stories_ui <- function(id = "stories", label = "m_stories") {
+module_stories_ui <- function(id = "stories", label = "m_stories", type = "all") {
   ns <- NS(id)
   tagList(
     fluidPage(
-      h2("Stories!")
+      h2(paste("Stories", type, "!")),
+      load_embedded_quarto("handlung2_analyse")
 
 
 
@@ -16,7 +17,7 @@ module_stories_ui <- function(id = "stories", label = "m_stories") {
 #' Missing description
 #' @noRd
 
-module_stories_server <- function(id = "stories", con) {
+module_stories_server <- function(id = "stories", con, type = "all") {
   moduleServer(
     id,
     function(input, output, session) {
