@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  app:
+    image: sv_shiny_basic:0.0.1
+    restart: always
+    ports:
+      - '30910:80'
+    networks:
+      - net
+    volumes:
+      - /home/jsc/development/datenportal_2/volume/app:/app
+networks:
+  net:
+    driver: bridge
+
+
