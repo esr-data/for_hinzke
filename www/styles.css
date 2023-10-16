@@ -1,4 +1,8 @@
 
+body {
+  font-family:"Calibri", sans-serif;
+}
+
 .navbar{
   margin-bottom: 0;
 }
@@ -31,6 +35,34 @@
   text-align: left;
   margin: 0 5px;
   border-color: #ffffff00;
+}
+
+.sidebar_title_main {
+  color: #195365;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-transform: uppercase;
+  position: relative;
+  padding: 20px 0;
+  z-index: 1;
+}
+
+.sidebar_title_main::before,
+.sidebar_title_main::after{
+  content: '';
+  display: block;
+  width: 100px;
+  height: 3px;
+  position: absolute;
+  left: 0;
+  background-color: #195365;
+}
+.sidebar_title_main::before{
+  top: 0;
+}
+.sidebar_title_main::after{
+  bottom: 0;
 }
 
 /*

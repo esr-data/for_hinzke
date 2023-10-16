@@ -75,13 +75,12 @@ draw_footer <- function() {
 draw_sidebar <- function(){
   tagList(
     br(),
-    h4("Title", class = "sidebar_title_main", style = "margin-top: 10px;"),
-    h4("------"),
+    h4("SV DATA PORTAL", class = "sidebar_title_main"),
     h4("Handlungsfelder", class = "sidebar_title", style = "margin-top: 40px;"),
     div(
       style = "background-color: white;",
-      bsButton("sb_handlung1",  label = "Handlung 1",  class = "sidebar_button", icon = icon("newspaper")),
-      bsButton("sb_handlung2",  label = "Handlung 2",  class = "sidebar_button", icon = icon("chart-pie")),
+      bsButton("sb_handlung1",  label = HTML("Bildung &<br>Kompetenzen"),  class = "sidebar_button"),
+      bsButton("sb_handlung2",  label = HTML("Forschung &<br>Innovation"),  class = "sidebar_button"),
     ),
     h4("Formate", class = "sidebar_title", style = "margin-top: 40px;"),
     div(
