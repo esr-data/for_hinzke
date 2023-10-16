@@ -1,0 +1,25 @@
+---
+title: "Die Data Awareness Rallye an der Hochschule Niederrhein und in der Universitätsallianz Ruhr"
+subtitle: "In 5 Leveln von null Ahnung zu mehr Datenbewusstsein"
+title-block-banner: false
+categories: ['Gamification', 'online', 'Workshop']
+description: 'Die Data Awareness Rallye ist ein gamifizierter Online-Kurs zum Erwerb von Datenbewusstsein als Grundlage von Data Literacy, der an der Hochschule Niederrhein und im Rahmen der Universitätsallianz Ruhr (an der Universität Duisburg-Essen (UDE), perspektivisch abgewandelt an der Technischen Universität Dortmund und an der Ruhr-Universität Bochum) angeboten wird.'
+author: 
+  - "Christina Grieb-Viglialoro" 
+  - "Elske Schönhals"
+  - "Christina Kläre"
+image:  "polyl3.png"
+toc: true
+toc-title: " "
+toc-location: left
+page-layout: full
+editor_options: 
+  chunk_output_type: console
+crossref: 
+  fig-title: Abb.
+  tbl-title: Tabelle
+  fig-prefix: Abb.
+  tbl-prefix: Tabelle
+---
+
+# Tool-Beschreibung

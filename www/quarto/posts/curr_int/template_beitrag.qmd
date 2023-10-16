@@ -1,0 +1,24 @@
+---
+title: "Module, Zertifikate & Co."
+subtitle: "Varianten der curricularen Integration von Data Literacy"
+title-block-banner: false
+categories: ['Curriculum', 'tag2']
+description: 'teaser'
+author: 
+  - autor1
+  - autor2
+image:  "poly.png"
+toc: true
+toc-title: " "
+toc-location: left
+page-layout: full
+editor_options: 
+  chunk_output_type: console
+crossref: 
+  fig-title: Abb.
+  tbl-title: Tabelle
+  fig-prefix: Abb.
+  tbl-prefix: Tabelle
+---
+
+# Tool-Beschreibung

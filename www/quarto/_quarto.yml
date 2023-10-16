@@ -1,0 +1,25 @@
+project:
+  type: website
+website:
+  title: "datenkompetent"
+  description: "Eine Publikation der Working Group: Data Literacy"
+  navbar:
+    logo: "/sv_log_weiss.png"
+    right:
+      - text: Zu den Tools
+        href: blog.qmd
+      - icon: github
+        href: https://github.com/
+  page-footer:
+    right: 
+      - href: impressum.qmd
+    left: |
+      [![](/svlog.png){width=50px} Unterstützt vom Stifterverband
+    center: |
+      [![](/datev.png){width=50px} und der Datev Stiftung Zukunft 
+format:
+  html:
+    page-layout: full
+    theme: theme.scss
+editor: source
+lang: de

@@ -6,10 +6,7 @@ module_stories_ui <- function(id = "stories", label = "m_stories", type = "all")
   tagList(
     fluidPage(
       h2(paste("Stories", type, "!")),
-      load_embedded_quarto("handlung2_analyse")
-
-
-
+      load_embedded_quarto("_site")
     )
   )
 }
