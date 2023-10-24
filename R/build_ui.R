@@ -79,8 +79,8 @@ draw_sidebar <- function(){
     h4("Handlungsfelder", class = "sidebar_title", style = "margin-top: 40px;"),
     div(
       style = "background-color: white;",
-      bsButton("sb_handlung1",  label = HTML("Bildung &<br>Kompetenzen"),  class = "sidebar_button"),
-      bsButton("sb_handlung2",  label = HTML("Forschung &<br>Innovation"),  class = "sidebar_button"),
+      bsButton("sb_handlung1",  label = HTML("Bildung &<br>Kompetenzen"),  class = "sidebar_button_hf_1"),
+      bsButton("sb_handlung2",  label = HTML("Forschung &<br>Innovation"),  class = "sidebar_button_hf_2"),
     ),
     h4("Formate", class = "sidebar_title", style = "margin-top: 40px;"),
     div(
@@ -92,11 +92,14 @@ draw_sidebar <- function(){
     ),
     h4("Inhalt", class = "sidebar_title", style = "margin-top: 40px;"),
     uiOutput("sidebar_dynamic"),
-    h4("Sonstiges", class = "sidebar_title", style = "margin-top: 40px;"),
+    h4("Mehr über uns", class = "sidebar_title", style = "margin-top: 40px;"),
     div(
       style = "background-color: white;",
-      bsButton("sb_sonstige1",  label = "Sonstige 1",  class = "sidebar_button", icon = icon("database")),
-      bsButton("sb_sonstige2",  label = "sonstige 2",  class = "sidebar_button", icon = icon("database")),
+      bsButton("sb_team",               label = "SV DATA",     class = "sidebar_button", icon = icon("user-group")),
+      bsButton("sb_Zivilgesellschaft",  label = "ZiviZ",       class = "sidebar_button", icon = icon("people-group")),
+      bsButton("sb_ki",                 label = "KI",          class = "sidebar_button", icon = icon("brain")),
+      bsButton("sb_impressum",          label = "Impressum",   class = "sidebar_button", icon = icon("circle-info")),
+      bsButton("sb_datenschutz",        label = "Datenschutz", class = "sidebar_button", icon = icon("shield-halved"))
     ),
     div(style = "margin: 80px;")
   )

@@ -1,18 +1,55 @@
 
-body {
-  font-family:"Calibri", sans-serif;
+/* Root Variable Definition --------------------------------------------------------------------- */
+
+:root{
+  /*colors*/
+  --primary:         #6896a8;
+  --soft-primary:    #b3c8d3;
+  --light-primary:   #e0e8ed;
+  --blue:            #195365;
+  --blue-trans:      #195365cc;
+  --light-blue:      #8d9ca9;
+  --red:             #e73f0c;
+  --grey:            #b5bfc5;
+  --light-grey:      #dae0e3;
+  --very-light-grey: #f0f3f4;
+  --dark-grey:       #6A6F73;
+  --very-dark-grey:  #575757;
+  --beige:           #ada58b;
+  --dark-beige:      #8A8161;
+  --color-bildung:   #C3DA46;
+  --color-forschung: #A96BF1;
+  --color-bildung-trans:   #C3DA46cc;
+  --color-forschung-trans: #A96BF1cc;
+
+  /*font*/
+  --font-size: 15px;
+  --font-family: "Calibri", sans-serif;
 }
+
+/* Font ----------------------------------------------------------------------------------------- */
+
+h1, h2, h3, h4, h5, h6, p,
+.h1, .h2, .h3, .h4, .h5, .h6, .p {
+  font-family: var(--font-family);
+}
+
+/* Sidebar -------------------------------------------------------------------------------------- */
 
 .navbar{
   margin-bottom: 0;
 }
 .sidebar_button,
-.sidebar_dynamic_button{
+.sidebar_dynamic_button,
+.sidebar_button_hf_1,
+.sidebar_button_hf_2 {
   color: black;
   width: 110px;
   margin: 5px;
   border-radius: 0px;,
 }
+
+/* Sidebar-Buttons ------------------------------------------------------------------------------ */
 
 .btn:focus {
   outline: none!important;
@@ -20,15 +57,40 @@ body {
 
 .btn-warning.sidebar_button {
   color: white;
-  background-color: #195365;
-  border-color: #195365;
+  background-color: var(--blue);
+  border-color: var(--blue);
 }
 
 .btn-warning.sidebar_button:hover,
 .btn-warning.sidebar_button:hover:active{
-  background-color: #195365cc;
-  border-color: #195365cc;
+  background-color: var(--blue-trans);
+  border-color: var(--blue-trans);
 }
+
+.btn-warning.sidebar_button_hf_1 {
+  color: white;
+  background-color: var(--color-bildung);
+  border-color: var(--color-bildung);
+}
+
+.btn-warning.sidebar_button_hf_1:hover,
+.btn-warning.sidebar_button_hf_1:hover:active{
+  background-color: var(--color-bildung-trans);
+  border-color: var(--color-bildung-trans);
+}
+
+.btn-warning.sidebar_button_hf_2 {
+  color: white;
+  background-color: var(--color-forschung);
+  border-color: var(--color-forschung);
+}
+
+.btn-warning.sidebar_button_hf_2:hover,
+.btn-warning.sidebar_button_hf_2:hover:active{
+  background-color: var(--color-forschung-trans);
+  border-color: var(--color-forschung-trans);
+}
+
 
 .sidebar_dynamic_button{
   width: 100%;
@@ -37,8 +99,10 @@ body {
   border-color: #ffffff00;
 }
 
+/* Sidebar-Title -------------------------------------------------------------------------------- */
+
 .sidebar_title_main {
-  color: #195365;
+  color: var(--blue);
   font-size: 30px;
   font-weight: 700;
   line-height: 1.35;
@@ -56,7 +120,7 @@ body {
   height: 3px;
   position: absolute;
   left: 0;
-  background-color: #195365;
+  background-color: var(--blue);
 }
 .sidebar_title_main::before{
   top: 0;
@@ -64,6 +128,11 @@ body {
 .sidebar_title_main::after{
   bottom: 0;
 }
+
+
+
+
+
 
 /*
 @media (max-width: 767px){
