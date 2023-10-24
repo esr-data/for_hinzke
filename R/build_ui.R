@@ -3,7 +3,8 @@
 
 draw_ui <- function(){
   tagList(
-    tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")),
+    #tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")),
+    tags$style(paste(readLines("www/styles.css"), collapse = " ")),
     title = NULL,
     # navigation_bar,
     fluidPage(

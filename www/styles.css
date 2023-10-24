@@ -32,6 +32,11 @@
 h1, h2, h3, h4, h5, h6, p,
 .h1, .h2, .h3, .h4, .h5, .h6, .p {
   font-family: var(--font-family);
+  color: var(--blue);
+}
+
+h2, .h2 {
+  font-weight: 600;
 }
 
 /* Sidebar -------------------------------------------------------------------------------------- */
@@ -91,7 +96,6 @@ h1, h2, h3, h4, h5, h6, p,
   border-color: var(--color-forschung-trans);
 }
 
-
 .sidebar_dynamic_button{
   width: 100%;
   text-align: left;
@@ -129,9 +133,39 @@ h1, h2, h3, h4, h5, h6, p,
   bottom: 0;
 }
 
+/* Content-Panel -------------------------------------------------------------------------------- */
 
+.panel-content, panel-content {
+  padding: 10px 20px;
+  margin: 20px 0px 20px 0px;
+  background-color: white;
+  width: 100%;
+}
 
+/* Boxen bei Studies ---------------------------------------------------------------------------- */
 
+.studies_box {
+  background-color: red;
+  max-width: 220px;
+}
+
+.studies_header {
+  font-size: 18px;
+  text-align: center;
+  padding: 20px 10px;
+  font-weight: 600;
+}
+
+.studies_img {
+  width: 200px;
+  margin: auto;
+  display: flow;
+}
+
+.studies_text{
+  margin: 20px;
+  font-size: 16px;
+}
 
 
 /*
