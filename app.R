@@ -1,9 +1,29 @@
 
+# --- Packages laden -------------------------------------------------------------------------------
+
+library(dplyr)
 library(shiny)
-library(shinyBS)
 library(shiny.router)
+library(shinyWidgets)
+library(bsplus)
+library(shinyBS)
+library(DBI)
+library(reactable)
+library(sortable)
 
-for (i in list.files("R")) source(file.path("R", i))
-rm(i)
+# --- Code laden -----------------------------------------------------------------------------------
 
-shinyApp(draw_ui(), server)
+for (j in c("utils", "pages", "build")){
+  for (i in file.path("R", j) |> list.files()){
+    source(file.path("R", j, i))
+  }
+}
+rm(i, j)
+
+# --- App starten ----------------------------------------------------------------------------------
+
+shinyApp(
+  draw_ui(),
+  server,
+  onStart = function() {con <<- dbConnect(RSQLite::SQLite(), "data/magpie.sqlite")}
+)

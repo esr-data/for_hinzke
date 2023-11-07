@@ -63,3 +63,14 @@ rsconnect/
 /www/quarto/_site
 /www/quarto/.quarto
 /www/quarto/_freeze
+
+/www/stories/
+
+# Do not save Images
+*.xcf
+*.png
+*.svg
+*.jpg
+
+# Do not save data
+*.sqlite

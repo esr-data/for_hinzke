@@ -29,6 +29,12 @@
 
 /* Font ----------------------------------------------------------------------------------------- */
 
+.body, body {
+  font-family: var(--font-family);
+  font-size: 18px;
+  background-color: #F2F2F2;
+}
+
 h1, h2, h3, h4, h5, h6, p,
 .h1, .h2, .h3, .h4, .h5, .h6, .p {
   font-family: var(--font-family);
@@ -44,6 +50,7 @@ h2, .h2 {
 .navbar{
   margin-bottom: 0;
 }
+
 .sidebar_button,
 .sidebar_dynamic_button,
 .sidebar_button_hf_1,
@@ -103,6 +110,11 @@ h2, .h2 {
   border-color: #ffffff00;
 }
 
+.sidebar_dynamic_button:focus{
+  background-color: #ffffff00;
+  border-color:     #ffffff00;
+}
+
 /* Sidebar-Title -------------------------------------------------------------------------------- */
 
 .sidebar_title_main {
@@ -145,15 +157,38 @@ h2, .h2 {
 /* Boxen bei Studies ---------------------------------------------------------------------------- */
 
 .studies_box {
-  background-color: red;
-  max-width: 220px;
+  background-color: white;
+  max-width: 240px;
+  padding: 20px;
+  border: 2px solid var(--grey);
+  margin: 20px;
+  transition: all .4s ease;
 }
+
+.studies_box:hover {
+  margin: 15px 15px 25px 25px;
+  box-shadow: 2px 2px 2px 0px var(--grey);
+}
+
+.studies_box:hover {
+  border-color: var(--blue);
+}
+
+.studies_box.innovation:hover {
+  border-color: var(--color-forschung);
+}
+
+.studies_box.bildung:hover {
+  border-color: var(--color-bildung);
+}
+
 
 .studies_header {
   font-size: 18px;
   text-align: center;
-  padding: 20px 10px;
   font-weight: 600;
+  margin-bottom: 15px;
+  color: var(--blue);;
 }
 
 .studies_img {
@@ -163,10 +198,41 @@ h2, .h2 {
 }
 
 .studies_text{
-  margin: 20px;
+  margin-top: 15px;
   font-size: 16px;
+  line-height: 20px;
 }
 
+/* Tooltips ------------------------------------------------------------------------------------- */
+
+.tooltip.bottom .tooltip-arrow {
+  border-bottom-color: var(--blue);
+}
+
+.tooltip.bottom .tooltip-inner {
+  background-color: var(--blue);
+  max-width: 360px;
+  font-size: 13px;
+  padding: 10px;
+  box-shadow: 2px 2px 2px 0px var(--grey);
+}
+
+/* Content-Box ---------------------------------------------------------------------------------- */
+
+.content-box {
+  padding: 10px;
+  margin: 10px;
+  background-color: var(--light-grey);
+}
+
+@media (max-width: 767px){
+  #main-body {
+    display: block!important;
+  }
+  #sidebar{
+    width: 100%!important;
+  }
+}
 
 /*
 @media (max-width: 767px){
