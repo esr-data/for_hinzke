@@ -6,6 +6,7 @@ draw_ui <- function(){
 
     # HEAD AND STYLE
     #theme = bslib::bs_theme(version = 3),
+    shinyjs::useShinyjs(),
     tags$head(
       tags$link(rel = "apple-touch-icon-precomposed", sizes = "180x180", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/apple-touch-icon.png"),
       tags$link(rel = "icon",                         sizes = "192x192", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/touch-icon-192x192.png"),

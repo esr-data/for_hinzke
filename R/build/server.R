@@ -9,6 +9,7 @@ server <- function(input, output, session) {
 
   # --- Server der Shiny-Modules -------------------------------------------------------------------
 
+  module_monitor_server()
   module_explorer_server(con = con)
   module_studies_server()
 
