@@ -1,41 +1,50 @@
- module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all") {
-   ns <- NS(id)
-   tagList(
-     fluidPage(
-       shinyjs::useShinyjs(),
-       titlePanel(paste("Monitor", "!")),
-       div(
-         id = "mon",
-         uiOutput(ns("monitor_svg")),
-         verbatimTextOutput(ns("debug"))
-       ),
-       tags$script(HTML(
-         "$('#mon').on('click', '.side_circle', (ev) => {
-        Shiny.setInputValue('mon', ev.target.id)
-        })
-        "
-       ))
-      )
-   )
- }
-
- module_monitor_server <- function(id = "monitor", con, type = "all") {
-   moduleServer(
-     id,
-     function(input, output, session) {
-       ns <- session$ns
-
-       output$debug <- renderPrint(input$mon)
-
-       output$monitor_svg <- renderUI({
+module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all") {
+  ns <- NS(id)
+  tagList(
+    fluidPage(
+      shinyjs::useShinyjs(),
+      titlePanel(paste("Monitor", "!")),
+      div(
+        id = ns("mon"),
+        uiOutput(ns("monitor_svg")),
+        verbatimTextOutput(ns("debug"))
+      ),
+      tags$script(
         HTML(
-           readLines("www/img/Test_Monitor.svg")
-         )
-       })
+          "
+            shinyjs.init = function() {
+              $('body').on('click', '.side_circle', function(ev) {
+                Shiny.setInputValue('monitor-mon', ev.target.id, {priority: 'event'});
+              });
+            };
+          "
+        )
+      )
+    )
+  )
+}
 
-     }
-   )
- }
+
+
+module_monitor_server <- function(id = "monitor", con, type = "all") {
+  moduleServer(
+    id,
+    function(input, output, session) {
+      ns <- session$ns
+
+      observeEvent(input$mon, { print(input$mon) })
+
+      output$debug <- renderPrint(input$mon)
+
+      output$monitor_svg <- renderUI({
+        HTML(
+          readLines("www/img/Test_Monitor.svg")
+        )
+      })
+    }
+  )
+}
+
 
 
 
