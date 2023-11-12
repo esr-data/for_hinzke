@@ -9,8 +9,8 @@ module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all")
       titlePanel(paste("Monitor", "!")),
       div(
         id = ns("mon"),
-        uiOutput(ns("monitor_svg")) # ,
-        # verbatimTextOutput(ns("debug"))
+        uiOutput(ns("monitor_svg")),
+        verbatimTextOutput(ns("debug"))
       ),
       tags$script(
         HTML(
@@ -36,9 +36,18 @@ module_monitor_server <- function(id = "monitor", con, type = "all") {
     function(input, output, session) {
       ns <- session$ns
 
-      observeEvent(input$mon, { print(input$mon) })
+      # simple linking?
 
-      # output$debug <- renderPrint(input$mon)
+      # observeEvent(input$mon, {
+      #   shinyjs::runjs(
+      #     sprintf(
+      #       "window.location.href = 'R/pages/subpages_monitor/%s';",
+      #       input$mon
+      #     )
+      #   )
+      # })
+
+      output$debug <- renderPrint(input$mon)
 
       output$monitor_svg <- renderUI({
         HTML(
