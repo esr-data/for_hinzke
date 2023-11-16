@@ -10,6 +10,9 @@ library(shinyBS)
 library(DBI)
 library(reactable)
 library(sortable)
+library(shinyjs)
+library(purrr)
+library(lorem)
 
 # --- Code laden -----------------------------------------------------------------------------------
 
