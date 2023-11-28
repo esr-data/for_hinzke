@@ -105,6 +105,18 @@ a{
 
 /* monitor subpages sidbar -------------------------------------------------- */
 
+.collapsible-content {
+  display: none;
+}
+
+.collapsible-header {
+  position: relative;
+}
+
+.collapsible-header:hover {
+  cursor: pointer;
+}
+
 .monitor-sidbar-row {
   margin-bottom: 15px;
   padding: 10px;
@@ -208,3 +220,22 @@ ul li {
   margin-right: 3px;
 }
 
+.arrow-down, .arrow-up {
+  position: absolute;
+  right: 0;   /* Kein Abstand vom rechten Rand des übergeordneten Elements */
+  top: 0;     /* Kein Abstand vom oberen Rand des übergeordneten Elements */
+  border: solid var(--blue);
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 5px;
+}
+
+.arrow-down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+.arrow-up {
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+}
