@@ -54,6 +54,20 @@ module_monitor_server <- function(id = "monitor", con, type = "all") {
           readLines("www/img/Test_Monitor.svg")
         )
       })
+
+      observeEvent(input$mon, {
+        if(input$mon == "circle_bildung_ganztag") {
+          showModal(modalDialog(
+            title = "",
+            module_monitor_ganztag_als_bildungszeit_ui("monitor_ganztag_als_bildungszeit"),
+            module_monitor_ganztag_als_bildungszeit_server("monitor_ganztag_als_bildungszeit"),
+            easyClose = TRUE,
+            footer = modalButton("Schließen")
+          ))
+        }
+      })
+
+
     }
   )
 }

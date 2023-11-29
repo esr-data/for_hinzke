@@ -37,6 +37,10 @@ module_monitor_ganztag_als_bildungszeit_ui <- function(id = "monitor_ganztag_als
         sidebarPanel(
           width = 3,
           fluidRow(
+            class = "back_button_row",
+            actionButton("back_button", label = HTML("Zurück<br>zur Übersicht"))
+          ),
+          fluidRow(
             width = 12,
             div(
               class = "fragen-indikatoren-ziele-box monitor-sidbar-row",
@@ -193,7 +197,7 @@ module_monitor_ganztag_als_bildungszeit_ui <- function(id = "monitor_ganztag_als
           div(
             class = "important-values-graph",
             img(
-              src = "img/4er.svg",
+              src = "img/4er_Ganztag.svg",
               alt = "Wichtige Kennzahlen zum Ausbau der Ganztagsschule in Duetschland"
             )
           ),
@@ -205,20 +209,33 @@ module_monitor_ganztag_als_bildungszeit_ui <- function(id = "monitor_ganztag_als
               ~{
                 div(
                   h3(
-                    class = "collapsible-header",
+                    class = "collapsible-header collapsible-header-main",
                     id = content_list_monitor_subpage_structure[["ID"]][[.]],
-                    content_list_monitor_subpage_structure[["Ueberschriften"]][[.]]),
+                    content_list_monitor_subpage_structure[["Ueberschriften"]][[.]],
+                    tags$i(class = "arrow-down")
+                  ),
                   div(
-                    class = "collapsible-content",
-                    tags$ul(
-                      tags$li(tags$i(class = "fa-solid fa-clipboard-question"),tags$b("Frage:"), content_list_monitor_subpage_structure[["Fragen"]][[.]]),
-                      tags$li(tags$i(class = "fa-solid fa-bullseye"),tags$b("Ziel:"), content_list_monitor_subpage_structure[["Ziele"]][[.]]),
-                      tags$li(tags$i(class = "fa-solid fa-ruler"),tags$b("Indikator:"), content_list_monitor_subpage_structure[["Indikatoren"]][[.]])
-
+                    class = "collapsible-content collapsible-content-main",
+                    div(
+                      class = "content-ask-aim-ind",
+                      tags$ul(
+                        tags$li(tags$i(class = "fa-solid fa-clipboard-question"),tags$b("Frage:"), content_list_monitor_subpage_structure[["Fragen"]][[.]]),
+                        tags$li(tags$i(class = "fa-solid fa-bullseye"),tags$b("Ziel:"), content_list_monitor_subpage_structure[["Ziele"]][[.]]),
+                        tags$li(tags$i(class = "fa-solid fa-ruler"),tags$b("Indikator:"), content_list_monitor_subpage_structure[["Indikatoren"]][[.]])
+                      )
+                    ),
+                    div(
+                      class = "real-content",
+                      x()
+                    ),
+                    div(
+                      class = "content-footer",
+                      p("Notes")
                     )
                   )
                 )
-            })
+              }
+            )
           )
         )
       )
@@ -271,8 +288,6 @@ module_monitor_ganztag_als_bildungszeit_server <- function(id = "monitor_ganztag
           )
         )
       })
-
-
     }
   )
 }

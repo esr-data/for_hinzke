@@ -23,6 +23,9 @@ for (j in c("utils", "pages", "build")){
 }
 rm(i, j)
 
+source("test_data.R")
+content_list_monitor_subpage_structure <- content_list_monitor_subpages_structure_full[["bildung_ganztag"]]
+
 # --- App starten ----------------------------------------------------------------------------------
 
 shinyApp(

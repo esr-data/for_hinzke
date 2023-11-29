@@ -105,6 +105,13 @@ a{
 
 /* monitor subpages sidbar -------------------------------------------------- */
 
+.collapsible-header-main, .collapsible-content-main {
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    margin-bottom: 0px;
+    padding: 15px;
+}
+
 .collapsible-content {
   display: none;
 }
@@ -222,8 +229,8 @@ ul li {
 
 .arrow-down, .arrow-up {
   position: absolute;
-  right: 0;   /* Kein Abstand vom rechten Rand des übergeordneten Elements */
-  top: 0;     /* Kein Abstand vom oberen Rand des übergeordneten Elements */
+  right: 15px;
+  top: auto;
   border: solid var(--blue);
   border-width: 0 2px 2px 0;
   display: inline-block;
@@ -238,4 +245,29 @@ ul li {
 .arrow-up {
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
+}
+
+.back_button_row {
+  margin-bottom: 10px;
+}
+
+#back_button {
+  background-color: #91bea0;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 10px;
+  width: 75px;
+  height: 75px;
+  text-align: center;
+  margin 5px;
+}
+
+#back_button:hover {
+  background-color: #3D8656;
+}
+
+.content-ask-aim-ind {
+  border: solid 1px;
 }
