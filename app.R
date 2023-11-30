@@ -1,15 +1,24 @@
 
 # --- Packages laden -------------------------------------------------------------------------------
 
+# Basics + Databases
 library(dplyr)
+library(DBI)
+
+# Shiny + Routing
 library(shiny)
 library(shiny.router)
+
+# Widgets + UI Elements
 library(shinyWidgets)
 library(bsplus)
 library(shinyBS)
-library(DBI)
 library(reactable)
 library(sortable)
+
+# Loading-Screens
+library(shinycssloaders)
+library(waiter)
 
 # --- Code laden -----------------------------------------------------------------------------------
 
@@ -25,5 +34,8 @@ rm(i, j)
 shinyApp(
   draw_ui(),
   server,
-  onStart = function() {con <<- dbConnect(RSQLite::SQLite(), "data/magpie.sqlite")}
+  onStart = function() {
+    con <<- dbConnect(RSQLite::SQLite(), "data/magpie.sqlite")
+  }
 )
+
