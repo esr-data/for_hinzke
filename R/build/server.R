@@ -3,13 +3,14 @@
 
 server <- function(input, output, session) {
 
-  onStop(function() {dbDisconnect(con)})
+  # onStop(function() {dbDisconnect(con)})
 
-  sidebar_button <- reactiveValues(value_1 = "", value_2 = "", locked = FALSE)
+  sidebar_button <- reactiveValues(value_1 = "", value_2 = "", locked = FALSE, start = TRUE)
 
   # --- Server der Shiny-Modules -------------------------------------------------------------------
 
-  module_explorer_server(con = con)
+  module_explorer_server()
+  module_indikator_server(con = con)
   module_studies_server()
 
   # --- Sidebar ------------------------------------------------------------------------------------
@@ -32,13 +33,6 @@ server <- function(input, output, session) {
 
   observeEvent(session$clientData$url_hash, {
     url <- isolate(session$clientData$url_hash)
-
-    # Sub-URLs weitergeben
-    print(url)
-    if (grepl("&", url, fixed = TRUE)){
-      print(1)
-      change_page("#!/explorer")
-    }
 
     if (!isolate(sidebar_button$locked)){
       if (grepl("handlung1", url)) sidebar_button$value_1 <- "handlung1"
@@ -71,7 +65,11 @@ server <- function(input, output, session) {
     }
 
     sidebar_button$locked <- FALSE
-    change_url(isolate(value_1), isolate(value_2))
+    if (!isolate(sidebar_button$start)){
+      change_url(isolate(value_1), isolate(value_2))
+    } else {
+      sidebar_button$start <- FALSE
+    }
   })
 
   observeEvent(input$sb_home, {
