@@ -130,22 +130,20 @@ server <- function(input, output, session) {
       select(-id)
   })
 
+  filtered_data_map <- reactive({
+    req(input$map_year)
+    filtered_data() %>%
+      filter(time == input$map_year)
+  })
+
   output$output_list <- renderUI({
 
     if(nrow(filtered_data()) == 0) {
       return(HTML("<p>Leider Keine Daten in dieser Kombination verfügbar, bitte ändern Sie die Eingabe/n.</p>"))
     } else if (input$show == "Tabelle") {
       renderTable(filtered_data())
-    } else if (input$show == "Zeitreihe") {
-      renderPlot({
-       ggplot2::ggplot(filtered_data(), ggplot2::aes(x = as.numeric(Zeit), y = as.numeric(wert))) +
-          ggplot2::geom_line()
-      })
-    } else if (input$input_show == "Karte") {
-      renderPlot({
-
-      })
     }
+
   })
 
 }
