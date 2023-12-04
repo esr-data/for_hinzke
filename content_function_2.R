@@ -52,19 +52,20 @@ load_table_by_variable <- function(variable){
     }
   }
 
-  for (i in unique(reichweite$gruppe)){
-    daten[,i] <- ifelse(is.na(daten[,i]), "Insgesamt", daten[,i])
-  }
+  # for (i in unique(reichweite$gruppe)){
+  #   daten[,i] <- ifelse(is.na(daten[,i]), "Insgesamt", daten[,i])
+  # }
 
   names(daten) <- gsub("jahr", "Zeit", names(daten))
 
-  daten <- daten %>%
-    tidyr::pivot_longer(
-      cols = c(everything(), - c(id, variable, Zeit, wert, einheit)),
-      names_to = "Gliederung",
-      values_to = "Kategorie"
-    ) %>%
-    dplyr::select(- id)
+  # daten <- daten %>%
+  #   tidyr::pivot_longer(
+  #     cols = c(everything(), - c(id, variable, Zeit, wert, einheit)),
+  #     names_to = "Gliederung",
+  #     values_to = "Kategorie"
+  #   ) %>%
+  #   dplyr::filter(!is.na(Kategorie)) %>%
+  #   dplyr::select(- id)
 
   return(daten)
 }

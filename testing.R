@@ -225,8 +225,7 @@ module_monitor_ganztag_als_bildungszeit_ui <- function(id = "monitor_ganztag_als
                       )
                     ),
                     div(
-                      class = "real-content",
-                      x()
+                      class = "real-content"
                     ),
                     div(
                       class = "content-footer",

@@ -7,6 +7,9 @@ content_list_monitor_subpages_structure_full <-
       "Titel" = "Ganztag als Bildungszeit",
       "Untertitel" = "Wie steht es um den Ausbau der Ganztagsschule?",
       "Einfuehrungstext" = "Ganztagsschulen können dazu beitragen, Bildungsungleichheiten zu verringern, indem sie allen Kindern, unabhängig von ihrem familiären Hintergrund, Zugang zu zusätzlichen Bildungsressourcen und Unterstützung bieten. Ganztagsschulen ermöglichen eine bessere Vereinbarkeit von Beruf und Familie, da Eltern nicht für die Betreuung ihrer Kinder am Nachmittag sorgen müssen. Zudem bieten sie Raum für innovative pädagogische Konzepte, die über den traditionellen Unterricht hinausgehen und die Persönlichkeitsentwicklung sowie soziale Kompetenzen der Schüler fördern. Ganztagsangebote sind eine Chance Schule neu zu denken und auch andere gesellschaftliche Akteure sinnstiftend einzubinden.",
+      "Indikator_Inhalt" = c(
+
+      ),
       "Ueberschriften" = c(
         "Ausbau der Ganztagsangebote",
         "Vielfalt der Ganztagsangebote",
