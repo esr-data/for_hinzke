@@ -52,9 +52,9 @@ load_table_by_variable <- function(variable){
     }
   }
 
-  # for (i in unique(reichweite$gruppe)){
-  #   daten[,i] <- ifelse(is.na(daten[,i]), "Insgesamt", daten[,i])
-  # }
+  for (i in unique(reichweite$gruppe)){
+    daten[,i] <- ifelse(is.na(daten[,i]), "Insgesamt", daten[,i])
+  }
 
   names(daten) <- gsub("jahr", "Zeit", names(daten))
 
@@ -68,6 +68,62 @@ load_table_by_variable <- function(variable){
   #   dplyr::select(- id)
 
   return(daten)
+}
+
+x <- manage_explorer_data( # TODO
+  werte         = var_table$wert,
+  gruppe        = var_table$gruppen[var_table$gruppen != "Zeit"],
+  unterscheiden = var_table$auswahl,
+  filtern       = var_table$filter
+)
+
+manage_explorer_data <- function(werte, gruppe = NULL, unterscheiden = NULL, filtern = NULL){
+
+  # werte         <<- werte
+  # gruppe        <<- gruppe
+  # unterscheiden <<- unterscheiden
+  # filtern       <<- filtern
+
+  if (nrow(werte) < 1) return(NULL)
+
+  if (is.null(gruppe)){
+    gruppe <- c()
+  }
+
+  neue_gruppe <- gruppe
+  if (is.null(unterscheiden)){
+    unterscheiden <- c()
+  }
+
+  nicht_unterscheiden <- gruppe[!(gruppe %in% unterscheiden)]
+
+  if (!is.null(filtern)){
+    if (nrow(filtern) > 0){
+      for (i in unique(filtern$type)){
+        werte <- werte[werte[,match(i, names(werte))] %in% filtern[filtern$type == i,"werte"],]
+      }
+    }
+  }
+
+  for (i in nicht_unterscheiden){
+    if ("Insgesamt" %in% werte[,i]) {
+      werte <- werte[werte[,i] == "Insgesamt", names(werte) != i]
+    } else if ("Deutschland" %in% werte[,i]) {
+      werte <- werte[werte[,i] == "Deutschland", names(werte) != i]
+    } else {
+      x <- table(werte[,i])
+      x <- (names(x)[max(x) == x])[1]
+      werte <- werte[werte[,i] == x, names(werte) != i]
+      rm(x)
+    }
+  }
+
+  if (!("Zeit" %in% unterscheiden)){
+    werte <- werte[werte$Zeit == max(werte$Zeit),]
+  }
+
+  neue_gruppe <- gruppe[!(gruppe %in% nicht_unterscheiden)]
+  return(werte[,c("Zeit", "wert", "einheit", neue_gruppe)])
 }
 
 var_table <- load_table_by_variable(138)
