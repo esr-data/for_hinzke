@@ -67,15 +67,8 @@ load_table_by_variable <- function(variable){
   #   dplyr::filter(!is.na(Kategorie)) %>%
   #   dplyr::select(- id)
 
-  return(daten)
+  return(list(daten, gruppe))
 }
-
-x <- manage_explorer_data( # TODO
-  werte         = var_table$wert,
-  gruppe        = var_table$gruppen[var_table$gruppen != "Zeit"],
-  unterscheiden = var_table$auswahl,
-  filtern       = var_table$filter
-)
 
 manage_explorer_data <- function(werte, gruppe = NULL, unterscheiden = NULL, filtern = NULL){
 
@@ -127,6 +120,13 @@ manage_explorer_data <- function(werte, gruppe = NULL, unterscheiden = NULL, fil
 }
 
 var_table <- load_table_by_variable(138)
+
+x <- manage_explorer_data(# TODO
+  werte = var_table,
+  gruppe = ,
+  unterscheiden = c("Hochschularten"),
+  filter = c()
+)
 
 ui <- function() {
   fluidPage(
