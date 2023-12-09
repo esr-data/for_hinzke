@@ -67,7 +67,7 @@ load_table_by_variable <- function(variable){
   #   dplyr::filter(!is.na(Kategorie)) %>%
   #   dplyr::select(- id)
 
-  return(list(daten, gruppe))
+  return(list(daten = daten, gruppe = unique(reichweite$gruppe)))
 }
 
 manage_explorer_data <- function(werte, gruppe = NULL, unterscheiden = NULL, filtern = NULL){
@@ -90,6 +90,10 @@ manage_explorer_data <- function(werte, gruppe = NULL, unterscheiden = NULL, fil
 
   nicht_unterscheiden <- gruppe[!(gruppe %in% unterscheiden)]
 
+  if (!is.null(unterscheiden)) {
+    unterscheiden_string <- as_label()
+  }
+
   if (!is.null(filtern)){
     if (nrow(filtern) > 0){
       for (i in unique(filtern$type)){
@@ -111,22 +115,21 @@ manage_explorer_data <- function(werte, gruppe = NULL, unterscheiden = NULL, fil
     }
   }
 
-  if (!("Zeit" %in% unterscheiden)){
-    werte <- werte[werte$Zeit == max(werte$Zeit),]
-  }
+  # if (!("Zeit" %in% unterscheiden)){
+  #   werte <- werte[werte$Zeit == max(werte$Zeit),]
+  # }
 
   neue_gruppe <- gruppe[!(gruppe %in% nicht_unterscheiden)]
   return(werte[,c("Zeit", "wert", "einheit", neue_gruppe)])
 }
 
-var_table <- load_table_by_variable(138)
-
-x <- manage_explorer_data(# TODO
-  werte = var_table,
-  gruppe = ,
-  unterscheiden = c("Hochschularten"),
-  filter = c()
+x <- manage_explorer_data(
+  werte = var_table$daten,
+  gruppe = var_table$gruppe,
+  unterscheiden = "Hochschularten"
 )
+
+var_table <- load_table_by_variable(138)
 
 ui <- function() {
   fluidPage(
@@ -160,8 +163,11 @@ server <- function(input, output, session) {
   # reactives
 
   filtered_data_gliederung <- reactive({
-    var_table %>%
-      filter(Gliederung == input$gliederungsauswahl1_in)
+    manage_explorer_data(
+      werte = var_table$daten,
+      gruppe = var_table$gruppe,
+      unterscheiden = input$gliederungsauswahl1_in
+    )
   })
 
   filtered_data_gliederung_kategorie <- reactive({
