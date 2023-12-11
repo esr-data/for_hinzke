@@ -225,7 +225,9 @@ module_monitor_ganztag_als_bildungszeit_ui <- function(id = "monitor_ganztag_als
                       )
                     ),
                     div(
-                      class = "real-content"
+                      class = "real-content",
+                      content_list_monitor_subpage_structure[["Indikator_Inhalt_UI"]][[.]]()
+                     # eval(parse(text = unlist(content_list_monitor_subpage_structure["Indikator_Inhalt_UI"])[.])),
                     ),
                     div(
                       class = "content-footer",
@@ -249,6 +251,9 @@ module_monitor_ganztag_als_bildungszeit_server <- function(id = "monitor_ganztag
     id,
     function(input, output, session) {
       ns <- session$ns
+
+        content_list_monitor_subpage_structure[["Indikator_Inhalt_Server"]][[1]]()
+
 
       # toggles
 

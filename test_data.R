@@ -7,8 +7,23 @@ content_list_monitor_subpages_structure_full <-
       "Titel" = "Ganztag als Bildungszeit",
       "Untertitel" = "Wie steht es um den Ausbau der Ganztagsschule?",
       "Einfuehrungstext" = "Ganztagsschulen können dazu beitragen, Bildungsungleichheiten zu verringern, indem sie allen Kindern, unabhängig von ihrem familiären Hintergrund, Zugang zu zusätzlichen Bildungsressourcen und Unterstützung bieten. Ganztagsschulen ermöglichen eine bessere Vereinbarkeit von Beruf und Familie, da Eltern nicht für die Betreuung ihrer Kinder am Nachmittag sorgen müssen. Zudem bieten sie Raum für innovative pädagogische Konzepte, die über den traditionellen Unterricht hinausgehen und die Persönlichkeitsentwicklung sowie soziale Kompetenzen der Schüler fördern. Ganztagsangebote sind eine Chance Schule neu zu denken und auch andere gesellschaftliche Akteure sinnstiftend einzubinden.",
-      "Indikator_Inhalt" = c(
-
+      "Indikator_Inhalt_UI" = c(
+       function() monitor_indicator_main_content_ui("ganztag_quantitativ", var_table = load_table_by_variable_monitor(138)),
+       function() monitor_indicator_main_content_ui("ganztag_vielfalt", var_table =load_table_by_variable_monitor(138)),
+       function() monitor_indicator_main_content_ui("ganztag_kooperation", var_table =load_table_by_variable_monitor(138)),
+       function() monitor_indicator_main_content_ui("ganztag_sozial", var_table =load_table_by_variable_monitor(138)),
+       function() monitor_indicator_main_content_ui("ganztag_multiprofessionel", var_table =load_table_by_variable_monitor(138)),
+       function() monitor_indicator_main_content_ui("ganztag_digital", var_table =load_table_by_variable_monitor(138)),
+       function() monitor_indicator_main_content_ui("ganztag_lage", var_table = load_table_by_variable_monitor(138))
+      ),
+      "Indikator_Inhalt_Server" = c(
+        function() monitor_indicator_main_content_server("ganztag_quantitativ", load_table_by_variable_monitor(138)),
+        function() monitor_indicator_main_content_server("ganztag_vielfalt", load_table_by_variable_monitor(138)),
+        function() monitor_indicator_main_content_server("ganztag_kooperation", load_table_by_variable_monitor(138)),
+        function() monitor_indicator_main_content_server("ganztag_sozial", load_table_by_variable_monitor(138)),
+        function() monitor_indicator_main_content_server("ganztag_multiprofessionel", load_table_by_variable_monitor(138)),
+        function() monitor_indicator_main_content_server("ganztag_digital", load_table_by_variable_monitor(138)),
+        function() monitor_indicator_main_content_server("ganztag_lage", load_table_by_variable_monitor(138))
       ),
       "Ueberschriften" = c(
         "Ausbau der Ganztagsangebote",
