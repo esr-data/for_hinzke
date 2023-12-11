@@ -1,3 +1,8 @@
+con <<- dbConnect(RSQLite::SQLite(), "data/magpie.sqlite")
+source("test_data.R")
+source("test_content_module.R")
+content_list_monitor_subpage_structure <- content_list_monitor_subpages_structure_full[["bildung_ganztag"]]
+
 # UI
 
 module_monitor_subject_ui <- function(id, label = "m_monitor_ganztag_als_bildungszeit", type = "all") {

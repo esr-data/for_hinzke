@@ -54,24 +54,9 @@ module_monitor_server <- function(id = "monitor", con, type = "all") {
       output$debug <- renderPrint(input$mon)
 
 
-      observe({
-        # Verwende isTruthy(), um zu überprüfen, ob input$mon existiert und einen Wert hat
-        if (isTruthy(input$mon)) {
-          # Wenn input$mon eine bestimmte ID hat, rufe das gewünschte Modul auf
-          if (input$mon == "circle_bildung_ganztag") {
-            output$monitor_svg <- renderUI({
-              # Hier wird das Modul aufgerufen
-              module_monitor_subject_ui("monitor_ganztag_als_bildungszeit")
-            })
-          } else {
-            # Andernfalls zeige die SVG
-            output$monitor_svg <- renderUI({
+      output$monitor_svg <- renderUI({
               HTML(readLines("www/img/Test_Monitor.svg"))
-            })
-          }
-        }
       })
-
 
 
 

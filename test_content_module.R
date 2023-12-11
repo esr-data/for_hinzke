@@ -1,3 +1,5 @@
+Farben <- svVis::give_color_set("SV")
+
 #' Missing description
 #' @noRd
 #'
@@ -484,12 +486,12 @@ monitor_indicator_main_content_server <- function(id, var_table) {
 
 # test module
 
-ui <- fluidPage(
-  monitor_indicator_main_content_ui("mein_modul_id", var_table)
-)
-
-server <- function(input, output, session) {
-  monitor_indicator_main_content_server("mein_modul_id", var_table)
-}
-
-shinyApp(ui, server)
+# ui <- fluidPage(
+#   monitor_indicator_main_content_ui("mein_modul_id", load_table_by_variable_monitor(138))
+# )
+#
+# server <- function(input, output, session) {
+#   monitor_indicator_main_content_server("mein_modul_id", load_table_by_variable_monitor(138))
+# }
+#
+# shinyApp(ui, server)
