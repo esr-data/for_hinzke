@@ -224,11 +224,14 @@ module_monitor_ganztag_als_bildungszeit_ui <- function(id = "monitor_ganztag_als
                         tags$li(tags$i(class = "fa-solid fa-ruler"),tags$b("Indikator:"), content_list_monitor_subpage_structure[["Indikatoren"]][[.]])
                       )
                     ),
+                    br(),
                     div(
                       class = "real-content",
-                      content_list_monitor_subpage_structure[["Indikator_Inhalt_UI"]][[.]]()
+                      monitor_indicator_main_content_ui(ns(content_list_monitor_subpage_structure[["Indikator_Inhalt_IDs"]][[.]]), load_table_by_variable_monitor(138))
+                     # content_list_monitor_subpage_structure[["Indikator_Inhalt_UI"]][[.]]()
                      # eval(parse(text = unlist(content_list_monitor_subpage_structure["Indikator_Inhalt_UI"])[.])),
                     ),
+                    br(),
                     div(
                       class = "content-footer",
                       p("Notes")
@@ -252,8 +255,10 @@ module_monitor_ganztag_als_bildungszeit_server <- function(id = "monitor_ganztag
     function(input, output, session) {
       ns <- session$ns
 
-        content_list_monitor_subpage_structure[["Indikator_Inhalt_Server"]][[1]]()
-
+      map(
+        1:length(content_list_monitor_subpage_structure[["Ueberschriften"]]),
+        ~ content_list_monitor_subpage_structure[["Indikator_Inhalt_Server"]][[.]]()
+      )
 
       # toggles
 

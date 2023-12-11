@@ -72,6 +72,8 @@ load_table_by_variable_monitor <- function(variable){
   #   dplyr::filter(!is.na(Kategorie)) %>%
   #   dplyr::select(- id)
 
+  daten <- rename(daten, "Jahr" = Zeit, "Wert" = wert, "Messeinheit" = einheit)
+
   return(list(daten = daten, gruppe = unique(reichweite$gruppe)))
 }
 
@@ -137,7 +139,7 @@ manage_explorer_data_monitor <- function(werte, gruppe = NULL, unterscheiden = N
 monitor_indicator_main_content_ui <- function(id, var_table) {
   ns <- NS(id)
 
-  auswahlmoeglichkeiten <- setdiff(unique(colnames(var_table$daten)), c("id", "variable", "Jahr", "Wert", "Messeinheit")) #TODO noch weiter aus Funktion rausziehen?
+  auswahlmoeglichkeiten <- setdiff(unique(colnames(var_table$daten)), c("id", "variable", "Jahr", "Wert", "Messeinheit"))
 
   fluidPage(
     column(
@@ -148,7 +150,7 @@ monitor_indicator_main_content_ui <- function(id, var_table) {
         choices = c("---", auswahlmoeglichkeiten)
       ),
       conditionalPanel(
-        condition = sprintf("input.%s != '---'", ns("gliederungsauswahl1_in")),
+        condition = "input.gliederungsauswahl1_in != '---'", ns = ns,
         pickerInput(
           inputId = ns("kategorieauswahl1_in"),
           label = "Bitte wählen Sie, welche Daten Ihnen angezeigt werden sollen",
@@ -173,7 +175,7 @@ monitor_indicator_main_content_ui <- function(id, var_table) {
     column(
       width = 9,
       conditionalPanel(
-        condition = sprintf("input.%s == 'Karte'", ns("darstellungsweise1_in")),
+        condition = "input.darstellungsweise1_in == 'Karte'", ns = ns,
         numericInput(
           inputId = ns("karte1_jahr_in"),
           label = "Jahr:",
