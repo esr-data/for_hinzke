@@ -1,10 +1,6 @@
-
-source("test_data.R")
-content_list_monitor_subpage_structure <- content_list_monitor_subpages_structure_full[["bildung_ganztag"]]
-
 # UI
 
-module_monitor_ganztag_als_bildungszeit_ui <- function(id = "monitor_ganztag_als_bildungszeit", label = "m_monitor_ganztag_als_bildungszeit", type = "all") {
+module_monitor_subject_ui <- function(id, label = "m_monitor_ganztag_als_bildungszeit", type = "all") {
   ns <- NS(id)
   tagList(
     fluidPage(
@@ -249,7 +245,7 @@ module_monitor_ganztag_als_bildungszeit_ui <- function(id = "monitor_ganztag_als
 
 # Server
 
-module_monitor_ganztag_als_bildungszeit_server <- function(id = "monitor_ganztag_als_bildungszeit", con, type = "all") {
+module_monitor_subject_server <- function(id, con, type = "all") {
   moduleServer(
     id,
     function(input, output, session) {
@@ -304,11 +300,11 @@ module_monitor_ganztag_als_bildungszeit_server <- function(id = "monitor_ganztag
 # Demo / Debugging
 ui <- fluidPage(
   shinyjs::useShinyjs(),
-  module_monitor_ganztag_als_bildungszeit_ui("monitor_ganztag_als_bildungszeit")
+  module_monitor_subject_ui("monitor_ganztag_als_bildungszeit")
 )
 
 server <- function(input, output, session) {
-  module_monitor_ganztag_als_bildungszeit_server("monitor_ganztag_als_bildungszeit")
+  module_monitor_subject_server("monitor_ganztag_als_bildungszeit")
 }
 
 shinyApp(ui, server)
