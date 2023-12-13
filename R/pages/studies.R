@@ -1,5 +1,17 @@
+#' Necessary Packages/Functions
+
+box::use(
+  shiny[
+    NS, moduleServer, observeEvent,
+    fluidPage, tagList,
+    markdown,
+    h2, a, p, div, img
+  ],
+  bsplus[bs_embed_tooltip]
+)
+
 #' Missing description
-#' @noRd
+#' @export
 
 module_studies_ui <- function(id = "studies", label = "m_studies", type = "all") {
   ns <- NS(id)
@@ -32,7 +44,7 @@ module_studies_ui <- function(id = "studies", label = "m_studies", type = "all")
           style = "background-color: #EAEDEF; padding: 20px; margin: 20px;",
           div(
             style = "color: #195365; margin: 0;",
-            shiny::markdown(readLines("md/information_studien.md"))
+            markdown(readLines("md/information_studien.md"))
           )
         ),
 
@@ -42,14 +54,13 @@ module_studies_ui <- function(id = "studies", label = "m_studies", type = "all")
           style = "padding: 20px; margin: 20px; display: flex; flex-wrap: wrap;",
           create_all_boxes_studies(type)
         )
-#
       )
     )
   )
 }
 
 #' Missing description
-#' @noRd
+#' @export
 
 module_studies_server <- function(id = "studies", con, type = "all") {
   moduleServer(
@@ -94,7 +105,7 @@ create_box_studies <-
 
 
     if (!is.null(tooltip)){
-      return(bsplus::bs_embed_tooltip(element, tooltip, placement = "bottom"))
+      return(bs_embed_tooltip(element, tooltip, placement = "bottom"))
     }
 
     return(element)

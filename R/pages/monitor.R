@@ -1,5 +1,15 @@
+#' Necessary Packages/Functions
+
+box::use(
+  shiny[
+    NS, moduleServer, observeEvent,
+    fluidPage, tagList
+  ]
+)
+
+
 #' Missing description
-#' @noRd
+#' @export
 
 module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all") {
   ns <- NS(id)
@@ -28,7 +38,7 @@ module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all")
 }
 
 #' Missing description
-#' @noRd
+#' @export
 
 module_monitor_server <- function(id = "monitor", con, type = "all") {
   moduleServer(

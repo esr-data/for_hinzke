@@ -1,5 +1,15 @@
+#' Necessary Packages/Functions
+
+box::use(
+  shiny[
+    NS, moduleServer, observeEvent,
+    fluidPage, tagList, h2
+  ]
+)
+
+
 #' Missing description
-#' @noRd
+#' @export
 
 module_reader_ui <- function(id = "reader", label = "m_home") {
   ns <- NS(id)
@@ -14,7 +24,7 @@ module_reader_ui <- function(id = "reader", label = "m_home") {
 }
 
 #' Missing description
-#' @noRd
+#' @export
 
 module_reader_server <- function(id = "reader", con) {
   moduleServer(

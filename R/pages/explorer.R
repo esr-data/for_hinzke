@@ -1,3 +1,15 @@
+#' Necessary Packages/Functions
+
+box::use(
+  shiny[
+    NS, moduleServer, observeEvent,
+    fluidPage, tagList,
+    markdown, actionButton,
+    h2, div, icon
+  ],
+  shiny.router[change_page]
+)
+
 #' Missing description
 #' @noRd
 
@@ -12,9 +24,10 @@ module_explorer_ui <- function(id = "explorer", label = "m_explorer", type = "al
         div(
           id = "exp_auswahl",
           style = "display: flex; flex-direction: row; flex-wrap: wrap;",
-          bsButton(ns("suche"),       label = "Suchen",      class = "link_button", icon = icon("magnifying-glass")),
-          bsButton(ns("indikatoren"), label = "Indikatoren", class = "link_button", icon = icon("chart-pie")),
-          bsButton(ns("vergleichen"), label = "Vergleichen", class = "link_button", icon = icon("chart-bar"))
+          actionButton(ns("suche"),       label = "Suchen",      class = "link_button", icon = icon("magnifying-glass")),
+          actionButton(ns("indikatoren"), label = "Indikatoren", class = "link_button", icon = icon("chart-pie")),
+          actionButton(ns("vergleichen"), label = "Vergleichen", class = "link_button", icon = icon("chart-bar")),
+          actionButton(ns("datensatz"),   label = "Datensätze",  class = "link_button", icon = icon("chart-bar"))
         )
       )
     )
@@ -29,13 +42,13 @@ module_explorer_server <- function(id = "explorer", type = "all") {
     id,
     function(input, output, session) {
       ns <- session$ns
-
       observeEvent(input$indikatoren, {change_page("indikator?in_hd=0")})
-
-
     }
   )
 }
+
+#' Missing description
+#' @noRd
 
 draw_explorer_details <- function(type){
   color_class <- "keine_handlung_triangle"

@@ -1,5 +1,17 @@
+#' Necessary Packages/Functions
+
+box::use(
+  shiny[
+    NS, moduleServer, observeEvent,
+    fluidPage, fluidRow, tagList,
+    uiOutput,
+    div,
+    HTML
+  ]
+)
+
 #' Missing description
-#' @noRd
+#' @export
 
 module_stories_ui <- function(id = "stories", label = "m_stories", type = "all") {
   ns <- NS(id)
@@ -24,7 +36,7 @@ module_stories_ui <- function(id = "stories", label = "m_stories", type = "all")
 }
 
 #' Missing description
-#' @noRd
+#' @export
 
 module_stories_server <- function(id = "stories", con, type = "all") {
   moduleServer(
