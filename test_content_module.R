@@ -1,3 +1,25 @@
+# library(dplyr)
+# library(shiny)
+# library(shiny.router)
+# library(shinyWidgets)
+# library(bsplus)
+# library(shinyBS)
+# library(DBI)
+# library(reactable)
+# library(sortable)
+# library(shinyjs)
+# library(purrr)
+# library(lorem)
+# library(plotly)
+# library(ggplot2)
+# library(ggpubr)
+# library(stringr)
+# library(DT)
+#
+# con <<- DBI::dbConnect(RSQLite::SQLite(), "data/magpie.sqlite")
+# source("test_data.R")
+# content_list_monitor_subpage_structure <- content_list_monitor_subpages_structure_full[["bildung_ganztag"]]
+
 Farben <- svVis::give_color_set("SV")
 
 #' Missing description
@@ -239,79 +261,76 @@ monitor_indicator_main_content_server <- function(id, var_table) {
 
     # observes
 
-    observeEvent(input$gliederungsauswahl1_in, {
-      if(input$gliederungsauswahl1_in != "---") {
-        if(input$gliederungsauswahl1_in %in% colnames(filtered_data_gliederung())) {
-          unique_values <- unique(filtered_data_gliederung()[[input$gliederungsauswahl1_in]])
-          selected_values <- NULL
+observeEvent(input$gliederungsauswahl1_in, {
+  req(input$gliederungsauswahl1_in != "---")  # Überprüfen, ob gliederungsauswahl1_in nicht "---" ist
 
-          if(length(unique_values) < 6) {
-            selected_values <- unique_values
-          } else {
-            if(input$gliederungsauswahl1_in == "Räumliche Gebiete") {
-              selected_values <- c("Deutschland", "Bayern", "Baden-Württemberg", "Nordrhein-Westfalen")
-            } else {
-              selected_values <- unique_values[1:5]
-            }
-          }
+  req(input$gliederungsauswahl1_in %in% colnames(filtered_data_gliederung()))  # Stellen Sie sicher, dass gliederungsauswahl1_in in den Spaltennamen vorhanden ist
 
-          updatePickerInput(
-            session = session,
-            inputId = "kategorieauswahl1_in",
-            choices = unique_values,
-            selected = selected_values
-          )
-        }
-      } else {
-        updatePickerInput(
-          session = session,
-          inputId = "kategorieauswahl1_in",
-          choices = NULL,
-          selected = NULL
-        )
-      }
-    })
+  unique_values <- unique(filtered_data_gliederung()[[input$gliederungsauswahl1_in]])
+  selected_values <- NULL
 
-    observe({
-      if (input$gliederungsauswahl1_in == "Räumliche Gebiete") {
-        updateRadioButtons(
-          session = session,
-          inputId = "darstellungsweise1_in",
-          choices = c("Zeitverlauf", "Tabelle", "Karte"),
-          selected = input$darstellungsweise1_in
-        )
-      } else {
-        updateRadioButtons(
-          session = session,
-          inputId = "darstellungsweise1_in",
-          choices = c("Zeitverlauf", "Tabelle"),
-          selected = ifelse(
-            input$darstellungsweise1_in != "Karte",
-            input$darstellungsweise1_in,
-            "Zeitverlauf")
-        )
-      }
-    })
+  if(length(unique_values) < 6) {
+    selected_values <- unique_values
+  } else {
+    if(input$gliederungsauswahl1_in == "Räumliche Gebiete") {
+      selected_values <- c("Deutschland", "Bayern", "Baden-Württemberg", "Nordrhein-Westfalen")
+    } else {
+      selected_values <- unique_values[1:5]
+    }
+  }
 
-    observe({
-      if (input$darstellungsweise1_in == "Karte") {
-        updateNumericInput(
-          session = session,
-          inputId = "karte1_jahr_in",
-          value = max(filtered_data_gliederung_kategorie()$Jahr),
-          min = min(filtered_data_gliederung_kategorie()$Jahr),
-          max = max(filtered_data_gliederung_kategorie()$Jahr)
-        )
-      } else {
-        updateNumericInput(
-          session = session,
-          inputId = "karte1_jahr_in",
-          value = NULL,
-          min = NULL,
-          max = NULL
-        )
-      }
-    })
+  updatePickerInput(
+    session = session,
+    inputId = "kategorieauswahl1_in",
+    choices = unique_values,
+    selected = selected_values
+  )
+})
+
+observe({
+  req(input$gliederungsauswahl1_in)  # Stellen Sie sicher, dass gliederungsauswahl1_in vorhanden ist
+
+  if (input$gliederungsauswahl1_in == "Räumliche Gebiete") {
+    updateRadioButtons(
+      session = session,
+      inputId = "darstellungsweise1_in",
+      choices = c("Zeitverlauf", "Tabelle", "Karte"),
+      selected = input$darstellungsweise1_in
+    )
+  } else {
+    updateRadioButtons(
+      session = session,
+      inputId = "darstellungsweise1_in",
+      choices = c("Zeitverlauf", "Tabelle"),
+      selected = ifelse(
+        input$darstellungsweise1_in != "Karte",
+        input$darstellungsweise1_in,
+        "Zeitverlauf")
+    )
+  }
+})
+
+observe({
+  req(input$darstellungsweise1_in)  # Stellen Sie sicher, dass darstellungsweise1_in vorhanden ist
+
+  if (input$darstellungsweise1_in == "Karte") {
+    updateNumericInput(
+      session = session,
+      inputId = "karte1_jahr_in",
+      value = max(filtered_data_gliederung_kategorie()$Jahr),
+      min = min(filtered_data_gliederung_kategorie()$Jahr),
+      max = max(filtered_data_gliederung_kategorie()$Jahr)
+    )
+  } else {
+    updateNumericInput(
+      session = session,
+      inputId = "karte1_jahr_in",
+      value = NULL,
+      min = NULL,
+      max = NULL
+    )
+  }
+})
 
     # outputs
 

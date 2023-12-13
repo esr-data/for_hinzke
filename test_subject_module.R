@@ -1,7 +1,25 @@
-con <<- dbConnect(RSQLite::SQLite(), "data/magpie.sqlite")
-source("test_data.R")
-source("test_content_module.R")
-content_list_monitor_subpage_structure <- content_list_monitor_subpages_structure_full[["bildung_ganztag"]]
+# library(dplyr)
+# library(shiny)
+# library(shiny.router)
+# library(shinyWidgets)
+# library(bsplus)
+# library(shinyBS)
+# library(DBI)
+# library(reactable)
+# library(sortable)
+# library(shinyjs)
+# library(purrr)
+# library(lorem)
+# library(plotly)
+# library(ggplot2)
+# library(ggpubr)
+# library(stringr)
+# library(DT)
+#
+#con <<- DBI::dbConnect(RSQLite::SQLite(), "data/magpie.sqlite")
+# source("test_data.R")
+# source("test_content_module.R")
+# content_list_monitor_subpage_structure <- content_list_monitor_subpages_structure_full[["bildung_ganztag"]]
 
 # UI
 
@@ -303,14 +321,14 @@ module_monitor_subject_server <- function(id, con, type = "all") {
 }
 
 # Demo / Debugging
-ui <- fluidPage(
-  shinyjs::useShinyjs(),
-  module_monitor_subject_ui("monitor_ganztag_als_bildungszeit")
-)
-
-server <- function(input, output, session) {
-  module_monitor_subject_server("monitor_ganztag_als_bildungszeit")
-}
-
-shinyApp(ui, server)
+# ui <- fluidPage(
+#   shinyjs::useShinyjs(),
+#   module_monitor_subject_ui("monitor_ganztag_als_bildungszeit")
+# )
+#
+# server <- function(input, output, session) {
+#   module_monitor_subject_server("monitor_ganztag_als_bildungszeit")
+# }
+#
+# shinyApp(ui, server)
 # profvis::profvis(shinyApp(ui, server)) #

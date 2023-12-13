@@ -45,7 +45,9 @@ draw_ui <- function(){
           route("handlung2_stories",   module_stories_ui(type = "handlung2",  id = "stories_handlung2")),
           route("handlung2_monitor",   module_monitor_ui(type = "handlung2",  id = "monitor_handlung2")),
           route("handlung2_explorer",  module_explorer_ui(type = "handlung2", id = "explorer_handlung2")),
-          route("handlung2_studies",   module_studies_ui(type = "handlung2",  id = "studies_handlung2"))
+          route("handlung2_studies",   module_studies_ui(type = "handlung2",  id = "studies_handlung2"))#,
+#          route("handlung1_monitor_subpage",   module_monitor_subject_ui(type = "handlung1",  id = "monitor_handlung1_subpage")),
+
         )
       )
     ),

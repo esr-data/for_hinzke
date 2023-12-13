@@ -10,7 +10,7 @@ module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all")
       div(
         id = ns("mon"),
         uiOutput(ns("monitor_svg")),
-        verbatimTextOutput(ns("debug"))
+          verbatimTextOutput(ns("debug"))
       ),
       tags$script(
         HTML(
@@ -36,29 +36,28 @@ module_monitor_server <- function(id = "monitor", con, type = "all") {
     function(input, output, session) {
       ns <- session$ns
 
-      # simple linking?
-
-      # observeEvent(input$mon, {
-      #   shinyjs::runjs(
-      #     sprintf(
-      #       "window.location.href = 'R/pages/subpages_monitor/%s';",
-      #       input$mon
-      #     )
-      #   )
-      # })
+      output$monitor_svg <- renderUI({
+        HTML(readLines("www/img/Test_Monitor.svg"))
+      })
 
       subject <- reactive({
-        sub("circle_", "", input$mon)
+        req(input$mon)
+        sub_id <- sub("circle_", "", input$mon)
+        if (sub_id %in% names(content_list_monitor_subpages_structure_full)) {
+          content_list_monitor_subpages_structure_full[[sub_id]]
+        } else {
+          NULL
+        }
       })
 
-      output$debug <- renderPrint(input$mon)
-
-
-      output$monitor_svg <- renderUI({
-              HTML(readLines("www/img/Test_Monitor.svg"))
+      observe({
+        if (!is.null(subject())) {
+          content_list_monitor_subpage_structure <<- subject()
+          change_page("#!/handlung1_monitor_subpage")
+        }
       })
 
-
+      output$debug <- renderPrint(sub("circle_", "", input$mon))
 
     }
   )
