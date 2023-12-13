@@ -1,39 +1,3 @@
-/* Root Variable Definition --------------------------------------------------------------------- */
-
-:root{
-  /*colors*/
-  --primary:         #6896a8;
-  --soft-primary:    #b3c8d3;
-  --light-primary:   #e0e8ed;
-  --blue:            #195365;
-  --blue-trans:      #195365cc;
-  --light-blue:      #8d9ca9;
-  --red:             #e73f0c;
-  --grey:            #b5bfc5;
-  --light-grey:      #dae0e3;
-  --very-light-grey: #f0f3f4;
-  --dark-grey:       #6A6F73;
-  --very-dark-grey:  #575757;
-  --beige:           #ada58b;
-  --dark-beige:      #8A8161;
-  --color-bildung:   #C3DA46;
-  --color-forschung: #A96BF1;
-  --color-bildung-trans:   #C3DA46cc;
-  --color-forschung-trans: #A96BF1cc;
-
-  /*font*/
-  --font-size: 15px;
-  --font-family: "Calibri", sans-serif;
-}
-
-
-body{
-    max-width: 1250px;
-    margin: 0 auto;
-    width: 100%;
-    color: var(--blue);
-}
-
 a{
   text-decoration: none;
   color: inherit;

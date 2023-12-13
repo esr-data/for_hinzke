@@ -12,6 +12,7 @@ box::use(../../R/pages/handlung_2[module_handlung_2_ui])
 box::use(../../R/pages/impressum[module_impressum_ui])
 box::use(../../R/pages/datenschutz[module_datenschutz_ui])
 box::use(../../R/pages/team[module_team_ui])
+box::use(../../R/pages/monitor_bildung_inhalt[module_monitor_bildung_inhalt_ui])
 
 box::use(
   shiny[
@@ -76,6 +77,7 @@ draw_ui <- function(){
           route("handlung2_monitor",   module_monitor_ui(type = "handlung2",  id = "monitor_handlung2")),
           route("handlung2_explorer",  module_explorer_ui(type = "handlung2", id = "explorer_handlung2")),
           route("handlung2_studies",   module_studies_ui(type = "handlung2",  id = "studies_handlung2")),
+          route("monitor_bildung_inhalt", module_monitor_bildung_inhalt_ui()),
           route("impressum",           module_impressum_ui()),
           route("datenschutz",         module_datenschutz_ui()),
           route("team",                module_team_ui())

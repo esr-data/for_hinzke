@@ -6,6 +6,7 @@ box::use(
   ../../R/pages/indikator[module_indikator_server],
   ../../R/pages/search[module_search_server],
   ../../R/pages/home[module_home_server],
+  ../../R/pages/monitor[module_monitor_server],
   ../../R/build/sidebar[
     draw_sidebar_home,
     draw_sidebar_stories,
@@ -179,6 +180,7 @@ server <- function(input, output, session) {
   # --- Server der Shiny-Modules -------------------------------------------------------------------
 
   module_explorer_server()
+  module_monitor_server()
   module_indikator_server(con = con)
   module_search_server(con = con)
   module_home_server(con = con)
