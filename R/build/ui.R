@@ -7,6 +7,7 @@ draw_ui <- function(){
 
     # HEAD AND STYLE
     #theme = bslib::bs_theme(version = 3),
+    shinyjs::useShinyjs(),
     tags$head(
       tags$link(rel = "apple-touch-icon-precomposed", sizes = "180x180", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/apple-touch-icon.png"),
       tags$link(rel = "icon",                         sizes = "192x192", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/touch-icon-192x192.png"),
@@ -47,7 +48,9 @@ draw_ui <- function(){
           route("handlung2_stories",   module_stories_ui(type = "handlung2",  id = "stories_handlung2")),
           route("handlung2_monitor",   module_monitor_ui(type = "handlung2",  id = "monitor_handlung2")),
           route("handlung2_explorer",  module_explorer_ui(type = "handlung2", id = "explorer_handlung2")),
-          route("handlung2_studies",   module_studies_ui(type = "handlung2",  id = "studies_handlung2"))
+          route("handlung2_studies",   module_studies_ui(type = "handlung2",  id = "studies_handlung2"))#,
+#          route("handlung1_monitor_subpage",   module_monitor_subject_ui(type = "handlung1",  id = "monitor_handlung1_subpage")),
+
         )
       )
     ),

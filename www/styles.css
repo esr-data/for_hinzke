@@ -29,6 +29,22 @@
 
 /* Font ----------------------------------------------------------------------------------------- */
 
+    .modal-dialog {
+      max-width: 100%;
+      width: 98%; /* Fast die ganze Breite */
+      height: calc(100% - 60px); /* Höhe, wie zuvor definiert */
+      margin: 0 auto; /* Zentriert das Modal */
+    }
+    .modal-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-body {
+      flex: 1 1 auto;
+      overflow-y: auto;
+    }
+
 .body, body {
   font-family: var(--font-family);
   font-size: 18px;
