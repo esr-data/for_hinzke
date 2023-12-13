@@ -3,6 +3,7 @@
 
 draw_ui <- function(){
   fluidPage(
+    style = "padding: 0px;",
 
     # HEAD AND STYLE
     #theme = bslib::bs_theme(version = 3),
@@ -18,6 +19,7 @@ draw_ui <- function(){
     title = NULL,
 
     # BODY
+    draw_header(),
     fluidPage(
       style = "padding:0; background-color: #F2F2F2; display: flex;",
       id    = "main-body",
@@ -35,6 +37,7 @@ draw_ui <- function(){
           route("stories",             module_stories_ui()),
           route("monitor",             module_monitor_ui()),
           route("explorer",            module_explorer_ui()),
+          route("indikator",           module_indikator_ui()),
           route("studies",             module_studies_ui()),
           route("handlung1",           module_handlung_1_ui()),
           route("handlung2",           module_handlung_2_ui()),
@@ -118,5 +121,23 @@ draw_sidebar <- function(){
       bsButton("sb_datenschutz",        label = "Datenschutz", class = "sidebar_button", icon = icon("shield-halved"))
     ),
     div(style = "margin: 80px;")
+  )
+}
+
+draw_header <- function(){
+  tagList(
+    HTML("<header class='top' style = 'display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; background-color: white; max-width: var(--max-width); margin: 0 auto; padding: 25px;'>"),
+    div(
+      class = "top__left"
+    ),
+    div(
+      class = "top__middle",
+      HTML("<img class='brand__logo' src='https://stifterverband.org//themes/custom/cake/res/logo_stifterverband_wide.svg' alt='Logo Stifterverband'>")
+    ),
+    div(
+      class = "top__right"
+    ),
+    HTML("</header>")
+
   )
 }

@@ -164,8 +164,8 @@ h2, .h2 {
 /* Content-Panel -------------------------------------------------------------------------------- */
 
 .panel-content, panel-content {
-  padding: 10px 20px;
-  margin: 20px 0px 20px 0px;
+  padding: 20px 20px;
+  margin: 30px 0px 30px 0px;
   background-color: white;
   width: 100%;
 }
@@ -233,6 +233,113 @@ h2, .h2 {
   box-shadow: 2px 2px 2px 0px var(--grey);
 }
 
+/* Widgets -------------------------------------------------------------------------------------- */
+
+label.control-label{
+  font-weight: 700;
+  color: var(--blue);
+  margin: 0 0 10px;
+}
+
+/* Sortable ------------------------------------------------------------------------------------- */
+
+.default-sortable .rank-list-item:hover:not(.disabled) {
+    background-color: var(--light-primary);
+}
+
+p.rank-list-title {
+  font-weight: 600;
+}
+
+.rank-list {
+  margin: 0!important;
+}
+
+.rank-list-container {
+  margin: 0!important;
+}
+
+.default-sortable.bucket-list-container {
+  margin: 0!important;
+  padding: 0!important;
+}
+
+.default-sortable .rank-list-item:hover:not(.disabled) {
+  background-color: var(--grey)!important;
+  color: white;
+}
+
+.default-sortable .rank-list-item.sortable-selected,
+.default-sortable .rank-list-item.sortable-chosen,
+.default-sortable .rank-list-item.sortable-ghost.sortable-chosen,
+.default-sortable .rank-list-item.sortable-drag {
+  background-color: var(--primary)!important;
+  border: 0px solid var(--primary)!important;
+  color: white;
+}
+
+.filter-option-inner-inner,
+.dropdown-item {
+  font-size: 18px;
+}
+
+/* Link-Button ---------------------------------------------------------------------------------- */
+
+.link_button {
+  margin: 1%;
+  padding: 30px 20px;
+  width: 48%;
+  font-size: 32px;
+  border-radius: 0px;
+  background-color: var(--blue);
+  border-color: var(--blue);
+  color: white;
+  font-weight: 900;
+}
+
+.link_button:hover {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+#explorer-suche,
+#explorer_handlung1-suche,
+#explorer_handlung2-suche {
+  width: 100%;
+}
+
+/* Triangle-Handlung ---------------------------------------------------------------------------- */
+
+.handlung1_triangle {
+  /* content:  '';
+  display:  block;
+  height:   100%;
+  width:    100%;
+  position: absolute;*/
+  left:     0;
+  top:      0;
+  bottom:   0;
+  background-color: var(--color-bildung);
+  clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
+}
+
+.handlung2_triangle {
+  left:     0;
+  top:      0;
+  bottom:   0;
+  background-color: var(--color-forschung);
+  clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
+}
+
+.keine_handlung_triangle {
+  left:     0;
+  top:      0;
+  bottom:   0;
+  background-color: var(--primary);
+  clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
+}
+
 /* Content-Box ---------------------------------------------------------------------------------- */
 
 .content-box {
@@ -248,6 +355,11 @@ h2, .h2 {
   #sidebar{
     width: 100%!important;
   }
+}
+
+.default-sortable .rank-list-item.sortable-selected, .default-sortable .rank-list-item.sortable-chosen, .default-sortable .rank-list-item.sortable-ghost.sortable-chosen, .default-sortable .rank-list-item.sortable-drag {
+  background-color: yellow;
+  border: 1px solid red;
 }
 
 /*
