@@ -1,4 +1,11 @@
 
+#' Necessary Packages/Functions
+#'
+box::use(shiny[HTML])
+box::use(DBI[dbGetQuery])
+
+#' Missing description
+#' @export
 
 load_embedded_quarto <- function(name){
   paste0(
@@ -9,15 +16,10 @@ load_embedded_quarto <- function(name){
     HTML()
 }
 
-add_param_in_url <- function(current_url, current_page, parameter, value, old_value){
+#' Missing description
+#' @export
 
-  # LÖSCHEN
-  # current_url <<- current_url
-  # current_page <<- current_page
-  # parameter <<- parameter
-  # value  <<- value
-  # old_value  <<- old_value
-  #
+add_param_in_url <- function(current_url, current_page, parameter, value, old_value){
 
   current_page <- paste0("#!/", current_page)
   new_url <- current_url
@@ -59,7 +61,10 @@ add_param_in_url <- function(current_url, current_page, parameter, value, old_va
   return(new_url)
 }
 
-get_sql <- function(x, query_sql = FALSE){
+#' Missing description
+#' @export
+
+get_sql <- function(x, query_sql = FALSE, con){
 
   sql <-
     paste0("SQL/", x, ".sql") |>
@@ -67,7 +72,7 @@ get_sql <- function(x, query_sql = FALSE){
     paste(collapse = " ")
 
   if (query_sql){
-    sql <- DBI::dbGetQuery(con, sql)
+    sql <- dbGetQuery(con, sql)
   }
 
   return(sql)

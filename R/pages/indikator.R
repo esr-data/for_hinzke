@@ -1,5 +1,24 @@
+#' Necessary Packages/Functions
+
+box::use(
+  ../../R/utils/utils[get_sql, add_param_in_url],
+  shiny[
+    NS, moduleServer, observeEvent,
+    uiOutput, renderUI,
+    fluidPage, fluidRow,
+    HTML, tagList, div, h2,
+    reactiveVal, reactiveValues
+  ],
+  shinyWidgets[pickerInput, updatePickerInput],
+  shiny.router[get_page, get_query_param, change_page],
+  shinycssloaders[withSpinner],
+  reactable[reactable, reactableOutput, renderReactable, colDef],
+  DBI[dbGetQuery],
+  sortable[bucket_list, add_rank_list]
+)
+
 #' Missing description
-#' @noRd
+#' @export
 
 module_indikator_ui <- function(id = "indikator", label = "m_indikator", type = "all") {
   ns <- NS(id)
@@ -59,7 +78,7 @@ module_indikator_ui <- function(id = "indikator", label = "m_indikator", type = 
 }
 
 #' Missing description
-#' @noRd
+#' @export
 
 module_indikator_server <- function(id = "indikator", type = "all", con) {
   moduleServer(
@@ -81,7 +100,7 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
       input_var <- reactiveVal(data.frame())
       input_tag <- reactiveVal(data.frame())
 
-      filter_param <- indikator_translate_filter_param()
+      filter_param <- indikator_translate_filter_param(con)
 
       # URL-Parameter werden zwischengespeichert, um den Verlauf/eine Aktualisierung besser nachzuvollziehen
       # Jeder mögliche URL-Parameter hat einen Eintrag in der reaktiven Liste und "" steht für NULL/Kein Eintrag
@@ -118,8 +137,8 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
                 parameter$in_hd <- param_in_hd
 
                 if (param_in_hd == 0){
-                  input_var(indikator_get_variables()) #TODO
-                  input_tag(get_sql("indikator_get_tag_by_variable", TRUE))
+                  input_var(indikator_get_variables(con)) #TODO
+                  input_tag(get_sql("indikator_get_tag_by_variable", TRUE, con))
                   updatePickerInput(session, "select_tag",      choices = sort(input_tag()$beschr))
                   updatePickerInput(session, "select_variable", choices = sort(input_var()$beschr[input_var()$relevant]))
                   aenderung <- TRUE
@@ -148,7 +167,7 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
                 }
 
                 # Aktualisierung der Variablen aus Basis der Tags
-                input_var(indikator_get_variables_by_tags(input_var(), selected_tags))
+                input_var(indikator_get_variables_by_tags(input_var(), selected_tags, con))
                 updatePickerInput(
                   session = session,
                   inputId = "select_variable",
@@ -183,7 +202,7 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
 
                   if (nrow(variable) == 1){
 
-                    tabelle <- load_table_by_variable(variable$id)
+                    tabelle <- load_table_by_variable(variable$id, con)
 
                     daten$filter  <- data.frame()
                     daten$gruppen <- sort(c(tabelle$gruppe, "Zeit"))
@@ -317,7 +336,7 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
               if (aenderung){
                 output$table <-
                   renderReactable({
-                    inidkator_draw_reactable(
+                    indikator_draw_reactable(
                       manage_explorer_data( # TODO
                         werte         = daten$werte,
                         gruppe        = daten$gruppen[daten$gruppen != "Zeit"],
@@ -444,7 +463,10 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
   )
 }
 
-load_table_by_variable <- function(variable){
+#' Missing description
+#' @noRd
+
+load_table_by_variable <- function(variable, con){
 
   daten <-
     dbGetQuery(
@@ -507,7 +529,10 @@ load_table_by_variable <- function(variable){
   return(list(daten = daten, gruppe = unique(reichweite$gruppe)))
 }
 
-inidkator_draw_reactable <- function(daten){
+#' Missing description
+#' @noRd
+
+indikator_draw_reactable <- function(daten){
 
   if (is.null(daten))  return(reactable(data.frame(keine = "daten")))
   if (nrow(daten) < 1) return(reactable(data.frame(keine = "daten")))
@@ -531,6 +556,9 @@ inidkator_draw_reactable <- function(daten){
     )
   )
 }
+
+#' Missing description
+#' @noRd
 
 indikator_draw_eimer <- function(reichweiten = list(), selected = NULL, ns){
 
@@ -563,12 +591,10 @@ indikator_draw_eimer <- function(reichweiten = list(), selected = NULL, ns){
   )
 }
 
-manage_explorer_data <- function(werte, gruppe = NULL, unterscheiden = NULL, filtern = NULL){
+#' Missing description
+#' @noRd
 
-  # werte         <<- werte
-  # gruppe        <<- gruppe
-  # unterscheiden <<- unterscheiden
-  # filtern       <<- filtern
+manage_explorer_data <- function(werte, gruppe = NULL, unterscheiden = NULL, filtern = NULL){
 
   if (nrow(werte) < 1) return(NULL)
 
@@ -612,6 +638,9 @@ manage_explorer_data <- function(werte, gruppe = NULL, unterscheiden = NULL, fil
   return(werte[,c("Zeit", "wert", "einheit", neue_gruppe)])
 }
 
+#' Missing description
+#' @noRd
+
 write_explorer_filter_observer <- function(filter_param_bez){
 
   gsub_name <- function(x){gsub("[^a-z]", "", tolower(x))}
@@ -648,48 +677,60 @@ write_explorer_filter_observer <- function(filter_param_bez){
   return(sapply(filter_param_bez, write_code))
 }
 
+#' #' Missing description
+#' #' @noRd
+#'
+#' get_tags_of_variables <- function(con){
+#'
+#'   tags <-
+#'     dbGetQuery(
+#'       con,
+#'       "SELECT view_tag_baum_lesbar.id, view_tag_baum_lesbar.text, tag.beschr
+#'        FROM view_tag_baum_lesbar
+#'        LEFT JOIN tag ON view_tag_baum_lesbar.id = tag.id
+#'        WHERE view_tag_baum_lesbar.id IN (SELECT tag_id FROM tag_link WHERE tabelle_id = (SELECT id FROM tabelle WHERE bez = 'variable'))"
+#'     )
+#'
+#'   return(tags)
+#' }
 
-get_tags_of_variables <- function(){
+#' #' Missing description
+#' #' @noRd
+#'
+#' get_variable_ids <- function(beschr, con){
+#'   dbGetQuery(
+#'     con,
+#'     paste(
+#'       "SELECT id FROM tag WHERE beschr IN (",
+#'       paste(
+#'         paste0("'", beschr, "'"),
+#'         collapse = ","
+#'       ),
+#'       ")"
+#'     )
+#'   )[,1]
+#' }
 
-  tags <-
-    dbGetQuery(
-      con,
-      "SELECT view_tag_baum_lesbar.id, view_tag_baum_lesbar.text, tag.beschr
-       FROM view_tag_baum_lesbar
-       LEFT JOIN tag ON view_tag_baum_lesbar.id = tag.id
-       WHERE view_tag_baum_lesbar.id IN (SELECT tag_id FROM tag_link WHERE tabelle_id = (SELECT id FROM tabelle WHERE bez = 'variable'))"
-    )
+#' Missing description
+#' @noRd
 
-  return(tags)
-}
-
-get_variable_ids <- function(beschr){
-  dbGetQuery(
-    con,
-    paste(
-      "SELECT id FROM tag WHERE beschr IN (",
-      paste(
-        paste0("'", beschr, "'"),
-        collapse = ","
-      ),
-      ")"
-    )
-  )[,1]
-}
-
-
-indikator_get_variables <- function(){
+indikator_get_variables <- function(con){
   output <- dbGetQuery(con, "SELECT id, beschr FROM variable")
   output$relevant <- TRUE
   return(output)
 }
 
-# TODO
+#' Missing description
+#' @noRd
+
 indikator_recode_url_parameter <- function(x){
   if (is.null(x)) return("")
   if (is.na(x))   return("")
   return(x)
 }
+
+#' Missing description
+#' @noRd
 
 indikator_ini_param_vr <- function(x){
   if (is.null(x)) return("")
@@ -698,12 +739,21 @@ indikator_ini_param_vr <- function(x){
   return(x)
 }
 
+#' Missing description
+#' @noRd
+
 indikator_ini_param_tg <- function(x){
   if (is.null(x)) return("")
   x <- suppressWarnings(as.numeric(x))
   if (is.na(x)) return("")
   return(x)
 }
+
+#' Missing description
+#' @noRd
+
+#' Missing description
+#' @noRd
 
 indikator_ini_param_hnd <- function(x){
   if (is.null(x)) return("")
@@ -717,6 +767,9 @@ indikator_ini_param_hnd <- function(x){
 
 # ---- ab hier neu
 
+#' Missing description
+#' @noRd
+
 indikator_recode_param_int <- function(x, vec = FALSE){
   if (is.null(x)) return("")
   if (vec) x <- strsplit(x, ",")[[1]]
@@ -725,7 +778,10 @@ indikator_recode_param_int <- function(x, vec = FALSE){
   return(sort(x))
 }
 
-indikator_get_variables_by_tags <- function(variable, selected_tags){
+#' Missing description
+#' @noRd
+
+indikator_get_variables_by_tags <- function(variable, selected_tags, con){
 
   if (length(selected_tags) == 0){
     variable$relevant <- TRUE
@@ -749,7 +805,10 @@ indikator_get_variables_by_tags <- function(variable, selected_tags){
   return(variable)
 }
 
-indikator_translate_filter_param <- function(){
+#' Missing description
+#' @noRd
+
+indikator_translate_filter_param <- function(con){
 
   gsub_name <- function(x){gsub("[^a-z]", "", tolower(x))}
 
@@ -774,11 +833,16 @@ indikator_translate_filter_param <- function(){
   return(output)
 }
 
+#' Missing description
+#' @noRd
+
 indikator_gsub_zeit <- function(x, type = 1){
   if (type == 1) return(gsub("Zeit", "zeit", x))
   return(x)
 }
 
+#' Missing description
+#' @noRd
 
 indikator_draw_filter <- function(werte, unterscheiden = NULL, ns){
 
@@ -787,15 +851,12 @@ indikator_draw_filter <- function(werte, unterscheiden = NULL, ns){
   }
 
   filter_ui <- HTML("")
-  # x <<- werte
-  # y <<- unterscheiden
 
   if (is.null(unterscheiden)){
     unterscheiden <- c()
   }
 
   if (length(unterscheiden) > 0){
-    # gsub_zeit <- function(x){gsub("Zeit", "zeit", x)}
     gsub_name <- function(x){gsub("[^a-z]", "", tolower(x))}
 
     filter_ui <-
@@ -824,4 +885,3 @@ indikator_draw_filter <- function(werte, unterscheiden = NULL, ns){
 
   return(filter_ui)
 }
-
