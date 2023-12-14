@@ -1,20 +1,21 @@
 #' Necessary Packages/Functions
 
-box::use(../../R/pages/home[module_home_ui])
-box::use(../../R/pages/indikator[module_indikator_ui])
-box::use(../../R/pages/search[module_search_ui])
-box::use(../../R/pages/studies[module_studies_ui])
-box::use(../../R/pages/stories[module_stories_ui])
-box::use(../../R/pages/monitor[module_monitor_ui])
-box::use(../../R/pages/explorer[module_explorer_ui])
-box::use(../../R/pages/handlung_1[module_handlung_1_ui])
-box::use(../../R/pages/handlung_2[module_handlung_2_ui])
-box::use(../../R/pages/impressum[module_impressum_ui])
-box::use(../../R/pages/datenschutz[module_datenschutz_ui])
-box::use(../../R/pages/team[module_team_ui])
-box::use(../../R/pages/monitor_bildung_inhalt[module_monitor_bildung_inhalt_ui])
-
 box::use(
+  ../../R/pages/home[module_home_ui],
+  ../../R/pages/indikator[module_indikator_ui],
+  ../../R/pages/suchen[module_suchen_ui],
+  ../../R/pages/vergleichen[module_vergleichen_ui],
+  ../../R/pages/datensaetze[module_datensaetze_ui],
+  ../../R/pages/studies[module_studies_ui],
+  ../../R/pages/stories[module_stories_ui],
+  ../../R/pages/monitor[module_monitor_ui],
+  ../../R/pages/explorer[module_explorer_ui],
+  ../../R/pages/handlung_1[module_handlung_1_ui],
+  ../../R/pages/handlung_2[module_handlung_2_ui],
+  ../../R/pages/impressum[module_impressum_ui],
+  ../../R/pages/datenschutz[module_datenschutz_ui],
+  ../../R/pages/team[module_team_ui],
+  ../../R/pages/monitor_bildung_inhalt[module_monitor_bildung_inhalt_ui],
   shiny[
     NS, moduleServer, observeEvent,
     fluidPage, tagList, tags, HTML,
@@ -27,6 +28,7 @@ box::use(
   shinyjs[useShinyjs],
   cicerone[use_cicerone]
 )
+
 
 #' Missing description
 #' @export
@@ -42,7 +44,7 @@ draw_ui <- function(){
       tags$link(rel = "apple-touch-icon-precomposed", sizes = "180x180", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/apple-touch-icon.png"),
       tags$link(rel = "icon",                         sizes = "192x192", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/touch-icon-192x192.png"),
       tags$link(rel = "shortcut icon",                                   href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/favicon.ico"),
-      tags$link(rel = "stylesheet", type = "text/css", href = "styles.css"),
+      tags$link(rel = "stylesheet", type = "text/css", href = paste0("styles.css?version=", Sys.time())),
       tags$title("SV Datenportal")
     ),
     use_bs_tooltip(),
@@ -60,27 +62,21 @@ draw_ui <- function(){
       div(
         id  = "content-body",
         router_ui(
-          route("/",                   module_home_ui()),
-          route("stories",             module_stories_ui()),
-          route("monitor",             module_monitor_ui()),
-          route("explorer",            module_explorer_ui()),
-          route("indikator",           module_indikator_ui()),
-          route("suche",               module_search_ui()),
-          route("studies",             module_studies_ui()),
-          route("handlung1",           module_handlung_1_ui()),
-          route("handlung2",           module_handlung_2_ui()),
-          route("handlung1_stories",   module_stories_ui(type = "handlung1",  id = "stories_handlung1")),
-          route("handlung1_monitor",   module_monitor_ui(type = "handlung1",  id = "monitor_handlung1")),
-          route("handlung1_explorer",  module_explorer_ui(type = "handlung1", id = "explorer_handlung1")),
-          route("handlung1_studies",   module_studies_ui(type = "handlung1",  id = "studies_handlung1")),
-          route("handlung2_stories",   module_stories_ui(type = "handlung2",  id = "stories_handlung2")),
-          route("handlung2_monitor",   module_monitor_ui(type = "handlung2",  id = "monitor_handlung2")),
-          route("handlung2_explorer",  module_explorer_ui(type = "handlung2", id = "explorer_handlung2")),
-          route("handlung2_studies",   module_studies_ui(type = "handlung2",  id = "studies_handlung2")),
+          route("/",                      module_home_ui()),
+          route("stories",                module_stories_ui()),
+          route("monitor",                module_monitor_ui()),
+          route("explorer",               module_explorer_ui()),
+          route("indikator",              module_indikator_ui()),
+          route("suchen",                 module_suchen_ui()),
+          route("vergleichen",            module_vergleichen_ui()),
+          route("datensaetze",            module_datensaetze_ui()),
+          route("studies",                module_studies_ui()),
+          route("handlung1",              module_handlung_1_ui()),
+          route("handlung2",              module_handlung_2_ui()),
           route("monitor_bildung_inhalt", module_monitor_bildung_inhalt_ui()),
-          route("impressum",           module_impressum_ui()),
-          route("datenschutz",         module_datenschutz_ui()),
-          route("team",                module_team_ui())
+          route("impressum",              module_impressum_ui()),
+          route("datenschutz",            module_datenschutz_ui()),
+          route("team",                   module_team_ui())
         )
       )
     ),
@@ -108,9 +104,15 @@ navigation_bar <-
 #' @noRd
 
 draw_footer <- function() {
-  footer <-
-    HTML('<footer class="main-footer" data-fixed="false"></footer>')
-  return(footer)
+  tagList(
+    HTML('<footer class="main-footer" data-fixed="false">'),
+    HTML(
+      "<div class='bottom__left'>
+        <a class='brand' href='/' rel='home'><img class='brand__logo' src='https://stifterverband.org/themes/custom/cake/res/logo_stifterverband.svg' alt='Logo Stifterverband'></a>
+       </div>"
+    ),
+    HTML("</footer>")
+  )
 }
 
 #' Missing description
@@ -118,30 +120,42 @@ draw_footer <- function() {
 
 draw_sidebar <- function(){
   tagList(
-    h4("Handlungsfelder", class = "sidebar_title", style = "margin-top: 40px;"),
     div(
-      style = "background-color: white;",
-      actionButton("sb_handlung1",  label = HTML("Bildung &<br>Kompetenzen"),   class = "sidebar_button_hf_1"),
-      actionButton("sb_handlung2",  label = HTML("Forschung &<br>Innovation"),  class = "sidebar_button_hf_2"),
+      class = "sidebar_group",
+      h4("Handlungsfelder", class = "sidebar_title", style = "margin-top: 40px;"),
+      div(
+        style = "background-color: white;",
+        actionButton("sb_handlung1",  label = HTML("Bildung &<br>Kompetenzen"),   class = "sidebar_button_hf_1"),
+        actionButton("sb_handlung2",  label = HTML("Forschung &<br>Innovation"),  class = "sidebar_button_hf_2"),
+      )
     ),
-    h4("Formate", class = "sidebar_title", style = "margin-top: 40px;"),
     div(
-      style = "background-color: white;",
-      actionButton("sb_stories",  label = "Stories",  class = "sidebar_button", icon = icon("newspaper")),
-      actionButton("sb_monitor",  label = "Monitor",  class = "sidebar_button", icon = icon("chart-pie")),
-      actionButton("sb_explorer", label = "Explorer", class = "sidebar_button", icon = icon("magnifying-glass")),
-      actionButton("sb_studies",  label = "Studies",  class = "sidebar_button", icon = icon("square-poll-vertical")),
+      class = "sidebar_group",
+      h4("Formate", class = "sidebar_title", style = "margin-top: 40px;"),
+      div(
+        style = "background-color: white;",
+        actionButton("sb_stories",  label = "Stories",  class = "sidebar_button", icon = icon("newspaper")),
+        actionButton("sb_monitor",  label = "Monitor",  class = "sidebar_button", icon = icon("chart-pie")),
+        actionButton("sb_explorer", label = "Explorer", class = "sidebar_button", icon = icon("magnifying-glass")),
+        actionButton("sb_studies",  label = "Studies",  class = "sidebar_button", icon = icon("square-poll-vertical")),
+      )
     ),
-    h4("Inhalt", class = "sidebar_title", style = "margin-top: 40px;"),
-    uiOutput("sidebar_dynamic"),
-    h4("Mehr über uns", class = "sidebar_title", style = "margin-top: 40px;"),
     div(
-      style = "background-color: white;",
-      actionButton("sb_team",        label = "SV DATA",     class = "sidebar_button", icon = icon("user-group")),
-      actionButton("sb_impressum",   label = "Impressum",   class = "sidebar_button", icon = icon("circle-info")),
-      actionButton("sb_datenschutz", label = "Datenschutz", class = "sidebar_button", icon = icon("shield-halved"))
-      # actionButton("sb_ziviz",     label = "ZiviZ",       class = "sidebar_button", icon = icon("people-group")),
-      # actionButton("sb_ki",        label = "KI",          class = "sidebar_button", icon = icon("brain")),
+      class = "sidebar_group",
+      h4("Inhalt", class = "sidebar_title", style = "margin-top: 40px;"),
+      uiOutput("sidebar_dynamic")
+    ),
+    div(
+      class = "sidebar_group",
+      h4("Mehr über uns", class = "sidebar_title", style = "margin-top: 40px;"),
+      div(
+        style = "background-color: white;",
+        actionButton("sb_team",        label = "SV DATA",     class = "sidebar_button", icon = icon("user-group")),
+        actionButton("sb_impressum",   label = "Impressum",   class = "sidebar_button", icon = icon("circle-info")),
+        actionButton("sb_datenschutz", label = "Datenschutz", class = "sidebar_button", icon = icon("shield-halved"))
+        # actionButton("sb_ziviz",     label = "ZiviZ",       class = "sidebar_button", icon = icon("people-group")),
+        # actionButton("sb_ki",        label = "KI",          class = "sidebar_button", icon = icon("brain")),
+      )
     ),
     div(style = "margin: 80px;")
   )
@@ -180,3 +194,4 @@ draw_header <- function(){
 
   )
 }
+

@@ -5,22 +5,23 @@ box::use(
     NS, moduleServer, observeEvent,
     fluidPage, tagList,
     markdown, actionButton,
-    h2, div, icon
+    h2, div, icon,
+    uiOutput, renderUI
   ],
-  shiny.router[change_page]
+  shiny.router[change_page, get_query_param, get_page]
 )
 
 #' Missing description
 #' @noRd
 
-module_explorer_ui <- function(id = "explorer", label = "m_explorer", type = "all") {
+module_explorer_ui <- function(id = "explorer", label = "m_explorer") {
   ns <- NS(id)
   tagList(
     fluidPage(
       div(
         class = "panel-content",
         h2("Explorer", style = "text-align: center;"),
-        draw_explorer_details(type),
+        uiOutput(ns("intro")),
         div(
           id = "exp_auswahl",
           style = "display: flex; flex-direction: row; flex-wrap: wrap;",
@@ -37,12 +38,38 @@ module_explorer_ui <- function(id = "explorer", label = "m_explorer", type = "al
 #' Missing description
 #' @noRd
 
-module_explorer_server <- function(id = "explorer", type = "all") {
+module_explorer_server <- function(id = "explorer") {
   moduleServer(
     id,
     function(input, output, session) {
       ns <- session$ns
+
+      observeEvent(input$suche,       {change_page("suchen")})
       observeEvent(input$indikatoren, {change_page("indikator?in_hd=0")})
+      observeEvent(input$vergleichen, {change_page("vergleichen")})
+      observeEvent(input$datensatz,   {change_page("datensaetze")})
+
+      observeEvent(
+        get_query_param(), {
+          if (get_page() == "explorer"){
+
+            param_hf <- get_query_param("hf")
+            if (is.null(param_hf)) param_hf <- 0
+
+            if (param_hf == 1){
+              ui_element <- draw_explorer_details("handlung1")
+            } else if (param_hf == 2){
+              ui_element <- draw_explorer_details("handlung2")
+            } else {
+              ui_element <- draw_explorer_details("keins")
+            }
+
+            output$intro <- renderUI({ui_element})
+          }
+        }, ignoreNULL = FALSE
+      )
+
+
     }
   )
 }

@@ -4,9 +4,11 @@
 box::use(
   ../../R/pages/explorer[module_explorer_server],
   ../../R/pages/indikator[module_indikator_server],
-  ../../R/pages/search[module_search_server],
+  ../../R/pages/suchen[module_suchen_server],
   ../../R/pages/home[module_home_server],
   ../../R/pages/monitor[module_monitor_server],
+  ../../R/pages/studies[module_studies_server],
+  ../../R/pages/stories[module_stories_server],
   ../../R/build/sidebar[
     draw_sidebar_home,
     draw_sidebar_stories,
@@ -119,8 +121,8 @@ server <- function(input, output, session) {
   observeEvent(session$clientData$url_hash, {
     url <- isolate(session$clientData$url_hash)
     if (!isolate(sidebar_button$locked)){
-      if (grepl("handlung1",   url)) sidebar_button$value_1 <- "handlung1"
-      if (grepl("handlung2",   url)) sidebar_button$value_1 <- "handlung2"
+      if (grepl("handlung1",   url) | grepl("hf=1", url)) sidebar_button$value_1 <- "handlung1"
+      if (grepl("handlung2",   url) | grepl("hf=2", url)) sidebar_button$value_1 <- "handlung2"
       if (grepl("stories",     url)) sidebar_button$value_2 <- "stories"
       if (grepl("studies",     url)) sidebar_button$value_2 <- "studies"
       if (grepl("monitor",     url)) sidebar_button$value_2 <- "monitor"
@@ -128,9 +130,19 @@ server <- function(input, output, session) {
       if (grepl("impressum",   url)) sidebar_button$value_2 <- "impressum"
       if (grepl("datenschutz", url)) sidebar_button$value_2 <- "datenschutz"
       if (grepl("team",        url)) sidebar_button$value_2 <- "team"
+
+      if (grepl("vergleichen", url)){
+        addCssClass("sbd_explorer_vergleich", "btn_selected")
+      }
+
     }
   })
 
+  observeEvent(input$sbd_explorer,           {change_page("explorer")})
+  observeEvent(input$sbd_explorer_suche,     {change_page("suchen")})
+  observeEvent(input$sbd_explorer_indikator, {change_page("indikator")})
+  observeEvent(input$sbd_explorer_vergleich, {change_page("vergleichen")})
+  observeEvent(input$sbd_explorer_datensatz, {change_page("datensaetze")})
 
   # --- Tutorial -----------------------------------------------------------------------------------
 
@@ -182,8 +194,10 @@ server <- function(input, output, session) {
   module_explorer_server()
   module_monitor_server()
   module_indikator_server(con = con)
-  module_search_server(con = con)
+  module_suchen_server(con = con)
   module_home_server(con = con)
+  module_studies_server()
+  module_stories_server()
 
 }
 
@@ -208,8 +222,35 @@ change_url <- function(value_1, value_2){
   if (length(values) == 0){
     change_page("")
   } else {
-    change_page(paste(values, collapse = "_"))
+    url <- paste(values, collapse = "_")
+    url <- recode_url(url)
+    change_page(url)
   }
   return(invisible())
 }
 
+#' Missing description
+#' @noRd
+
+recode_url <- function(url){
+
+  if (url == "handlung1_explorer"){
+    url <- "explorer?hf=1"
+  } else if (url == "handlung2_explorer"){
+    url <- "explorer?hf=2"
+  } else if (url == "handlung1_studies"){
+    url <- "studies?hf=1"
+  } else if (url == "handlung2_studies"){
+    url <- "studies?hf=2"
+  } else if (url == "handlung1_stories"){
+    url <- "stories?hf=1"
+  } else if (url == "handlung2_stories"){
+    url <- "stories?hf=2"
+  } else if (url == "handlung1_monitor"){
+    url <- "monitor?hf=1"
+  } else if (url == "handlung2_monitor"){
+    url <- "monitor?hf=2"
+  }
+
+  return(url)
+}

@@ -5,15 +5,17 @@ box::use(
     NS, moduleServer, observeEvent,
     fluidPage, tagList,
     markdown,
-    h2, a, p, div, img
+    h2, a, p, div, img,
+    uiOutput, renderUI
   ],
-  bsplus[bs_embed_tooltip]
+  bsplus[bs_embed_tooltip],
+  shiny.router[get_query_param, get_page]
 )
 
 #' Missing description
 #' @export
 
-module_studies_ui <- function(id = "studies", label = "m_studies", type = "all") {
+module_studies_ui <- function(id = "studies", label = "m_studies") {
   ns <- NS(id)
   tagList(
     fluidPage(
@@ -21,22 +23,7 @@ module_studies_ui <- function(id = "studies", label = "m_studies", type = "all")
         class = "panel-content",
 
         # Variabler Titel
-        h2(
-          style = "text-align: center;",
-          ifelse(
-            type == "all",
-            "Alle Studien",
-            ifelse(
-              type == "handlung1",
-              "Studien zu Bildung & Kompetenz",
-              ifelse(
-                type == "handlung2",
-                "Studien zu Forschung & Innovation",
-                "NA"
-              )
-            )
-          )
-        ),
+        uiOutput(ns("titel")),
 
         # Informationen
 
@@ -50,10 +37,7 @@ module_studies_ui <- function(id = "studies", label = "m_studies", type = "all")
 
         # Box
 
-        div(
-          style = "padding: 20px; margin: 20px; display: flex; flex-wrap: wrap;",
-          create_all_boxes_studies(type)
-        )
+        uiOutput(ns("studies"))
       )
     )
   )
@@ -62,11 +46,36 @@ module_studies_ui <- function(id = "studies", label = "m_studies", type = "all")
 #' Missing description
 #' @export
 
-module_studies_server <- function(id = "studies", con, type = "all") {
+module_studies_server <- function(id = "studies", con) {
   moduleServer(
     id,
     function(input, output, session) {
       ns <- session$ns
+
+      observeEvent(
+        get_query_param(), {
+          if (get_page() == "studies"){
+
+            param_hf <- get_query_param("hf")
+            if (is.null(param_hf)) param_hf <- 0
+
+            if (param_hf == 1){
+              ui_titel <- "Studien zu Bildung & Kompetenz"
+              output$studies <- renderUI({create_all_boxes_studies("handlung1")})
+            } else if (param_hf == 2){
+              ui_titel <- "Studien zu Forschung & Innovation"
+              output$studies <- renderUI({create_all_boxes_studies("handlung2")})
+            } else {
+              ui_titel <- "Alle Studien"
+              output$studies <- renderUI({create_all_boxes_studies("all")})
+            }
+
+            output$titel <- renderUI({h2(style = "text-align: center;", ui_titel)})
+          }
+        }, ignoreNULL = FALSE
+      )
+
+
 
 
     }
@@ -219,8 +228,12 @@ create_all_boxes_studies <- function(type){
     box_daten <- box_daten[box_daten$typ == "Innovation",]
   }
 
-  tagList(
-    apply(box_daten, 1, \(x) create_box_studies(x["titel"], x["text"], x["bild_front"], x["bild_hinten"], x["tooltip"], x["path"], x["typ"]))
+  div(
+    style = "padding: 20px; margin: 20px; display: flex; flex-wrap: wrap;",
+    tagList(
+      apply(box_daten, 1, \(x) create_box_studies(x["titel"], x["text"], x["bild_front"], x["bild_hinten"], x["tooltip"], x["path"], x["typ"]))
+    )
   )
+
 }
 

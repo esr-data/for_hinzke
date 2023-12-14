@@ -81,6 +81,7 @@ h2, .h2 {
   width: 110px;
   margin: 5px;
   border-radius: 0px;
+  font-size: var(--font-size);
 }
 
 #sidebar {
@@ -147,6 +148,10 @@ h2, .h2 {
 .sidebar_dynamic_button:focus{
   background-color: #ffffff00;
   border-color:     #ffffff00;
+}
+
+.sidebar_dynamic_button.btn_selected {
+  background-color: red;
 }
 
 /* Sidebar-Title -------------------------------------------------------------------------------- */
@@ -374,18 +379,31 @@ p.rank-list-title {
   }
   #sidebar{
     width: 100%!important;
+    display: flex;
   }
   #header-left-title{
     display: none;
   }
-  .sidebar_minimized{
+  #sidebar.sidebar_minimized{
     display: none;
+  }
+  .sidebar_group {
+    padding: 20px;
   }
 }
 
 .default-sortable .rank-list-item.sortable-selected, .default-sortable .rank-list-item.sortable-chosen, .default-sortable .rank-list-item.sortable-ghost.sortable-chosen, .default-sortable .rank-list-item.sortable-drag {
   background-color: yellow;
   border: 1px solid red;
+}
+
+.main-footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin: 0 auto;
+  padding: 65px 80px;
+  background-color: white;
 }
 
 /*

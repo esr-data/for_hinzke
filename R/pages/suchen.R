@@ -14,7 +14,7 @@ box::use(
 #' Missing description
 #' @noRd
 
-module_search_ui <- function(id = "search", label = "m_search", type = "all") {
+module_suchen_ui <- function(id = "suchen", label = "m_suchen", type = "all") {
   ns <- NS(id)
   tagList(
     fluidPage(
@@ -24,8 +24,8 @@ module_search_ui <- function(id = "search", label = "m_search", type = "all") {
         fluidRow(
           style = "padding: 10px; display: flex; margin: 0;",
           searchInput(
-            inputId     = ns("search"),
-            label       = "Click search icon to update or hit 'Enter'",
+            inputId     = ns("suchen"),
+            label       = "Click suchen icon to update or hit 'Enter'",
             placeholder = "A placeholder",
             btnSearch   = icon("search"),
             btnReset    = icon("remove"),
@@ -41,21 +41,21 @@ module_search_ui <- function(id = "search", label = "m_search", type = "all") {
 #' Missing description
 #' @noRd
 
-module_search_server <- function(id = "search", type = "all", con) {
+module_suchen_server <- function(id = "suchen", type = "all", con) {
   moduleServer(
     id,
     function(input, output, session) {
       ns <- session$ns
 
       # observeEvent(
-      #   input$search, {
+      #   input$suchen, {
       #     output$results <-
       #       renderUI({
-      #         input_search <- input$search
-      #         if (!is.null(input_search)){
-      #           if (!is.na(input_search)){
-      #             if (nchar(input_search) > 0){
-      #               results <- get_results(input_search, limit_results_to = 10)
+      #         input_suchen <- input$suchen
+      #         if (!is.null(input_suchen)){
+      #           if (!is.na(input_suchen)){
+      #             if (nchar(input_suchen) > 0){
+      #               results <- get_results(input_suchen, limit_results_to = 10)
       #               test    <- as.data.frame(results[[2]])[,2:6]
       #               test$rank <- unlist(test$rank)
       #               test$ranking_weight <- round(unlist(test$ranking_weight), 2)
