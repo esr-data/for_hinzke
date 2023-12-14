@@ -57,6 +57,7 @@ draw_sidebar_explorer <- function(){
   tagList(
     div(
       style = "background-color: white;",
+      actionButton("sbd_explorer",           label = "Überblick",   class = "sidebar_dynamic_button", icon = icon("home")),
       actionButton("sbd_explorer_suche",     label = "Suche",       class = "sidebar_dynamic_button", icon = icon("magnifying-glass")),
       actionButton("sbd_explorer_indikator", label = "Indikator",   class = "sidebar_dynamic_button", icon = icon("chart-pie")),
       actionButton("sbd_explorer_vergleich", label = "Vergleichen", class = "sidebar_dynamic_button", icon = icon("greater-than-equal")),
