@@ -1,7 +1,7 @@
 
 #' Necessary Packages/Functions
 #'
-box::use(shiny[HTML])
+box::use(shiny[HTML, div, icon, p])
 box::use(DBI[dbGetQuery])
 
 #' Missing description
@@ -76,4 +76,18 @@ get_sql <- function(x, query_sql = FALSE, con){
   }
 
   return(sql)
+}
+
+#' Missing description
+#' @export
+
+draw_under_construction <- function(){
+  div(
+    style = "display: flex; color: var(--red); font-size: 30px; margin-top: 30px;",
+    icon(
+      style = "margin-right: 10px;",
+      "screwdriver-wrench"
+    ),
+    p("Under construction ...")
+  )
 }

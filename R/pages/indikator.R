@@ -110,7 +110,7 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
             paste0(
               "parameter <- reactiveValues(",
               paste(
-                paste(c("in_gp", "in_tg", "in_hd", "in_vr", filter_param$param), "= ''"),
+                paste(c("in_gp", "in_tg", "hf", "in_vr", filter_param$param), "= ''"),
                 collapse = ","
               ),
               ")"
@@ -124,239 +124,247 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
           if (!gesperrt()){
             if (get_page() == "indikator"){
 
-              gesperrt(TRUE)
-              aenderung <- FALSE
+              if (is.null(get_query_param())){
+                change_page("indikator?hf=0")
+              } else {
+                gesperrt(TRUE)
+                aenderung <- FALSE
 
-              # PARAMETER IN_HD - Update des Handlungsfeldes / der Themen Auswahl __________________
+                # PARAMETER HF - Update des Handlungsfeldes / der Themen Auswahl __________________
 
-              param_in_hd <-
-                get_query_param("in_hd") |>
-                indikator_recode_param_int()
+                param_hf <-
+                  get_query_param("hf") |>
+                  indikator_recode_param_int()
+                if (param_hf == ""){
+                  param_hf <- 0
+                }
 
-              if (param_in_hd != parameter$in_hd){
-                parameter$in_hd <- param_in_hd
+                if (param_hf != parameter$hf){
+                  parameter$hf <- param_hf
 
-                if (param_in_hd == 0){
-                  input_var(indikator_get_variables(con)) #TODO
-                  input_tag(get_sql("indikator_get_tag_by_variable", TRUE, con))
-                  updatePickerInput(session, "select_tag",      choices = sort(input_tag()$beschr))
-                  updatePickerInput(session, "select_variable", choices = sort(input_var()$beschr[input_var()$relevant]))
+                  if (param_hf == 0){
+                    input_var(indikator_get_variables(con)) #TODO
+                    input_tag(get_sql("indikator_get_tag_by_variable", TRUE, con))
+                    updatePickerInput(session, "select_tag",      choices = sort(input_tag()$beschr))
+                    updatePickerInput(session, "select_variable", choices = sort(input_var()$beschr[input_var()$relevant]))
+                    aenderung <- TRUE
+                  }
+
+                }
+
+                # PARAMETER IN_TG - Update der Tags __________________________________________________
+
+                param_in_tg <-
+                  get_query_param("in_tg") |>
+                  indikator_recode_param_int(vec = TRUE)
+
+                # Nur Änderungen vornehmen, wenn sich etwas geändert hat
+                if (!(all(param_in_tg %in% parameter$in_tg) &
+                      all(parameter$in_tg %in% param_in_tg))){
+
+                  parameter$in_tg <- param_in_tg
+                  selected_tags   <- input_tag()$beschr[input_tag()$id %in% param_in_tg]
+
+                  # Picker updaten, wenn ich die ausgewählten Items unterscheiden:
+                  # Das ist der Fall, wenn die Paramter-Eingabe über die URL und nicht den Picker erfolgt
+                  if (!(all(selected_tags %in% input$select_tag) &
+                        all(input$select_tag %in% selected_tags))){
+                    updatePickerInput(session, "select_tag", selected = input_tag()$beschr[input_tag()$id %in% param_in_tg])
+                  }
+
+                  # Aktualisierung der Variablen aus Basis der Tags
+                  input_var(indikator_get_variables_by_tags(input_var(), selected_tags, con))
+                  updatePickerInput(
+                    session = session,
+                    inputId = "select_variable",
+                    selected = input$select_variable,
+                    choices = sort(input_var()$beschr[input_var()$relevant])
+                  )
                   aenderung <- TRUE
                 }
 
-              }
+                # PARAMETER IN_VR - Update der Variablen _____________________________________________
 
-              # PARAMETER IN_TG - Update der Tags __________________________________________________
+                param_in_vr <-
+                  get_query_param("in_vr") |>
+                  indikator_recode_param_int()
 
-              param_in_tg <-
-                get_query_param("in_tg") |>
-                indikator_recode_param_int(vec = TRUE)
+                if (param_in_vr != parameter$in_vr){
+                  parameter$in_vr <- param_in_vr
 
-              # Nur Änderungen vornehmen, wenn sich etwas geändert hat
-              if (!(all(param_in_tg %in% parameter$in_tg) &
-                    all(parameter$in_tg %in% param_in_tg))){
-
-                parameter$in_tg <- param_in_tg
-                selected_tags   <- input_tag()$beschr[input_tag()$id %in% param_in_tg]
-
-                # Picker updaten, wenn ich die ausgewählten Items unterscheiden:
-                # Das ist der Fall, wenn die Paramter-Eingabe über die URL und nicht den Picker erfolgt
-                if (!(all(selected_tags %in% input$select_tag) &
-                      all(input$select_tag %in% selected_tags))){
-                  updatePickerInput(session, "select_tag", selected = input_tag()$beschr[input_tag()$id %in% param_in_tg])
-                }
-
-                # Aktualisierung der Variablen aus Basis der Tags
-                input_var(indikator_get_variables_by_tags(input_var(), selected_tags, con))
-                updatePickerInput(
-                  session = session,
-                  inputId = "select_variable",
-                  selected = input$select_variable,
-                  choices = sort(input_var()$beschr[input_var()$relevant])
-                )
-                aenderung <- TRUE
-              }
-
-              # PARAMETER IN_VR - Update der Variablen _____________________________________________
-
-              param_in_vr <-
-                get_query_param("in_vr") |>
-                indikator_recode_param_int()
-
-              if (param_in_vr != parameter$in_vr){
-                parameter$in_vr <- param_in_vr
-
-                if (param_in_vr == ""){
-
-                  daten$filter  <- data.frame()
-                  daten$gruppen <- c()
-                  daten$werte   <- data.frame()
-                  daten$auswahl <- c()
-                  updatePickerInput(session, "select_variable", selected = NULL)
-                  output$filter_reichweite <- renderUI({HTML("")})
-                  output$select_reichweite <- renderUI({HTML("")})
-
-                } else {
-
-                  variable <- dbGetQuery(con, paste0("SELECT id, beschr FROM variable WHERE id =", param_in_vr))
-
-                  if (nrow(variable) == 1){
-
-                    tabelle <- load_table_by_variable(variable$id, con)
+                  if (param_in_vr == ""){
 
                     daten$filter  <- data.frame()
-                    daten$gruppen <- sort(c(tabelle$gruppe, "Zeit"))
-                    daten$werte   <- tabelle$daten
+                    daten$gruppen <- c()
+                    daten$werte   <- data.frame()
                     daten$auswahl <- c()
-
+                    updatePickerInput(session, "select_variable", selected = NULL)
                     output$filter_reichweite <- renderUI({HTML("")})
-                    output$select_reichweite <- renderUI({indikator_draw_eimer(daten$gruppen, ns = ns)})
-                    updatePickerInput(session, "select_variable", selected = variable$beschr[1])
+                    output$select_reichweite <- renderUI({HTML("")})
 
-                  }
+                  } else {
 
-                }
-                aenderung <- TRUE
-              }
+                    variable <- dbGetQuery(con, paste0("SELECT id, beschr FROM variable WHERE id =", param_in_vr))
 
-              # PARAMETER IN_GP - Update der Gruppenauswahl / Eimer ________________________________
+                    if (nrow(variable) == 1){
 
-              param_in_gp <-
-                get_query_param("in_gp") |>
-                indikator_recode_param_int(vec = TRUE)
+                      tabelle <- load_table_by_variable(variable$id, con)
 
-              if (!(all(param_in_gp %in% parameter$in_gp) &
-                    all(parameter$in_gp %in% param_in_gp))){
+                      daten$filter  <- data.frame()
+                      daten$gruppen <- sort(c(tabelle$gruppe, "Zeit"))
+                      daten$werte   <- tabelle$daten
+                      daten$auswahl <- c()
 
-                parameter$in_gp <- param_in_gp
-                daten_gruppe <- 1:length(daten$gruppen)
-                daten_gruppe <- daten_gruppe[daten_gruppe %in% param_in_gp]
+                      output$filter_reichweite <- renderUI({HTML("")})
+                      output$select_reichweite <- renderUI({indikator_draw_eimer(daten$gruppen, ns = ns)})
+                      updatePickerInput(session, "select_variable", selected = variable$beschr[1])
 
-                if (length(daten_gruppe) > 0){
-                  daten$auswahl <- daten$gruppen[daten_gruppe]
-                } else {
-                  daten$auswahl <- c()
-                }
-
-                if (length(daten$auswahl) > 0){
-
-                  # Änderung, die nicht im UI-Element persistiert ist?
-                  eimer_aenderung <- FALSE
-                  if (length(input$eimer_unterscheiden) != length(daten$auswahl)){
-                    eimer_aenderung <- TRUE
-                  } else if (length(daten$auswahl) > 0){
-                    if (!(all(daten$auswahl %in% input$eimer_unterscheiden) &
-                          all(input$eimer_unterscheiden %in% daten$auswahl))){
-                      eimer_aenderung <- TRUE
                     }
-                  }
-                  if (eimer_aenderung){
-                    output$select_reichweite <-
-                      renderUI({
-                        indikator_draw_eimer(daten$gruppen, daten$auswahl, ns)
-                      })
-                  }
 
-                  # Filter aktualisieren
-                  output$filter_reichweite <-
-                    renderUI({
-                      indikator_draw_filter(daten$werte, daten$auswahl, ns)
-                    })
-
+                  }
+                  aenderung <- TRUE
                 }
 
+                # PARAMETER IN_GP - Update der Gruppenauswahl / Eimer ________________________________
 
-              }
-
-              # PARAMETER der Filter _______________________________________________________________
-
-              for (filter_id in filter_param$param){
-                # in_re15
-                #filter_id <- "in_re15"
-                param_filter <-
-                  get_query_param(filter_id) |>
+                param_in_gp <-
+                  get_query_param("in_gp") |>
                   indikator_recode_param_int(vec = TRUE)
 
-                "test <- !(all(param_filter %in% parameter$ERSETZEN) &  all(parameter$ERSETZEN %in% param_filter))" |>
-                  gsub(pattern = "ERSETZEN", replacement = filter_id) |>
-                  parse(text = _) |>
-                  eval()
+                if (!(all(param_in_gp %in% parameter$in_gp) &
+                      all(parameter$in_gp %in% param_in_gp))){
 
-                if (test){
+                  parameter$in_gp <- param_in_gp
+                  daten_gruppe <- 1:length(daten$gruppen)
+                  daten_gruppe <- daten_gruppe[daten_gruppe %in% param_in_gp]
 
-                  "parameter$ERSETZEN <- param_filter" |>
+                  if (length(daten_gruppe) > 0){
+                    daten$auswahl <- daten$gruppen[daten_gruppe]
+                  } else {
+                    daten$auswahl <- c()
+                  }
+
+                  if (length(daten$auswahl) > 0){
+
+                    # Änderung, die nicht im UI-Element persistiert ist?
+                    eimer_aenderung <- FALSE
+                    if (length(input$eimer_unterscheiden) != length(daten$auswahl)){
+                      eimer_aenderung <- TRUE
+                    } else if (length(daten$auswahl) > 0){
+                      if (!(all(daten$auswahl %in% input$eimer_unterscheiden) &
+                            all(input$eimer_unterscheiden %in% daten$auswahl))){
+                        eimer_aenderung <- TRUE
+                      }
+                    }
+                    if (eimer_aenderung){
+                      output$select_reichweite <-
+                        renderUI({
+                          indikator_draw_eimer(daten$gruppen, daten$auswahl, ns)
+                        })
+                    }
+
+                    # Filter aktualisieren
+                    output$filter_reichweite <-
+                      renderUI({
+                        indikator_draw_filter(daten$werte, daten$auswahl, ns)
+                      })
+
+                  }
+
+
+                }
+
+                # PARAMETER der Filter _______________________________________________________________
+
+                for (filter_id in filter_param$param){
+                  # in_re15
+                  #filter_id <- "in_re15"
+                  param_filter <-
+                    get_query_param(filter_id) |>
+                    indikator_recode_param_int(vec = TRUE)
+
+                  "test <- !(all(param_filter %in% parameter$ERSETZEN) &  all(parameter$ERSETZEN %in% param_filter))" |>
                     gsub(pattern = "ERSETZEN", replacement = filter_id) |>
                     parse(text = _) |>
                     eval()
 
-                  eval(parse(text = paste0("input_filter <- input$", filter_param$bez[filter_param$param == filter_id])))
-                  auswahl <-
-                    daten$werte[,filter_param$beschr[filter_param$param == filter_id]] |>
-                    unique() |>
-                    sort()
-                  auswahl <- auswahl[param_filter]
+                  if (test){
 
-                  update_filter <-
-                    "updatePickerInput(session, '%s', selected = auswahl)" |>
-                    sprintf(fmt = _, filter_param$bez[filter_param$param == filter_id]) |>
-                    parse(text = _)
+                    "parameter$ERSETZEN <- param_filter" |>
+                      gsub(pattern = "ERSETZEN", replacement = filter_id) |>
+                      parse(text = _) |>
+                      eval()
 
-                  if (length(input_filter) != length(auswahl)){
-                    eval(update_filter)
-                  } else if (length(input_filter) > 0){
-                    if (!(all(input_filter %in% auswahl) &
-                          all(auswahl %in% input_filter))){
+                    eval(parse(text = paste0("input_filter <- input$", filter_param$bez[filter_param$param == filter_id])))
+                    auswahl <-
+                      daten$werte[,filter_param$beschr[filter_param$param == filter_id]] |>
+                      unique() |>
+                      sort()
+                    auswahl <- auswahl[param_filter]
+
+                    update_filter <-
+                      "updatePickerInput(session, '%s', selected = auswahl)" |>
+                      sprintf(fmt = _, filter_param$bez[filter_param$param == filter_id]) |>
+                      parse(text = _)
+
+                    if (length(input_filter) != length(auswahl)){
                       eval(update_filter)
+                    } else if (length(input_filter) > 0){
+                      if (!(all(input_filter %in% auswahl) &
+                            all(auswahl %in% input_filter))){
+                        eval(update_filter)
+                      }
                     }
+
+                    daten_filter <- daten$filter
+                    daten_filter <- daten_filter[daten_filter$type != filter_param$beschr[filter_param$param == filter_id],]
+
+                    if (length(auswahl) > 0){
+                      daten_filter <-
+                        rbind(
+                          daten_filter,
+                          data.frame(
+                            type  = filter_param$beschr[filter_param$param == filter_id],
+                            werte = auswahl
+                          )
+                        )
+                    }
+
+                    daten$filter <- daten_filter[!is.na(daten_filter$werte),]
+                    rm(update_filter, auswahl, param_filter, daten_filter)
+
                   }
+                  rm(test)
+                }
 
-                  daten_filter <- daten$filter
-                  daten_filter <- daten_filter[daten_filter$type != filter_param$beschr[filter_param$param == filter_id],]
+                # Am Ende nochmal die Tabelle aktualisieren __________________________________________
 
-                  if (length(auswahl) > 0){
-                    daten_filter <-
-                      rbind(
-                        daten_filter,
-                        data.frame(
-                          type  = filter_param$beschr[filter_param$param == filter_id],
-                          werte = auswahl
+                if (aenderung){
+                  output$table <-
+                    renderReactable({
+                      indikator_draw_reactable(
+                        manage_explorer_data( # TODO
+                          werte         = daten$werte,
+                          gruppe        = daten$gruppen[daten$gruppen != "Zeit"],
+                          unterscheiden = daten$auswahl,
+                          filtern       = daten$filter
                         )
                       )
-                  }
-
-                  daten$filter <- daten_filter[!is.na(daten_filter$werte),]
-                  rm(update_filter, auswahl, param_filter, daten_filter)
-
+                    })
                 }
-                rm(test)
-              }
-
-              # Am Ende nochmal die Tabelle aktualisieren __________________________________________
-
-              if (aenderung){
-                output$table <-
-                  renderReactable({
-                    indikator_draw_reactable(
-                      manage_explorer_data( # TODO
-                        werte         = daten$werte,
-                        gruppe        = daten$gruppen[daten$gruppen != "Zeit"],
-                        unterscheiden = daten$auswahl,
-                        filtern       = daten$filter
-                      )
-                    )
-                  })
               }
 
             }
           }
           gesperrt(FALSE)
-        }
+        },
+        ignoreNULL = FALSE
       )
 
       observeEvent(
         input$select_tag, {
 
-          if (!gesperrt() & !is.null(get_query_param("in_hd"))){
+          if (!gesperrt() & !is.null(get_query_param("hf"))){
             input_select_tag <- input$select_tag
             indikator_tags   <- input_tag()
             new_value        <- ""
@@ -393,7 +401,7 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
       observeEvent(
         input$select_variable, {
 
-          if (!gesperrt() & !is.null(get_query_param("in_hd"))){
+          if (!gesperrt() & !is.null(get_query_param("hf"))){
             input_select_var   <- input$select_variable
             new_value          <- ""
             current_url        <- session$clientData$url_hash
@@ -424,7 +432,7 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
       observeEvent(
         input$eimer_unterscheiden, {
 
-          if (!gesperrt() & !is.null(get_query_param("in_hd"))){
+          if (!gesperrt() & !is.null(get_query_param("hf"))){
 
             if (length(daten$gruppen) > 0){
 
@@ -446,7 +454,6 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
                 )
 
               if (new_url != current_url){
-                # print(paste("var", 1)) # BENCH-PRINT
                 change_page(new_url)
               }
             }
@@ -647,7 +654,7 @@ write_explorer_filter_observer <- function(filter_param_bez){
 
   write_code <- function(x){
     "observeEvent(input$ERSETZEN, {
-      if (!gesperrt() & !is.null(get_query_param('in_hd'))){
+      if (!gesperrt() & !is.null(get_query_param('hf'))){
 
         param_attr    <- filter_param[filter_param$bez == 'ERSETZEN',]
         auspraegungen <- sort(unique(daten$werte[,param_attr$beschr[1]]))
@@ -676,40 +683,6 @@ write_explorer_filter_observer <- function(filter_param_bez){
 
   return(sapply(filter_param_bez, write_code))
 }
-
-#' #' Missing description
-#' #' @noRd
-#'
-#' get_tags_of_variables <- function(con){
-#'
-#'   tags <-
-#'     dbGetQuery(
-#'       con,
-#'       "SELECT view_tag_baum_lesbar.id, view_tag_baum_lesbar.text, tag.beschr
-#'        FROM view_tag_baum_lesbar
-#'        LEFT JOIN tag ON view_tag_baum_lesbar.id = tag.id
-#'        WHERE view_tag_baum_lesbar.id IN (SELECT tag_id FROM tag_link WHERE tabelle_id = (SELECT id FROM tabelle WHERE bez = 'variable'))"
-#'     )
-#'
-#'   return(tags)
-#' }
-
-#' #' Missing description
-#' #' @noRd
-#'
-#' get_variable_ids <- function(beschr, con){
-#'   dbGetQuery(
-#'     con,
-#'     paste(
-#'       "SELECT id FROM tag WHERE beschr IN (",
-#'       paste(
-#'         paste0("'", beschr, "'"),
-#'         collapse = ","
-#'       ),
-#'       ")"
-#'     )
-#'   )[,1]
-#' }
 
 #' Missing description
 #' @noRd

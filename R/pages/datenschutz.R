@@ -1,10 +1,7 @@
 #' Necessary Packages/Functions
 
 box::use(
-  shiny[
-    NS, moduleServer,
-    fluidPage, tagList, h2
-  ]
+  shiny[NS, moduleServer, fluidPage, div, markdown]
 )
 
 #' Missing description
@@ -12,10 +9,13 @@ box::use(
 
 module_datenschutz_ui <- function(id = "datenschutz", label = "m_datenschutz") {
   ns <- NS(id)
-  tagList(
-    fluidPage(
-      h2("Datenschutz")
-
+  fluidPage(
+    div(
+      class = "panel-content",
+      div(
+        style = "margin: 40px; max-width: 800px;",
+        markdown(readLines("md/datenschutz.md"))
+      )
     )
   )
 }
