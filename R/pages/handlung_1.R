@@ -1,9 +1,10 @@
 #' Necessary Packages/Functions
 
 box::use(
+  ../../R/utils/utils[draw_under_construction],
   shiny[
     NS, moduleServer, observeEvent,
-    fluidPage, tagList, h2
+    fluidPage, tagList, h2, div
   ]
 )
 
@@ -12,12 +13,11 @@ box::use(
 
 module_handlung_1_ui <- function(id = "handlung_1", label = "m_handlung_1") {
   ns <- NS(id)
-  tagList(
-    fluidPage(
-      h2("handlung_1!")
-
-
-
+  fluidPage(
+    div(
+      class = "panel-content",
+      h2("Handlungsfeld - Bildung & Kompetenzen"),
+      draw_under_construction()
     )
   )
 }

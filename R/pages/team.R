@@ -1,9 +1,10 @@
 #' Necessary Packages/Functions
 
 box::use(
+  ../../R/utils/utils[draw_under_construction],
   shiny[
     NS, moduleServer,
-    fluidPage, tagList, h2
+    fluidPage, tagList, h2, div
   ]
 )
 
@@ -12,10 +13,11 @@ box::use(
 
 module_team_ui <- function(id = "team", label = "m_team") {
   ns <- NS(id)
-  tagList(
-    fluidPage(
-      h2("SV Data Team")
-
+  fluidPage(
+    div(
+      class = "panel-content",
+      h2("SV Data"),
+      draw_under_construction()
     )
   )
 }

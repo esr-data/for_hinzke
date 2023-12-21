@@ -206,6 +206,13 @@ get_network_data <- function(con){
   i <- nodes$label %in% tag$beschr[tag$id %in% i | tag$eltern_id %in% i]
   nodes$group[i] <- "bildung"
 
+  ebene_1 <- tag$id[tag$eltern_id %in% tag$id[tag$bez == "zmb"]]
+  ebene_2 <- tag$id[tag$eltern_id %in% ebene_1]
+  ebene_3 <- tag$id[tag$eltern_id %in% ebene_2]
+  i <- nodes$label %in% tag$beschr[tag$id %in% c(ebene_1, ebene_2, ebene_3)]
+  nodes$group[i] <- "bildung"
+  rm(ebene_1, ebene_2, ebene_3)
+
   i <- tag$id[tag$beschr %in% c("SV Datenportal", "Wirtschaft", "International", "MINT", "Wissen", "Informatik", "Wissenschaft", "Wissenschaftler")]
   i <- nodes$label %in% tag$beschr[tag$id %in% i]
   nodes$group[i] <- "allgemein"

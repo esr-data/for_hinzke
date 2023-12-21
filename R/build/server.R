@@ -2,7 +2,7 @@
 #' Necessary Packages/Functions
 
 box::use(
-  ../../R/pages/explorer[module_explorer_server],
+  ../../R/pages/explorer[module_explorer_server, report_explorer_subpages],
   ../../R/pages/indikator[module_indikator_server],
   ../../R/pages/suchen[module_suchen_server],
   ../../R/pages/home[module_home_server],
@@ -21,128 +21,214 @@ box::use(
     observeEvent, observe,
     isolate,
     reactiveValues,
+    reactiveVal,
+    reactive,
     renderUI
   ],
-  shinyjs[removeCssClass, addCssClass],
-  shiny.router[change_page, router_server],
+  shinyjs[
+    removeCssClass,
+    addCssClass
+  ],
+  shiny.router[
+    change_page,
+    router_server,
+    get_page,
+    get_query_param
+  ],
   DBI[dbConnect],
   RSQLite[SQLite]
 )
 
-
 # Global Variables
-
+print_events <- FALSE
 con   <- dbConnect(SQLite(), "data/magpie.sqlite")
 guide <- plan_tutorial_tour()
+explorer_subpages <- report_explorer_subpages()
 
 #' Missing description
 #' @export
 
 server <- function(input, output, session) {
 
-  # onStop(function() {dbDisconnect(con)})
-
-  sidebar_button    <- reactiveValues(value_1 = "", value_2 = "", locked = FALSE, start = TRUE)
-  sidebar_minimized <- reactiveValues(status = FALSE)
-
   # --- Sidebar ------------------------------------------------------------------------------------
 
-  observeEvent(
-    input$button_minimize, {
-      sidebar_minimized$status <- !sidebar_minimized$status
-      if (sidebar_minimized$status){
-        addCssClass("sidebar",    "sidebar_minimized")
-      } else {
-        removeCssClass("sidebar", "sidebar_minimized")
-      }
-    }
-  )
+  sidebar <-
+    reactiveValues(
+      button    = list(value_1 = "", value_2 = ""),
+      start     = TRUE,
+      locked    = FALSE,
+      minimized = FALSE,
+      modus     = 0
+    )
 
-  observeEvent(input$sb_stories,   {sidebar_button$value_2 <- update_button_sidebar("stories",   isolate(sidebar_button$value_2))})
-  observeEvent(input$sb_monitor,   {sidebar_button$value_2 <- update_button_sidebar("monitor",   isolate(sidebar_button$value_2))})
-  observeEvent(input$sb_explorer,  {sidebar_button$value_2 <- update_button_sidebar("explorer",  isolate(sidebar_button$value_2))})
-  observeEvent(input$sb_studies,   {sidebar_button$value_2 <- update_button_sidebar("studies",   isolate(sidebar_button$value_2))})
+  current <- reactiveValues(page = "start", sidebar = "start")
 
-  observeEvent(
-    input$sb_handlung1, {
-      sidebar_button$value_1 <- update_button_sidebar("handlung1", isolate(sidebar_button$value_1))
-      if (!(sidebar_button$value_2 %in% c("stories", "monitor", "explorer", "studies"))){
-        sidebar_button$value_2 <- ""
-      }
-    }
-  )
+  # Button-Events
 
-  observeEvent(
-    input$sb_handlung2, {
-      sidebar_button$value_1 <- update_button_sidebar("handlung2", isolate(sidebar_button$value_1))
-      if (!(sidebar_button$value_2 %in% c("stories", "monitor", "explorer", "studies"))){
-        sidebar_button$value_2 <- ""
-      }
-    }
-  )
-
-
-  observeEvent(
-    input$sb_impressum, {
-      sidebar_button$value_1 <- ""
-      sidebar_button$value_2 <- update_button_sidebar("impressum", isolate(sidebar_button$value_2))
-    }
-  )
-
-  observeEvent(
-    input$sb_datenschutz, {
-      sidebar_button$value_1 <- ""
-      sidebar_button$value_2 <- update_button_sidebar("datenschutz", isolate(sidebar_button$value_2))
-    }
-  )
-
-  observeEvent(
-    input$sb_team, {
-      sidebar_button$value_1 <- ""
-      sidebar_button$value_2 <- update_button_sidebar("team", isolate(sidebar_button$value_2))
-    }
-  )
-
-  observeEvent(sidebar_button$value_2, {
-    value_2 <- isolate(sidebar_button$value_2)
-    if (value_2 == "stories"){
-      output$sidebar_dynamic <- renderUI({draw_sidebar_stories()})
-    } else if (value_2 == "studies"){
-      output$sidebar_dynamic <- renderUI({draw_sidebar_studies()})
-    } else if (value_2 == "monitor"){
-      output$sidebar_dynamic <- renderUI({draw_sidebar_monitor()})
-    } else if (value_2 == "explorer"){
-      output$sidebar_dynamic <- renderUI({draw_sidebar_explorer()})
+  observeEvent(input$button_minimize, {
+    sidebar$minimized <- !sidebar$minimized
+    if (sidebar$minimized){
+      addCssClass("sidebar", "sidebar_minimized")
     } else {
-      output$sidebar_dynamic <- renderUI({draw_sidebar_home()})
+      removeCssClass("sidebar", "sidebar_minimized")
     }
   })
 
-  observeEvent(session$clientData$url_hash, {
-    url <- isolate(session$clientData$url_hash)
-    if (!isolate(sidebar_button$locked)){
-      if (grepl("handlung1",   url) | grepl("hf=1", url)) sidebar_button$value_1 <- "handlung1"
-      if (grepl("handlung2",   url) | grepl("hf=2", url)) sidebar_button$value_1 <- "handlung2"
-      if (grepl("stories",     url)) sidebar_button$value_2 <- "stories"
-      if (grepl("studies",     url)) sidebar_button$value_2 <- "studies"
-      if (grepl("monitor",     url)) sidebar_button$value_2 <- "monitor"
-      if (grepl("explorer",    url)) sidebar_button$value_2 <- "explorer"
-      if (grepl("impressum",   url)) sidebar_button$value_2 <- "impressum"
-      if (grepl("datenschutz", url)) sidebar_button$value_2 <- "datenschutz"
-      if (grepl("team",        url)) sidebar_button$value_2 <- "team"
+  observeEvent(input$sb_stories, {
+    sidebar$button$value_2 <- update_button_sidebar("stories", sidebar$button$value_2)
+  })
 
-      if (grepl("vergleichen", url)){
-        addCssClass("sbd_explorer_vergleich", "btn_selected")
+  observeEvent(input$sb_monitor, {
+    sidebar$button$value_2 <- update_button_sidebar("monitor", sidebar$button$value_2)
+  })
+
+  observeEvent(input$sb_explorer, {
+    sidebar$button$value_2 <- update_button_sidebar("explorer", sidebar$button$value_2)
+  })
+
+  observeEvent(input$sb_studies, {
+    sidebar$button$value_2 <- update_button_sidebar("studies", sidebar$button$value_2)
+  })
+
+  observeEvent(input$sb_handlung1, {
+    sidebar$button$value_1 <- update_button_sidebar("handlung1", sidebar$button$value_1)
+    if (!(sidebar$button$value_2 %in% c("stories", "monitor", "explorer", "studies"))){
+      sidebar$button$value_2 <- ""
+    }
+  })
+
+  observeEvent(input$sb_handlung2, {
+    sidebar$button$value_1 <- update_button_sidebar("handlung2", sidebar$button$value_1)
+    if (!(sidebar$button$value_2 %in% c("stories", "monitor", "explorer", "studies"))){
+      sidebar$button$value_2 <- ""
+    }
+  })
+
+  observeEvent(input$sb_impressum, {
+    sidebar$button$value_1 <- ""
+    sidebar$button$value_2 <- update_button_sidebar("impressum", isolate(sidebar$button$value_2))
+  })
+
+  observeEvent(input$sb_datenschutz, {
+    sidebar$button$value_1 <- ""
+    sidebar$button$value_2 <- update_button_sidebar("datenschutz", isolate(sidebar$button$value_2))
+  })
+
+  observeEvent(input$sb_team, {
+    sidebar$button$value_1 <- ""
+    sidebar$button$value_2 <- update_button_sidebar("team", isolate(sidebar$button$value_2))
+  })
+
+  observeEvent(input$sb_home, {
+    sidebar$modus <- 0
+    sidebar$button$value_1 <- ""
+    sidebar$button$value_2 <- ""
+  })
+
+  observeEvent(input$sbd_explorer, {
+    change_page_by_subpage_button("explorer")
+  })
+
+  observeEvent(input$sbd_explorer_suche, {
+    change_page_by_subpage_button("suchen")
+  })
+
+  observeEvent(input$sbd_explorer_indikator, {
+    change_page_by_subpage_button("indikator")
+  })
+
+  observeEvent(input$sbd_explorer_vergleich, {
+    change_page_by_subpage_button("vergleichen")
+  })
+
+  observeEvent(input$sbd_explorer_datensatz, {
+    change_page_by_subpage_button("datensaetze")
+  })
+
+  observeEvent(input$sbd_explorer_karten, {
+    change_page_by_subpage_button("karten")
+  })
+
+  # Observe URL
+
+  observeEvent(
+    session$clientData$url_hash, {
+
+      url <- session$clientData$url_hash
+
+      if (!sidebar$locked & !(url %in% c("", "#!/"))){
+        sidebar$locked <- TRUE
+        if (sidebar$modus == 0){
+          if (print_events) message("Event: New URL to be checked")
+
+          values <- get_button_values_from_url(url)
+          sidebar$button$value_1 <- values[1]
+          sidebar$button$value_2 <- values[2]
+          adjust_sidebar_button_classes(sidebar$button$value_1, sidebar$button$value_2)
+
+        } else {
+          sidebar$modus <- 0
+        }
+        sidebar$locked <- FALSE
+      } else if (url %in% c("", "#!/")){
+        sidebar$modus <- 0
       }
 
     }
-  })
+  )
 
-  observeEvent(input$sbd_explorer,           {change_page("explorer")})
-  observeEvent(input$sbd_explorer_suche,     {change_page("suchen")})
-  observeEvent(input$sbd_explorer_indikator, {change_page("indikator")})
-  observeEvent(input$sbd_explorer_vergleich, {change_page("vergleichen")})
-  observeEvent(input$sbd_explorer_datensatz, {change_page("datensaetze")})
+  # values in sidebar$button
+
+  observeEvent(
+    sidebar$button, {
+
+      if (print_events) message("Event: Update URL")
+
+      if (!sidebar$locked){
+
+        if (sidebar$modus == 0){
+
+          sidebar$locked <- TRUE
+          value_1 <- sidebar$button$value_1
+          value_2 <- sidebar$button$value_2
+
+          if (print_events) message("Event: Update URL - not locked")
+
+          if (!sidebar$start){
+            if (print_events) message("Event: Update URL - url changed")
+            change_url_by_button_values(value_1, value_2)
+            adjust_sidebar_button_classes(value_1, value_2)
+            sidebar$modus <- 1
+          } else {
+            sidebar$start <- FALSE
+          }
+
+          sidebar$locked <- FALSE
+        } else {
+          sidebar$modus <- 0
+        }
+      }
+    }
+  )
+
+  observeEvent(
+    get_page(),{
+      page <- get_page()
+      if (page != current$page) current$page <- page
+    }
+  )
+
+  observeEvent(
+    current$page, {
+      if (sidebar$button$value_2 != current$sidebar){
+        value_2 <- sidebar$button$value_2
+        current$sidebar <- value_2
+        output$sidebar_dynamic <- renderUI({update_subpage_sidebar(value_2, current$page)})
+      } else {
+        update_sidebar_subpages_classes(current$page)
+      }
+    }
+  )
 
   # --- Tutorial -----------------------------------------------------------------------------------
 
@@ -156,39 +242,6 @@ server <- function(input, output, session) {
 
   router_server()
 
-  observe({
-    value_1 <- sidebar_button$value_1
-    value_2 <- sidebar_button$value_2
-    sidebar_button$locked <- TRUE
-
-    value_1 <- isolate(value_1)
-    value_2 <- isolate(value_2)
-
-    for (i in c(
-      "handlung1", "handlung2",
-      "studies",   "stories",     "monitor", "explorer",
-      "impressum", "datenschutz", "team"
-    )){
-      if (i %in% c(value_1, value_2)){
-        addCssClass(paste0("sb_", i), "btn-warning")
-      } else {
-        removeCssClass(paste0("sb_", i), "btn-warning")
-      }
-    }
-
-    sidebar_button$locked <- FALSE
-    if (!isolate(sidebar_button$start)){
-      change_url(isolate(value_1), isolate(value_2))
-    } else {
-      sidebar_button$start <- FALSE
-    }
-  })
-
-  observeEvent(input$sb_home, {
-    sidebar_button$value_1 <- ""
-    sidebar_button$value_2 <- ""
-  })
-
   # --- Server der Shiny-Modules -------------------------------------------------------------------
 
   module_explorer_server()
@@ -199,6 +252,28 @@ server <- function(input, output, session) {
   module_studies_server()
   module_stories_server()
 
+}
+
+#' Missing description
+#' @export
+
+get_hf_param <- function(){
+
+  param <- get_query_param()
+  if (is.null(param)){
+    return(0)
+  }
+
+  hf <- param$hf
+  if (is.null(hf)){
+    return(0)
+  }
+
+  if (all(hf %in% 0:2)){
+    return(hf[1])
+  }
+
+  return(0)
 }
 
 #' Missing description
@@ -216,41 +291,153 @@ update_button_sidebar <- function(button, actual_value){
 #' Missing description
 #' @noRd
 
-change_url <- function(value_1, value_2){
-  values <- c(value_1, value_2)
-  values <- values[values != ""]
-  if (length(values) == 0){
-    change_page("")
-  } else {
-    url <- paste(values, collapse = "_")
-    url <- recode_url(url)
+change_url_by_button_values <- function(value_1, value_2){
+
+  page     <- get_page()
+  param_hf <- get_hf_param()
+  explorer <- explorer_subpages
+
+  if (value_2 == "explorer" & page %in% explorer$url) {
+    value_2 <- page
+  }
+
+  url <- ""
+  to_change <- TRUE
+
+  if (value_1 == "" & value_2 == ""){
+    # Startseite:
+    if (page %in% c("", "/")) to_change <- FALSE
+    url <- ""
+
+  } else if (value_1 == "" & value_2 != ""){
+    # Nur Format
+    if (param_hf %in% 0 & page %in% value_2){
+      to_change <- FALSE
+    }
+    url <- paste0(value_2, "?hf=0")
+
+  } else if (value_1 != "" & value_2 != ""){
+    # Format und Handlungsfeld
+    if (
+      (param_hf %in% gsub("handlung", "", value_1) |
+       (param_hf == 0 & value_1 == "")) &
+      page %in% value_2
+    ){
+      to_change <- FALSE
+    }
+    url <- paste0(value_2, gsub("handlung", "?hf=", value_1))
+
+  } else if (value_1 != "" & value_2 == ""){
+    # Nur Handlungsfeld
+    if (page %in% value_1) to_change <- FALSE
+    url <- value_1
+  }
+
+  if (to_change){
     change_page(url)
   }
+
   return(invisible())
 }
 
 #' Missing description
 #' @noRd
 
-recode_url <- function(url){
+change_page_by_subpage_button <- function(url){
+  change_page(paste0(url, "?hf=", get_hf_param()))
+}
 
-  if (url == "handlung1_explorer"){
-    url <- "explorer?hf=1"
-  } else if (url == "handlung2_explorer"){
-    url <- "explorer?hf=2"
-  } else if (url == "handlung1_studies"){
-    url <- "studies?hf=1"
-  } else if (url == "handlung2_studies"){
-    url <- "studies?hf=2"
-  } else if (url == "handlung1_stories"){
-    url <- "stories?hf=1"
-  } else if (url == "handlung2_stories"){
-    url <- "stories?hf=2"
-  } else if (url == "handlung1_monitor"){
-    url <- "monitor?hf=1"
-  } else if (url == "handlung2_monitor"){
-    url <- "monitor?hf=2"
+
+#' Missing description
+#' @noRd
+
+adjust_sidebar_button_classes <- function(value_1, value_2){
+
+  for (i in c(
+    "handlung1", "handlung2",
+    "studies",   "stories",
+    "monitor",   "explorer",
+    "impressum", "datenschutz",
+    "team"
+  )){
+    if (i %in% c(value_1, value_2)){
+      addCssClass(paste0("sb_", i), "btn-warning")
+    } else {
+      removeCssClass(paste0("sb_", i), "btn-warning")
+    }
   }
 
-  return(url)
+  return(invisible(NULL))
+}
+
+#' Missing description
+#' @noRd
+
+get_button_values_from_url <- function(url){
+
+  url <- gsub("#!/", "", url)
+  url <- strsplit(url, "?", fixed = TRUE)[[1]]
+
+  value_1 <- ""
+  if (length(url) > 1){
+    if (url[2] %in% paste0("hf=", 1:2)){
+      value_1 <- paste0("handlung", substr(url[2], 4, 4))
+    }
+  }
+
+  value_2 <- url[1]
+
+  if (length(value_2) == 0){
+    value_2 <- ""
+  }
+
+  if (value_2 %in% explorer_subpages$url){
+    value_2 <- "explorer"
+  }
+
+  return(c(value_1, value_2))
+}
+
+#' Missing description
+#' @noRd
+
+update_sidebar_subpages_classes <- function(url){
+
+  url      <- gsub("#!/", "", url)
+  explorer <- explorer_subpages
+
+  if (url %in% explorer$url){
+    for (i in explorer$url){
+      id <- explorer$id[match(i, explorer$url)]
+      if (i == url){
+        addCssClass(id,    "btn_selected")
+      } else {
+        removeCssClass(id, "btn_selected")
+      }
+      rm(id)
+    }
+    rm(i)
+  }
+
+  return(invisible(NULL))
+}
+
+#' Missing description
+#' @noRd
+
+update_subpage_sidebar <- function(button_value_2, url){
+
+  if (print_events) message("Event: Update Sidebar")
+
+  if (button_value_2 == "stories"){
+    return(draw_sidebar_stories())
+  } else if (button_value_2 == "studies"){
+    return(draw_sidebar_studies())
+  } else if (button_value_2 == "monitor"){
+    return(draw_sidebar_monitor())
+  } else if (button_value_2 == "explorer"){
+    return(draw_sidebar_explorer(url))
+  }
+
+  return(draw_sidebar_home())
 }

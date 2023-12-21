@@ -4,20 +4,19 @@ box::use(
   ../../R/utils/utils[draw_under_construction],
   shiny[
     NS, moduleServer,
-    fluidPage, h2,
-    icon, div, p
+    fluidPage, tagList, h2, div
   ]
 )
 
 #' Missing description
 #' @export
 
-module_datensaetze_ui <- function(id = "datensaetze", label = "m_datensaetze") {
+module_karten_ui <- function(id = "karten", label = "m_karten") {
   ns <- NS(id)
   fluidPage(
     div(
       class = "panel-content",
-      h2("Datensätze"),
+      h2("Karten"),
       draw_under_construction()
     )
   )
