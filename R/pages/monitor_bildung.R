@@ -1,8 +1,5 @@
 
 box::use(
-
-  # sources
-
   ../../R/utils/monitor_content[
     create_collapsible_panel,
     create_link_with_svg,
@@ -10,8 +7,8 @@ box::use(
   ],
   ../../R/utils/monitor_content[
     get_content_monitor_bildung,
-    monitor_indicator_main_content_server,
-    monitor_indicator_main_content_ui
+    monitor_bildung_box_server,
+    monitor_bildung_box_ui
   ],
   purrr[map, map2],
   shiny[
@@ -48,8 +45,10 @@ box::use(
   shiny.router[get_query_param, get_page, change_page],
   shinyWidgets[
     pickerInput,
-    updatePickerInput
-  ]
+    updatePickerInput,
+    radioGroupButtons
+  ],
+  shinycssloaders[withSpinner]
 )
 
 content_monitor <- get_content_monitor_bildung()
@@ -60,12 +59,16 @@ module_monitor_bildung_ui <- function(id = "monitor_bildung", label = "m_monitor
   ns <- NS(id)
   fluidPage(
     tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = paste0("monitor_styles.css?version=", Sys.time()))
+      tags$link(
+        rel = "stylesheet",
+        type = "text/css",
+        href = paste0("monitor_styles.css?version=", Sys.time())
+      )
     ),
     fluidPage(
       div(
         class = "panel-content",
-        uiOutput(ns("monitor_content"))
+        withSpinner(uiOutput(ns("monitor_content")))
       )
     )
   )
@@ -80,6 +83,24 @@ module_monitor_bildung_server <- function(id = "monitor_bildung", con) {
       ns <- session$ns
 
       current <- reactiveValues(content = NULL)
+
+      observeEvent(
+        input$back_button,{
+          current$content <- NULL
+          change_page("monitor?hf=1")
+        }
+      )
+
+      observeEvent(
+        input$switch_fragen_indikatoren_ziele, {
+          if (!is.null(current$content)){
+            output$list_fragen_indikatoren <-
+              renderUI({
+                draw_fragen_ziele_indikatoren(current$content, input$switch_fragen_indikatoren_ziele)
+              })
+          }
+        }
+      )
 
       observeEvent(
         get_query_param(), {
@@ -100,13 +121,20 @@ module_monitor_bildung_server <- function(id = "monitor_bildung", con) {
         }
       )
 
-      output$monitor_content <- renderUI({draw_content(current$content, con = con)})
+      output$monitor_content <- renderUI({draw_content(current$content, con = con, ns = ns)})
+
+      observeEvent(
+        input$gliederungsauswahlcontent1_in, {
+
+        }
+      )
+
     }
   )
 }
 
 
-draw_content <- function(content, con){
+draw_content <- function(content, con, ns){
 
   if (is.null(content)) return(HTML(""))
 
@@ -143,21 +171,21 @@ draw_content <- function(content, con){
         width = 3,
         fluidRow(
           class = "back_button_row",
-          actionButton("back_button", label = HTML("Zurück<br>zur Übersicht"))
+          actionButton(ns("back_button"), label = HTML("Zurück<br>zur Übersicht"))
         ),
         fluidRow(
           width = 12,
           div(
             class = "fragen-indikatoren-ziele-box monitor-sidbar-row",
             div(
-              shinyWidgets::radioGroupButtons(
-                "switch_fragen_indikatoren_ziele",
+              radioGroupButtons(
+                ns("switch_fragen_indikatoren_ziele"),
                 "",
                 choices = c("Fragen", "Ziele", "Indikatoren"),
                 justified = TRUE
               )
             ),
-            uiOutput("list_fragen_indikatoren")
+            uiOutput(ns("list_fragen_indikatoren"))
           )
         ),
         create_collapsible_panel("Aktivitäten des Stifterverbandes", content[["Aktivitaeten_Link"]], content[["Aktivitaeten"]], "aktivitaeten-box"),
@@ -211,8 +239,8 @@ draw_content <- function(content, con){
                   br(),
                   div(
                     class = "real-content",
-                    monitor_indicator_main_content_ui(paste0("content", .), load_table_by_variable_monitor(138, con), con),
-                    monitor_indicator_main_content_server(paste0("content", .), load_table_by_variable_monitor(138, con), con)
+                    monitor_bildung_box_ui(paste0("content", .), load_table_by_variable_monitor(138, con), con, ns)#,
+                    #monitor_bildung_box_server(paste0("content", .), load_table_by_variable_monitor(138, con), con)
                   ),
                   br(),
                   div(
@@ -225,6 +253,37 @@ draw_content <- function(content, con){
           )
         )
       )
+    )
+  )
+}
+
+draw_fragen_ziele_indikatoren <- function(content, input){
+  tags$ul(
+    map2(
+      unlist(content["ID"]),
+      unlist(content[input]),
+      ~ tags$li(
+        tags$a(
+          class = "link",
+          href = paste0("#", .x),
+          .y,
+          draw_svg_arrow()
+        )
+      )
+    )
+  )
+}
+
+draw_svg_arrow <- function(){
+  tags$svg(
+    class = "link__arrow",
+    width = "10",
+    height = "14",
+    viewBox = "0 0 10 14",
+    `xmlns` = "http://www.w3.org/2000/svg",
+    tags$path(
+      class = "link__arrow-path",
+      d = "M2.55058 14L0.854004 12.3497L6.4527 6.99767L0.854004 1.65025L2.55058 0L9.84645 6.99767L2.55058 14Z"
     )
   )
 }

@@ -27,23 +27,26 @@ box::use(
 #' Missing description
 #' @noRd
 
-monitor_indicator_main_content_ui <- function(id, var_table, con = con) {
-  ns <- NS(id)
+monitor_bildung_box_ui <- function(id, var_table, con = con, ns) {
 
-  auswahlmoeglichkeiten <- setdiff(unique(colnames(var_table$daten)), c("id", "variable", "Jahr", "Wert", "Messeinheit"))
+  auswahlmoeglichkeiten <-
+    setdiff(
+      unique(colnames(var_table$daten)),
+      c("id", "variable", "Jahr", "Wert", "Messeinheit")
+    )
 
   fluidPage(
     column(
       width = 3,
       selectInput(
-        inputId = ns("gliederungsauswahl1_in"),
+        inputId = ns(sprintf("gliederungsauswahl%s_in", id)),
         label = "Bitte wählen Sie eine Gliederungsebene",
         choices = c("---", auswahlmoeglichkeiten)
       ),
       conditionalPanel(
-        condition = "input.gliederungsauswahl1_in != '---'", ns = ns,
+        condition = sprintf("input.gliederungsauswahl%s_in != '---'", id), ns = ns,
         pickerInput(
-          inputId = ns("kategorieauswahl1_in"),
+          inputId = ns(sprintf("kategorieauswahl%s_in", id)),
           label = "Bitte wählen Sie, welche Daten Ihnen angezeigt werden sollen",
           choices = "---",
           options  = list(
@@ -57,25 +60,25 @@ monitor_indicator_main_content_ui <- function(id, var_table, con = con) {
         )
       ),
       radioButtons(
-        inputId = ns("darstellungsweise1_in"),
-        label = "Darstellungsweise:",
-        choices = c("Zeitverlauf", "Tabelle"),
+        inputId  = ns(sprintf("darstellungsweise%s_in", id)),
+        label    = "Darstellungsweise:",
+        choices  = c("Zeitverlauf", "Tabelle"),
         selected = "Zeitverlauf"
       )
     ),
     column(
       width = 9,
       conditionalPanel(
-        condition = "input.darstellungsweise1_in == 'Karte'", ns = ns,
+        condition = sprintf("input.darstellungsweise%s_in == 'Karte'", id), ns = ns,
         numericInput(
-          inputId = ns("karte1_jahr_in"),
+          inputId = ns(sprintf("karte%s_jahr_in", id)),
           label   = "Jahr:",
           value   = max(var_table$daten$Jahr),
           min     = min(var_table$daten$Jahr),
           max     = max(var_table$daten$Jahr)
         )
       ),
-      uiOutput(ns("output_list"))
+      uiOutput(ns(sprintf("output_list_%s", id)))
     )
   )
 }
@@ -83,7 +86,7 @@ monitor_indicator_main_content_ui <- function(id, var_table, con = con) {
 #' Missing description
 #' @noRd
 
-monitor_indicator_main_content_server <- function(id, var_table, con = con) {
+monitor_bildung_box_server <- function(id, var_table, con = con) {
   moduleServer(id, function(input, output, session) {
 
     # reactives
@@ -548,22 +551,22 @@ get_content_monitor_bildung <- function(){
         "ganztag_lage"
       ),
       "Indikator_Inhalt_UI" = c(
-        function() monitor_indicator_main_content_ui("ganztag_quantitativ", var_table = load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("ganztag_vielfalt", var_table =load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("ganztag_kooperation", var_table =load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("ganztag_sozial", var_table =load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("ganztag_multiprofessionel", var_table =load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("ganztag_digital", var_table =load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("ganztag_lage", var_table = load_table_by_variable_monitor(138))
+        function() monitor_bildung_box_ui("ganztag_quantitativ", var_table = load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("ganztag_vielfalt", var_table =load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("ganztag_kooperation", var_table =load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("ganztag_sozial", var_table =load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("ganztag_multiprofessionel", var_table =load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("ganztag_digital", var_table =load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("ganztag_lage", var_table = load_table_by_variable_monitor(138))
       ),
       "Indikator_Inhalt_Server" = c(
-        function() monitor_indicator_main_content_server("ganztag_quantitativ", load_table_by_variable_monitor(138, con = con)),
-        function() monitor_indicator_main_content_server("ganztag_vielfalt", load_table_by_variable_monitor(122, con = con)),
-        function() monitor_indicator_main_content_server("ganztag_kooperation", load_table_by_variable_monitor(138, con = con)),
-        function() monitor_indicator_main_content_server("ganztag_sozial", load_table_by_variable_monitor(138, con = con)),
-        function() monitor_indicator_main_content_server("ganztag_multiprofessionel", load_table_by_variable_monitor(138, con = con)),
-        function() monitor_indicator_main_content_server("ganztag_digital", load_table_by_variable_monitor(138, con = con)),
-        function() monitor_indicator_main_content_server("ganztag_lage", load_table_by_variable_monitor(138, con = con))
+        function() monitor_bildung_box_server("ganztag_quantitativ", load_table_by_variable_monitor(138, con = con)),
+        function() monitor_bildung_box_server("ganztag_vielfalt", load_table_by_variable_monitor(122, con = con)),
+        function() monitor_bildung_box_server("ganztag_kooperation", load_table_by_variable_monitor(138, con = con)),
+        function() monitor_bildung_box_server("ganztag_sozial", load_table_by_variable_monitor(138, con = con)),
+        function() monitor_bildung_box_server("ganztag_multiprofessionel", load_table_by_variable_monitor(138, con = con)),
+        function() monitor_bildung_box_server("ganztag_digital", load_table_by_variable_monitor(138, con = con)),
+        function() monitor_bildung_box_server("ganztag_lage", load_table_by_variable_monitor(138, con = con))
       ),
       "Ueberschriften" = c(
         "Ausbau der Ganztagsangebote",
@@ -653,22 +656,22 @@ get_content_monitor_bildung <- function(){
         "bo7"
       ),
       "Indikator_Inhalt_UI" = c(
-        function() monitor_indicator_main_content_ui("bo1", var_table = load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("bo2", var_table =load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("bo3", var_table =load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("bo4", var_table =load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("bo5", var_table =load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("bo6", var_table =load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_ui("bo7", var_table = load_table_by_variable_monitor(138))
+        function() monitor_bildung_box_ui("1", var_table = load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("2", var_table = load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("3", var_table = load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("4", var_table = load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("5", var_table = load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("6", var_table = load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_ui("7", var_table = load_table_by_variable_monitor(138))
       ),
       "Indikator_Inhalt_Server" = c(
-        function() monitor_indicator_main_content_server("bo1", load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_server("bo2", load_table_by_variable_monitor(122)),
-        function() monitor_indicator_main_content_server("bo3", load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_server("bo4", load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_server("bo5", load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_server("bo6", load_table_by_variable_monitor(138)),
-        function() monitor_indicator_main_content_server("bo7", load_table_by_variable_monitor(138))
+        function() monitor_bildung_box_server("1", load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_server("2", load_table_by_variable_monitor(122)),
+        function() monitor_bildung_box_server("3", load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_server("4", load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_server("5", load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_server("6", load_table_by_variable_monitor(138)),
+        function() monitor_bildung_box_server("7", load_table_by_variable_monitor(138))
       ),
       "Ueberschriften" = c(
         "Ausbau der Ganztagsangebote",
@@ -745,3 +748,5 @@ get_content_monitor_bildung <- function(){
     )
   )
 }
+
+

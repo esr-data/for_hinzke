@@ -10,7 +10,6 @@ box::use(
   ../../R/pages/studies[module_studies_server],
   ../../R/pages/stories[module_stories_server],
   ../../R/pages/monitor_bildung[module_monitor_bildung_server],
-  ../../R/utils/monitor_content[get_content_monitor_bildung],
   ../../R/build/sidebar[
     draw_sidebar_home,
     draw_sidebar_stories,
