@@ -22,57 +22,55 @@ box::use(
 
 module_indikator_ui <- function(id = "indikator", label = "m_indikator", type = "all") {
   ns <- NS(id)
-  tagList(
-    fluidPage(
-      div(
-        class = "panel-content",
-        h2("Explorer - Auswahl an Indikatoren"),
-        fluidRow(
-          style = "padding: 10px; display: flex; margin: 0;",
+  fluidPage(
+    div(
+      class = "panel-content",
+      h2("Explorer - Auswahl an Indikatoren"),
+      fluidRow(
+        style = "padding: 10px; display: flex; margin: 0;",
+        div(
+          class = "content-box",
+          style = "width: 100%;",
           div(
-            class = "content-box",
-            style = "width: 100%;",
-            div(
-              style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
-              pickerInput(
-                inputId = ns("select_variable"),
-                label = "Liste der Variablen",
-                choices = c(""),
-                options  = list(
-                  `actions-box`        = FALSE,
-                  `none-selected-text` = "nichts ausgewählt",
-                  `select-all-text`    = "alle auswählen",
-                  `deselect-all-text`  = "nichts auswählen",
-                  `live-search`        = TRUE,
-                  `max-options`        = 1
-                ),
-                multiple = TRUE
+            style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
+            pickerInput(
+              inputId = ns("select_variable"),
+              label = "Liste der Variablen",
+              choices = c(""),
+              options  = list(
+                `actions-box`        = FALSE,
+                `none-selected-text` = "nichts ausgewählt",
+                `select-all-text`    = "alle auswählen",
+                `deselect-all-text`  = "nichts auswählen",
+                `live-search`        = TRUE,
+                `max-options`        = 1
               ),
-              pickerInput(
-                inputId = ns("select_tag"),
-                label = "Themenbereiche",
-                choices = c(""),
-                options  = list(
-                  `actions-box`        = TRUE,
-                  `none-selected-text` = "nichts ausgewählt",
-                  `select-all-text`    = "alle auswählen",
-                  `deselect-all-text`  = "nichts auswählen",
-                  `live-search`        = TRUE
-                ),
-                multiple = TRUE
-              )
+              multiple = TRUE
             ),
-            uiOutput(ns("variable")),
-            div(
-              style = "display: flex; flex-wrap: wrap;",
-              div(uiOutput(ns("select_reichweite")), style = "max-width: 650px; width: 80%;"),
-              div(uiOutput(ns("filter_reichweite"),  style = "max-width: 250px; width: 100%"))
+            pickerInput(
+              inputId = ns("select_tag"),
+              label = "Themenbereiche",
+              choices = c(""),
+              options  = list(
+                `actions-box`        = TRUE,
+                `none-selected-text` = "nichts ausgewählt",
+                `select-all-text`    = "alle auswählen",
+                `deselect-all-text`  = "nichts auswählen",
+                `live-search`        = TRUE
+              ),
+              multiple = TRUE
             )
-
+          ),
+          uiOutput(ns("variable")),
+          div(
+            style = "display: flex; flex-wrap: wrap;",
+            div(uiOutput(ns("select_reichweite")), style = "max-width: 650px; width: 80%;"),
+            div(uiOutput(ns("filter_reichweite"),  style = "max-width: 250px; width: 100%"))
           )
-        ),
-        withSpinner(reactableOutput(ns("table")))
-      )
+
+        )
+      ),
+      withSpinner(reactableOutput(ns("table")))
     )
   )
 }

@@ -6,8 +6,6 @@ box::use(
     fluidPage, tagList, titlePanel,
     div, tags, HTML,
     uiOutput, renderUI,
-    verbatimTextOutput,
-    reactive, observe,
     renderPrint, req
   ],
   shiny.router[change_page],
@@ -16,7 +14,7 @@ box::use(
 #' Missing description
 #' @export
 
-module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all") {
+module_monitor_ui <- function(id = "monitor", label = "m_monitor") {
   ns <- NS(id)
   tagList(
     fluidPage(
@@ -25,19 +23,10 @@ module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all")
         titlePanel(paste("Monitor", "!")),
         div(
           id = ns("mon"),
-          uiOutput(ns("monitor_svg")),
-          # verbatimTextOutput(ns("debug"))
+          uiOutput(ns("monitor_svg"))
         ),
         tags$script(
-          HTML(
-            "
-            shinyjs.init = function() {
-              $('body').on('click', '.side_circle', function(ev) {
-                Shiny.setInputValue('monitor-mon', ev.target.id, {priority: 'event'});
-              });
-            };
-          "
-          )
+          HTML(paste(readLines("js/monitor_svg_click.js"), collapse = " "))
         )
       )
     )
@@ -48,25 +37,18 @@ module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all")
 #' Missing description
 #' @export
 
-module_monitor_server <- function(id = "monitor", con, type = "all", mon_value) {
+module_monitor_server <- function(id = "monitor", con) {
   moduleServer(
     id,
     function(input, output, session) {
       ns <- session$ns
-
       output$monitor_svg <- renderUI({HTML(readLines("www/img/Test_Monitor.svg"))})
-
       observeEvent(
         input$mon, {
-          if (!is.null(input$mon)){
-            mon_value(input$mon)
-            # print(paste0("monitor_bildung_inhalt?tp=", gsub("circle_", "", input$mon)))
-            change_page(paste0("monitor_bildung_inhalt?tp=", gsub("circle_", "", input$mon)))
-            # output$debug <- renderPrint(sub("circle_", "", input$mon))
-          }
+          new_url <- paste0("monitor_bildung?hf=1&tp=", gsub("circle_", "", input$mon))
+          change_page(new_url)
         }
       )
-
     }
   )
 }

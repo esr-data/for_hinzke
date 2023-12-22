@@ -9,7 +9,8 @@ box::use(
   ../../R/pages/monitor[module_monitor_server],
   ../../R/pages/studies[module_studies_server],
   ../../R/pages/stories[module_stories_server],
-  ../../R/pages/monitor_subject[module_monitor_subject_server],
+  ../../R/pages/monitor_bildung[module_monitor_bildung_server],
+  ../../R/utils/monitor_content[get_content_monitor_bildung],
   ../../R/build/sidebar[
     draw_sidebar_home,
     draw_sidebar_stories,
@@ -18,14 +19,9 @@ box::use(
     draw_sidebar_explorer
   ],
   ../../R/utils/tutorial[plan_tutorial_tour],
-  ../../R/utils/monitor_content[get_content_monitor_bildung],
-  reactlog[
-    reactlog_enable
-  ],
   shiny[
     observeEvent, observe,
     isolate,
-    reactiveVal,
     reactiveValues,
     reactiveVal,
     reactive,
@@ -251,14 +247,13 @@ server <- function(input, output, session) {
   # --- Server der Shiny-Modules -------------------------------------------------------------------
 
   module_explorer_server()
-  module_monitor_server(mon_value = mon_value)
-  module_monitor_subject_server(con = con, mon_value = mon_value, content_list_monitor_subpage_structure = content_list_monitor_subpage_structure)
   module_indikator_server(con = con)
   module_suchen_server(con = con)
   module_home_server(con = con)
   module_studies_server()
   module_stories_server()
-
+  module_monitor_server()
+  module_monitor_bildung_server(con = con)
 }
 
 #' Missing description
@@ -400,6 +395,10 @@ get_button_values_from_url <- function(url){
 
   if (value_2 %in% explorer_subpages$url){
     value_2 <- "explorer"
+  }
+
+  if (value_2 %in% c("monitor", "monitor_bildung")){
+    value_2 <- "monitor"
   }
 
   return(c(value_1, value_2))

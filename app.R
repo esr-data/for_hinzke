@@ -1,7 +1,5 @@
 # options(shiny.reactlog = TRUE)
 
-# options(shiny.reactlog = TRUE)
-
 # App starten
 rm(list = ls())
 box::purge_cache()
