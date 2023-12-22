@@ -26,7 +26,7 @@ module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all")
         div(
           id = ns("mon"),
           uiOutput(ns("monitor_svg")),
-          verbatimTextOutput(ns("debug"))
+          # verbatimTextOutput(ns("debug"))
         ),
         tags$script(
           HTML(
@@ -48,7 +48,7 @@ module_monitor_ui <- function(id = "monitor", label = "m_monitor", type = "all")
 #' Missing description
 #' @export
 
-module_monitor_server <- function(id = "monitor", con, type = "all") {
+module_monitor_server <- function(id = "monitor", con, type = "all", mon_value) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -59,9 +59,10 @@ module_monitor_server <- function(id = "monitor", con, type = "all") {
       observeEvent(
         input$mon, {
           if (!is.null(input$mon)){
-            print(paste0("monitor_bildung_inhalt?tp=", gsub("circle_", "", input$mon)))
+            mon_value(input$mon)
+            # print(paste0("monitor_bildung_inhalt?tp=", gsub("circle_", "", input$mon)))
             change_page(paste0("monitor_bildung_inhalt?tp=", gsub("circle_", "", input$mon)))
-            output$debug <- renderPrint(sub("circle_", "", input$mon))
+            # output$debug <- renderPrint(sub("circle_", "", input$mon))
           }
         }
       )

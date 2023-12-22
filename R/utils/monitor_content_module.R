@@ -20,147 +20,46 @@
 # source("test_data.R")
 # content_list_monitor_subpage_structure <- content_list_monitor_subpages_structure_full[["bildung_ganztag"]]
 
-Farben <- svVis::give_color_set("SV")
+box::use(
 
-#' Missing description
-#' @noRd
-#'
-load_table_by_variable_monitor <- function(variable){
+  # sources
 
-  # browser()
+  ../../R/utils/monitor_content[
+    load_table_by_variable_monitor,
+    create_link_with_svg
+  ],
 
-  daten <-
-    dbGetQuery(
-      con,
-      sprintf(
-        "SELECT daten.id, variable.beschr as variable, jahr, wert, wert_einheit.beschr as einheit
-         FROM daten
-         LEFT JOIN wert_einheit ON daten.wert_einheit_id = wert_einheit.id
-         LEFT JOIN variable     ON daten.variable_id = variable.id
-         WHERE variable_id = %s",
-        variable
-      )
-    )
+  # packages
 
-  reichweite <-
-    "SELECT reichweite.id as id, reichweite.beschr as reichweite, rtyp.beschr as reichweite_typ, rklasse.beschr as reichweite_klasse
-     FROM reichweite
-     LEFT JOIN reichweite_typ rtyp ON reichweite.reichweite_typ_id = rtyp.id
-     LEFT JOIN reichweite_klasse rklasse ON rtyp.reichweite_klasse_id = rklasse.id
-     WHERE reichweite.id IN (SELECT reichweite_id FROM daten_reichweite WHERE daten_id IN (SELECT id FROM daten WHERE variable_id = %s))" |>
-    sprintf(variable) |>
-    dbGetQuery(conn = con)
-
-  daten_reichweite <-
-    dbGetQuery(
-      con,
-      sprintf(
-        "SELECT daten_id, reichweite_id
-         FROM daten_reichweite
-         WHERE daten_id IN (SELECT id FROM daten WHERE variable_id = %s)",
-        variable
-      )
-    )
-
-  reichweite$gruppe <-
-    ifelse(
-      reichweite$reichweite_klasse == "Räumliche Gebiete",
-      reichweite$reichweite_klasse,
-      reichweite$reichweite_typ
-    )
-
-  daten[,unique(reichweite$gruppe)] <- NA
-
-  for (i in 1:nrow(daten)){
-    x <- daten_reichweite[daten_reichweite$daten_id == daten$id[i],]
-    for (j in 1:nrow(x)){
-      k <- reichweite$id == x$reichweite_id[j]
-      l <- c(daten[i, reichweite$gruppe[k]], reichweite$reichweite[k])
-      l <- l[!is.na(l)]
-      daten[i, reichweite$gruppe[k]] <- paste(l, collapse = ", ")
-    }
-  }
-
-  for (i in unique(reichweite$gruppe)){
-    daten[,i] <- ifelse(is.na(daten[,i]), "Insgesamt", daten[,i])
-  }
-
-  names(daten) <- gsub("jahr", "Zeit", names(daten))
-
-  # daten <- daten %>%
-  #   tidyr::pivot_longer(
-  #     cols = c(everything(), - c(id, variable, Zeit, wert, einheit)),
-  #     names_to = "Gliederung",
-  #     values_to = "Kategorie"
-  #   ) %>%
-  #   dplyr::filter(!is.na(Kategorie)) %>%
-  #   dplyr::select(- id)
-
-  daten <- rename(daten, "Jahr" = Zeit, "Wert" = wert, "Messeinheit" = einheit)
-
-  return(list(daten = daten, gruppe = unique(reichweite$gruppe)))
-}
+  DT[
+    renderDataTable
+  ],
+  shiny[
+    column,
+    conditionalPanel,
+    fluidPage,
+    moduleServer,
+    numericInput,
+    NS,
+    observe,
+    observeEvent,
+    radioButtons,
+    reactive,
+    renderUI,
+    req,
+    selectInput,
+    uiOutput,
+  ],
+  shinyWidgets[
+    pickerInput,
+    updatePickerInput
+  ]
+)
 
 #' Missing description
 #' @noRd
 
-manage_explorer_data_monitor <- function(werte, gruppe = NULL, unterscheiden = NULL, filtern = NULL){
-
-  # browser()
-
-  unterscheiden_string <- deparse(substitute(unterscheiden))
-
-  if (nrow(werte) < 1) return(NULL)
-
-  if (is.null(gruppe)){
-    gruppe <- c()
-  }
-
-  neue_gruppe <- gruppe
-  if (is.null(unterscheiden)){
-    unterscheiden <- c()
-  }
-
-  nicht_unterscheiden <- gruppe[!(gruppe %in% unterscheiden)]
-
-  if (!is.null(filtern)){
-    if (nrow(filtern) > 0){
-      for (i in unique(filtern$type)){
-        werte <- werte[werte[,match(i, names(werte))] %in% filtern[filtern$type == i,"werte"],]
-      }
-    }
-  }
-
-  for (i in nicht_unterscheiden){
-    if ("Insgesamt" %in% werte[,i]) {
-      werte <- werte[werte[,i] == "Insgesamt", names(werte) != i]
-    } else if ("Deutschland" %in% werte[,i]) {
-      werte <- werte[werte[,i] == "Deutschland", names(werte) != i]
-    } else {
-      x <- table(werte[,i])
-      x <- (names(x)[max(x) == x])[1]
-      werte <- werte[werte[,i] == x, names(werte) != i]
-      rm(x)
-    }
-  }
-
-  # if (!("Zeit" %in% unterscheiden)){
-  #   werte <- werte[werte$Zeit == max(werte$Zeit),]
-  # }
-
-  names(werte)[names(werte) == "einheit"] <- "Messeinheit"
-  names(werte)[names(werte) == "wert"] <- "Wert"
-  names(werte)[names(werte) == "Zeit"] <- "Jahr"
-  werte$Wert <- as.numeric(werte$Wert)
-
-  neue_gruppe <- gruppe[!(gruppe %in% nicht_unterscheiden)]
-  return(werte[,c("Jahr", "Wert", "Messeinheit", neue_gruppe)])
-}
-
-#' Missing description
-#' @noRd
-
-monitor_indicator_main_content_ui <- function(id, var_table) {
+monitor_indicator_main_content_ui <- function(id, var_table, con = con) {
   ns <- NS(id)
 
   auswahlmoeglichkeiten <- setdiff(unique(colnames(var_table$daten)), c("id", "variable", "Jahr", "Wert", "Messeinheit"))
@@ -216,7 +115,7 @@ monitor_indicator_main_content_ui <- function(id, var_table) {
 #' Missing description
 #' @noRd
 
-monitor_indicator_main_content_server <- function(id, var_table) {
+monitor_indicator_main_content_server <- function(id, var_table, con = con) {
   moduleServer(id, function(input, output, session) {
 
     # reactives
@@ -261,76 +160,74 @@ monitor_indicator_main_content_server <- function(id, var_table) {
 
     # observes
 
-observeEvent(input$gliederungsauswahl1_in, {
-  req(input$gliederungsauswahl1_in != "---")  # Überprüfen, ob gliederungsauswahl1_in nicht "---" ist
+    observeEvent(input$gliederungsauswahl1_in, {
+      req(input$gliederungsauswahl1_in != "---")
+      req(input$gliederungsauswahl1_in %in% colnames(filtered_data_gliederung()))
+      unique_values <- unique(filtered_data_gliederung()[[input$gliederungsauswahl1_in]])
+      selected_values <- NULL
 
-  req(input$gliederungsauswahl1_in %in% colnames(filtered_data_gliederung()))  # Stellen Sie sicher, dass gliederungsauswahl1_in in den Spaltennamen vorhanden ist
+      if(length(unique_values) < 6) {
+        selected_values <- unique_values
+      } else {
+        if (input$gliederungsauswahl1_in == "Räumliche Gebiete") {
+          selected_values <- c("Deutschland", "Bayern", "Baden-Württemberg", "Nordrhein-Westfalen")
+        } else {
+          selected_values <- unique_values[1:5]
+        }
+      }
 
-  unique_values <- unique(filtered_data_gliederung()[[input$gliederungsauswahl1_in]])
-  selected_values <- NULL
+      updatePickerInput(
+        session = session,
+        inputId = "kategorieauswahl1_in",
+        choices = unique_values,
+        selected = selected_values
+      )
+   })
 
-  if(length(unique_values) < 6) {
-    selected_values <- unique_values
-  } else {
-    if(input$gliederungsauswahl1_in == "Räumliche Gebiete") {
-      selected_values <- c("Deutschland", "Bayern", "Baden-Württemberg", "Nordrhein-Westfalen")
-    } else {
-      selected_values <- unique_values[1:5]
-    }
-  }
+   observe({
+     req(input$gliederungsauswahl1_in)
 
-  updatePickerInput(
-    session = session,
-    inputId = "kategorieauswahl1_in",
-    choices = unique_values,
-    selected = selected_values
-  )
-})
+     if (input$gliederungsauswahl1_in == "Räumliche Gebiete") {
+       updateRadioButtons(
+         session = session,
+         inputId = "darstellungsweise1_in",
+         choices = c("Zeitverlauf", "Tabelle", "Karte"),
+         selected = input$darstellungsweise1_in
+       )
+     } else {
+       updateRadioButtons(
+         session = session,
+         inputId = "darstellungsweise1_in",
+         choices = c("Zeitverlauf", "Tabelle"),
+         selected = ifelse(
+           input$darstellungsweise1_in != "Karte",
+           input$darstellungsweise1_in,
+           "Zeitverlauf")
+       )
+     }
+   })
 
-observe({
-  req(input$gliederungsauswahl1_in)  # Stellen Sie sicher, dass gliederungsauswahl1_in vorhanden ist
+   observe({
+     req(input$darstellungsweise1_in)
 
-  if (input$gliederungsauswahl1_in == "Räumliche Gebiete") {
-    updateRadioButtons(
-      session = session,
-      inputId = "darstellungsweise1_in",
-      choices = c("Zeitverlauf", "Tabelle", "Karte"),
-      selected = input$darstellungsweise1_in
-    )
-  } else {
-    updateRadioButtons(
-      session = session,
-      inputId = "darstellungsweise1_in",
-      choices = c("Zeitverlauf", "Tabelle"),
-      selected = ifelse(
-        input$darstellungsweise1_in != "Karte",
-        input$darstellungsweise1_in,
-        "Zeitverlauf")
-    )
-  }
-})
-
-observe({
-  req(input$darstellungsweise1_in)  # Stellen Sie sicher, dass darstellungsweise1_in vorhanden ist
-
-  if (input$darstellungsweise1_in == "Karte") {
-    updateNumericInput(
-      session = session,
-      inputId = "karte1_jahr_in",
-      value = max(filtered_data_gliederung_kategorie()$Jahr),
-      min = min(filtered_data_gliederung_kategorie()$Jahr),
-      max = max(filtered_data_gliederung_kategorie()$Jahr)
-    )
-  } else {
-    updateNumericInput(
-      session = session,
-      inputId = "karte1_jahr_in",
-      value = NULL,
-      min = NULL,
-      max = NULL
-    )
-  }
-})
+     if (input$darstellungsweise1_in == "Karte") {
+       updateNumericInput(
+         session = session,
+         inputId = "karte1_jahr_in",
+         value = max(filtered_data_gliederung_kategorie()$Jahr),
+         min = min(filtered_data_gliederung_kategorie()$Jahr),
+         max = max(filtered_data_gliederung_kategorie()$Jahr)
+       )
+     } else {
+       updateNumericInput(
+         session = session,
+         inputId = "karte1_jahr_in",
+         value = NULL,
+         min = NULL,
+         max = NULL
+       )
+     }
+   })
 
     # outputs
 
