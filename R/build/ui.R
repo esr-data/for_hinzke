@@ -30,7 +30,6 @@ box::use(
   cicerone[use_cicerone]
 )
 
-
 #' Missing description
 #' @export
 
@@ -66,6 +65,7 @@ draw_ui <- function(){
           route("/",                      module_home_ui()),
           route("stories",                module_stories_ui()),
           route("monitor",                module_monitor_ui()),
+          route("monitor_bildung_inhalt", module_monitor_subject_ui()),
           route("explorer",               module_explorer_ui()),
           route("indikator",              module_indikator_ui()),
           route("suchen",                 module_suchen_ui()),
@@ -74,7 +74,6 @@ draw_ui <- function(){
           route("studies",                module_studies_ui()),
           route("handlung1",              module_handlung_1_ui()),
           route("handlung2",              module_handlung_2_ui()),
-          route("monitor_bildung_inhalt", module_monitor_bildung_inhalt_ui()),
           route("impressum",              module_impressum_ui()),
           route("datenschutz",            module_datenschutz_ui()),
           route("team",                   module_team_ui()),
