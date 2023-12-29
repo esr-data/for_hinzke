@@ -16,7 +16,7 @@ box::use(
   ../../R/pages/datenschutz[module_datenschutz_ui],
   ../../R/pages/team[module_team_ui],
   ../../R/pages/karten[module_karten_ui],
-  ../../R/pages/monitor_bildung[module_monitor_bildung_ui],
+  ../../R/pages/monitor_inhalt[module_monitor_inhalt_ui],
   shiny[
     NS, moduleServer, observeEvent,
     fluidPage, tagList, tags, HTML,
@@ -62,22 +62,22 @@ draw_ui <- function(){
       div(
         id  = "content-body",
         router_ui(
-          route("/",                      module_home_ui()),
-          route("stories",                module_stories_ui()),
-          route("monitor",                module_monitor_ui()),
-          route("monitor_bildung", module_monitor_bildung_ui()),
-          route("explorer",        module_explorer_ui()),
-          route("indikator",       module_indikator_ui()),
-          route("suchen",                 module_suchen_ui()),
-          route("vergleichen",            module_vergleichen_ui()),
-          route("datensaetze",            module_datensaetze_ui()),
-          route("studies",                module_studies_ui()),
-          route("handlung1",              module_handlung_1_ui()),
-          route("handlung2",              module_handlung_2_ui()),
-          route("impressum",              module_impressum_ui()),
-          route("datenschutz",            module_datenschutz_ui()),
-          route("team",                   module_team_ui()),
-          route("karten",                 module_karten_ui())
+          route("/",              module_home_ui()),
+          route("stories",        module_stories_ui()),
+          route("monitor",        module_monitor_ui()),
+          route("monitor_inhalt", module_monitor_inhalt_ui()),
+          route("explorer",       module_explorer_ui()),
+          route("indikator",      module_indikator_ui()),
+          route("suchen",         module_suchen_ui()),
+          route("vergleichen",    module_vergleichen_ui()),
+          route("datensaetze",    module_datensaetze_ui()),
+          route("studies",        module_studies_ui()),
+          route("handlung1",      module_handlung_1_ui()),
+          route("handlung2",      module_handlung_2_ui()),
+          route("impressum",      module_impressum_ui()),
+          route("datenschutz",    module_datenschutz_ui()),
+          route("team",           module_team_ui()),
+          route("karten",         module_karten_ui())
         )
       )
     ),
@@ -94,9 +94,6 @@ navigation_bar <-
     windowTitle = "SV dataVerse",
     id          = "navigation_bar",
     selected    = "SV Data",
-    # tabPanel("SV Data",    icon = icon("chart-simple")),
-    # tabPanel("Handlung 1", icon = icon("graduation-cap")),
-    # tabPanel("Handlung 2", icon = icon("lightbulb")),
     fluid       = TRUE,
     collapsible = TRUE
   )

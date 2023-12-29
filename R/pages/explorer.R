@@ -1,7 +1,7 @@
 #' Necessary Packages/Functions
 
 box::use(
-  ../../R/build/server[get_hf_param],
+  ../../R/utils/routing[get_hf_param],
   shiny[
     NS, moduleServer, observeEvent,
     fluidPage, tagList,

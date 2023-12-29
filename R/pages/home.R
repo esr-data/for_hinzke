@@ -1,6 +1,7 @@
 #' Necessary Packages/Functions
 
 box::use(
+  ../../R/utils/database[get_query],
   shiny[
     NS, moduleServer, observeEvent, observe,
     reactiveValues, reactiveValuesToList,
@@ -8,7 +9,6 @@ box::use(
     uiOutput, renderUI, HTML,
     actionButton
   ],
-  DBI[dbGetQuery],
   visNetwork[
     visNetwork, visNetworkProxy,
     renderVisNetwork, visNetworkOutput,
@@ -51,13 +51,13 @@ module_home_ui <- function(id = "home", label = "m_home") {
 #' Missing description
 #' @export
 
-module_home_server <- function(id = "home", con) {
+module_home_server <- function(id = "home") {
   moduleServer(
     id,
     function(input, output, session) {
       ns <- session$ns
 
-      network <- reactiveValues(data = get_network_data(con))
+      network <- reactiveValues(data = get_network_data())
 
       observeEvent(
         network, {
@@ -97,9 +97,9 @@ module_home_server <- function(id = "home", con) {
 
 #' Missing description
 #' @export
-get_network_data <- function(con){
+get_network_data <- function(){
 
-  tag <- dbGetQuery(con, "SELECT * FROM tag")
+  tag <- get_query("SELECT * FROM tag")
 
   #TODO Daten ergänzen; später auslagern!!
 
