@@ -1,0 +1,80 @@
+Titel: Ganztag als Bildungszeit
+ID: bildung_ganztag
+Untertitel: Wie steht es um den Ausbau der Ganztagsschule?
+Einfuehrungstext:
+    Ganztagsschulen können dazu beitragen, Bildungsungleichheiten zu
+    verringern, indem sie allen Kindern, unabhängig von ihrem familiären Hintergrund,
+    Zugang zu zusätzlichen Bildungsressourcen und Unterstützung bieten. Ganztagsschulen
+    ermöglichen eine bessere Vereinbarkeit von Beruf und Familie, da Eltern nicht für
+    die Betreuung ihrer Kinder am Nachmittag sorgen müssen. Zudem bieten sie Raum für
+    innovative pädagogische Konzepte, die über den traditionellen Unterricht hinausgehen
+    und die Persönlichkeitsentwicklung sowie soziale Kompetenzen der Schüler fördern.
+    Ganztagsangebote sind eine Chance Schule neu zu denken und auch andere gesellschaftliche
+    Akteure sinnstiftend einzubinden.
+
+Inhalt:
+  - ID:        ganztag_quantitativ
+    Titel:     Ausbau der Ganztagsangebote
+    Frage:     Schaffen wir quantitativ genügend Ganztagsangebote?
+    Ziel:      Schulen in Deutschland sind Ganztagsschulen
+    Indikator: Anteil der Ganztagsschulen in Deutschland
+  - ID:        ganztag_vielfalt
+    Titel:     Vielfalt der Ganztagsangebote
+    Frage:     Schaffen wir vielfältige Ganztagsangebote?
+    Ziel:      Ganztagsunterricht wird vielseitig gestaltet
+    Indikator: Vielfalt der Angebote im Rahmen der Ganztagsbetreuung
+  - ID:        ganztag_kooperation
+    Titel:     Kooperationen zwischen Schule und Zivilgesellschaft im Ganztag
+    Frage:     Schaffen wir Kooperationen zwischen Schule und Zivilgesellschaft?
+    Ziel:      Zivilgesellschaftlicher Akteure sind in den Ganztag eingebunden
+    Indikator: Einbindung zivilgesellschaftlicher Akteure
+  - ID:        ganztag_sozial
+    Titel:     Sozialer Ausgleich bei Ausbau der Ganztagsangebote
+    Frage:     Schaffen wir es Ganztagsschule sozial einzuführen?
+    Ziel:      Insbesondere in Schulen mit niedrigem Sozialindex sind zivilgesellschaftliche Akteure eingebunden
+    Indikator: Einbindung zivilgesellschaftlicher Akteure nach Sozialindex
+  - ID:        ganztag_multiprofessionel
+    Titel:     Multiprofessionele Teams an Schulen
+    Frage:     Schaffen wir es multiprofessionelle Teams in den Schulen zu verankern?
+    Ziel:      Multiprofessionelle Teams an Schulen
+    Indikator: Anteil Schulpersonal außerhalb der Lehrkräfte an Schulpersonal
+  - ID:        ganztag_digital
+    Titel:     IT-Infrastruktur an Schulen
+    Frage:     Schaffen wir die Voraussetzungen für digitale Bildungsangebote?
+    Ziel:      Schulen haben WLAN
+    Indikator: Anteil Schulen mit WLAN über 100 Mbit
+  - ID:        ganztag_lage
+    Titel:     Die Lage an den Schulen aus Sicht der Schulleitungen
+    Frage:     Schaffen wir es die wahrgenomme Lage an den Schulen zu verbessern?
+    Ziel:      Die Lage an Schulen wird als gut eingeschätzt
+    Indikator: Anteil Schulleitungen die Lage an ihrer Schule insgesamt als gut bezeichnen
+
+Aktivitaet:
+  - Label: 'Studie: Vereine, Stiftungen und Co - die neuen Bildungspartner?'
+    URL:   https://www.stifterverband.org/download/file/fid/6014
+  - Label: 'Studie: Hochschul-Bildungs-Report'
+    URL:   https://www.hochschulbildungsreport.de/sites/hsbr/files/hochschul-bildungs-report_abschlussbericht_2022.pdf
+  - Label: Das Programm von Bildung und Begabung
+    URL:   https://www.bildung-und-begabung.de/
+
+Datenbasis:
+  - Label: KMK Schulen in Ganztagsform
+    URL:   https://www.kmk.org/dokumentation-statistik/statistik/schulstatistik/allgemeinbildende-schulen-in-ganztagsform.html
+  - Label: Studie zur Entwicklung von Ganztagsschulen (SteG)
+    URL:   https://steg.dipf.de/de
+  - Label: ZNL MINT-Angebote im schulischen Ganztag
+    URL:   https://wp.znl-ulm.de/
+
+Link:
+  - Label: Temenseite Ganztag der Bertelsmann-Stiftung
+    URL:   https://www.bertelsmann-stiftung.de/de/unsere-projekte/in-vielfalt-besser-lernen/projektthemen/ganztag
+  - Label: Sammlung des Forschungsstandes zum Ganztag vom DJI
+    URL:   https://www.dipf.de/de/forschung/pdf-forschung/steubis/gts-bilanz_broschuere
+  - Label: Themenseite Ganztag auf Bildungsserver
+    URL:   https://www.bildungsserver.de/ganztagsschule-1801-de.html#Studien_und_Untersuchungen_
+  - Label: BMBF-Portal zur Ganztagsschule
+    URL:   https://www.ganztagsschulen.org/de/forschung/einfuehrung/ganztagsschulforschung/ganztagsschulforschung-als-empirische-bildungsforschung_node.html
+  - Label: Bertelsmann 2
+    URL:   https://www.bertelsmann-stiftung.de//de/publikationen/publikation/did/die-landesseitige-ausstattung-gebundener-ganztagsschulen-mit-personellen-ressourcen/
+  - Label: Themenseite Ganztag der KMK
+    URL:   https://www.kmk.org/themen/allgemeinbildende-schulen/bildungswege-und-abschluesse/ganztagsschulen-in-deutschland.html

@@ -1,4 +1,4 @@
-con <- svMagpie::connect_magpie()
+con <- svMagpie::connectDB()
 tabs <- DBI::dbListTables(con)
 con2 <- DBI::dbConnect(RSQLite::SQLite(), "data/magpie.sqlite")
 
@@ -10,6 +10,6 @@ for (i in tabs){
   rm(x)
 }
 
-DBI::dbDisconnect(con)
-DBI::dbDisconnect(con2)
+dbDisconnect(con)
+dbDisconnect(con2)
 rm(tabs, i, con2, con)

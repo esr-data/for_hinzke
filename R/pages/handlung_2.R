@@ -1,7 +1,7 @@
 #' Necessary Packages/Functions
 
 box::use(
-  ../../R/utils/utils[draw_under_construction],
+  ../../R/utils/ui[draw_under_construction],
   shiny[
     NS, moduleServer, observeEvent,
     fluidPage, tagList, h2, div

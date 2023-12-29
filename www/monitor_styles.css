@@ -239,3 +239,59 @@ ul li {
 .content-footer {
   border-top: solid 1px;
 }
+
+
+.monitor-variable-content {
+  background-color: #EAE9E3;
+  box-shadow: 0px 0px 2px 0px var(--light-grey);
+  margin-bottom: 10px;
+}
+
+.monitor-variable-button-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.monitor-variable-button {
+  margin: 0 0 10px 0;
+}
+
+.monitor-variable-button {
+    margin: 0 0 10px 0;
+    background-color: var(--primary);
+    border-color: var(--primary);
+    border-radius: 0px;
+    border-width: 2px;
+    color: white;
+    font-weight: 900;
+    font-size: 20px;
+    transition: all .75s ease;
+    text-align: left;
+}
+
+.monitor-variable-button:hover {
+    background-color: white;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.monitor-variable-button-choosed {
+  border-color: white!important;
+  background-color: white!important;
+  color: var(--blue)!important;
+}
+
+.monitor-variable-button:after {
+    content: "\2b";
+    font-family: "FontAwesome";
+    position: sticky;
+    left: 95%;
+}
+
+
+.monitor-variable-button-choosed:after {
+    content: "\f068";
+    font-family: "FontAwesome";
+    position: sticky;
+    left: 95%;
+}

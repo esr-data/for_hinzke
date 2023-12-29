@@ -9,7 +9,7 @@ box::use(
   ../../R/pages/monitor[module_monitor_server],
   ../../R/pages/studies[module_studies_server],
   ../../R/pages/stories[module_stories_server],
-  ../../R/pages/monitor_bildung[module_monitor_bildung_server],
+  ../../R/pages/monitor_inhalt[module_monitor_inhalt_server],
   ../../R/build/sidebar[
     draw_sidebar_home,
     draw_sidebar_stories,
@@ -18,6 +18,7 @@ box::use(
     draw_sidebar_explorer
   ],
   ../../R/utils/tutorial[plan_tutorial_tour],
+  ../../R/utils/routing[get_hf_param],
   shiny[
     observeEvent, observe,
     isolate,
@@ -35,14 +36,11 @@ box::use(
     router_server,
     get_page,
     get_query_param
-  ],
-  DBI[dbConnect],
-  RSQLite[SQLite]
+  ]
 )
 
 # Global Variables
-print_events <- FALSE
-con   <- dbConnect(SQLite(), "data/magpie.sqlite")
+print_events <-FALSE
 guide <- plan_tutorial_tour()
 explorer_subpages <- report_explorer_subpages()
 
@@ -57,12 +55,14 @@ server <- function(input, output, session) {
     reactiveValues(
       button    = list(value_1 = "", value_2 = ""),
       start     = TRUE,
-      locked    = FALSE,
-      minimized = FALSE,
-      modus     = 0
+      minimized = FALSE
     )
 
-  current <- reactiveValues(page = "start", sidebar = "start")
+  current <-
+    reactiveValues(
+      page = "start",
+      sidebar = "start"
+    )
 
   # Button-Events
 
@@ -121,7 +121,6 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$sb_home, {
-    sidebar$modus <- 0
     sidebar$button$value_1 <- ""
     sidebar$button$value_2 <- ""
   })
@@ -154,27 +153,28 @@ server <- function(input, output, session) {
 
   observeEvent(
     session$clientData$url_hash, {
-
       url <- session$clientData$url_hash
+      if (!(url %in% c("", "#!/"))){
+        if (print_events) message("Event: New URL to be checked")
 
-      if (!sidebar$locked & !(url %in% c("", "#!/"))){
-        sidebar$locked <- TRUE
-        if (sidebar$modus == 0){
-          if (print_events) message("Event: New URL to be checked")
+        values <- get_button_values_from_url(url)
 
-          values <- get_button_values_from_url(url)
+        to_change <- FALSE
+
+        if (values[1] != sidebar$button$value_1){
           sidebar$button$value_1 <- values[1]
-          sidebar$button$value_2 <- values[2]
-          adjust_sidebar_button_classes(sidebar$button$value_1, sidebar$button$value_2)
-
-        } else {
-          sidebar$modus <- 0
+          to_change <- TRUE
         }
-        sidebar$locked <- FALSE
-      } else if (url %in% c("", "#!/")){
-        sidebar$modus <- 0
-      }
 
+        if (values[2] != sidebar$button$value_2){
+          sidebar$button$value_2 <- values[2]
+          to_change <- TRUE
+        }
+
+        if (to_change){
+          adjust_sidebar_button_classes(sidebar$button$value_1, sidebar$button$value_2)
+        }
+      }
     }
   )
 
@@ -185,29 +185,15 @@ server <- function(input, output, session) {
 
       if (print_events) message("Event: Update URL")
 
-      if (!sidebar$locked){
+      value_1 <- sidebar$button$value_1
+      value_2 <- sidebar$button$value_2
 
-        if (sidebar$modus == 0){
-
-          sidebar$locked <- TRUE
-          value_1 <- sidebar$button$value_1
-          value_2 <- sidebar$button$value_2
-
-          if (print_events) message("Event: Update URL - not locked")
-
-          if (!sidebar$start){
-            if (print_events) message("Event: Update URL - url changed")
-            change_url_by_button_values(value_1, value_2)
-            adjust_sidebar_button_classes(value_1, value_2)
-            sidebar$modus <- 1
-          } else {
-            sidebar$start <- FALSE
-          }
-
-          sidebar$locked <- FALSE
-        } else {
-          sidebar$modus <- 0
-        }
+      if (!sidebar$start){
+        if (print_events) message("Event: Update URL - url changed")
+        change_url_by_button_values(value_1, value_2, current_url = session$clientData$url_hash)
+        adjust_sidebar_button_classes(value_1, value_2)
+      } else {
+        sidebar$start <- FALSE
       }
     }
   )
@@ -246,35 +232,13 @@ server <- function(input, output, session) {
   # --- Server der Shiny-Modules -------------------------------------------------------------------
 
   module_explorer_server()
-  module_indikator_server(con = con)
-  module_suchen_server(con = con)
-  module_home_server(con = con)
+  module_indikator_server()
+  module_suchen_server()
+  module_home_server()
   module_studies_server()
   module_stories_server()
   module_monitor_server()
-  module_monitor_bildung_server(con = con)
-}
-
-#' Missing description
-#' @export
-
-get_hf_param <- function(){
-
-  param <- get_query_param()
-  if (is.null(param)){
-    return(0)
-  }
-
-  hf <- param$hf
-  if (is.null(hf)){
-    return(0)
-  }
-
-  if (all(hf %in% 0:2)){
-    return(hf[1])
-  }
-
-  return(0)
+  module_monitor_inhalt_server()
 }
 
 #' Missing description
@@ -292,13 +256,36 @@ update_button_sidebar <- function(button, actual_value){
 #' Missing description
 #' @noRd
 
-change_url_by_button_values <- function(value_1, value_2){
+change_url_by_button_values <- function(value_1, value_2, current_url){
 
-  page     <- get_page()
-  param_hf <- get_hf_param()
+  page <-
+    current_url |>
+    gsub(pattern = "#!/", replacement = "", fixed = TRUE) |>
+    strsplit("?", fixed = TRUE)
+  page <- (page[[1]])[1]
+
+  param_hf <- get_hf_param(current_url)
   explorer <- explorer_subpages
 
+  #TODO DEBUGING - SPÄTER LOESCHEN
+  # current_url <<- current_url
+  # page     <<- page
+  # param_hf <<- param_hf
+  # explorer <<- explorer
+  # value_1  <<- value_1
+  # value_2  <<- value_2
+
   if (value_2 == "explorer" & page %in% explorer$url) {
+    value_2 <- page
+  } else if (
+    value_2 == "monitor" &
+    page == "monitor_inhalt" &
+    value_1 %in% c("handlung1", "handlung2") &
+    (
+      (grepl("tp=bildung",    current_url) & value_1 == "handlung1") |
+      (grepl("tp=innovation", current_url) & value_1 == "handlung2")
+    )
+  ){
     value_2 <- page
   }
 
@@ -335,6 +322,7 @@ change_url_by_button_values <- function(value_1, value_2){
   }
 
   if (to_change){
+    if (print_events) message(paste("change_url_by_button_values:", url))
     change_page(url)
   }
 
@@ -345,7 +333,9 @@ change_url_by_button_values <- function(value_1, value_2){
 #' @noRd
 
 change_page_by_subpage_button <- function(url){
-  change_page(paste0(url, "?hf=", get_hf_param()))
+  url <- paste0(url, "?hf=", get_hf_param())
+  if (print_events) message(paste("change_page_by_subpage_button:", url))
+  change_page(url)
 }
 
 
@@ -381,13 +371,15 @@ get_button_values_from_url <- function(url){
 
   value_1 <- ""
   if (length(url) > 1){
-    if (url[2] %in% paste0("hf=", 1:2)){
-      value_1 <- paste0("handlung", substr(url[2], 4, 4))
+    url_param <- strsplit(url[2], "&")[[1]]
+    if (any(url_param %in% paste0("hf=", 1:2))){
+      url_param <- substr(url_param[match("hf", substr(url_param, 1, 2))], 4, 4)
+      value_1 <- paste0("handlung", url_param)
     }
+    rm(url_param)
   }
 
   value_2 <- url[1]
-
   if (length(value_2) == 0){
     value_2 <- ""
   }
@@ -396,7 +388,7 @@ get_button_values_from_url <- function(url){
     value_2 <- "explorer"
   }
 
-  if (value_2 %in% c("monitor", "monitor_bildung")){
+  if (value_2 %in% c("monitor", "monitor_inhalt")){
     value_2 <- "monitor"
   }
 

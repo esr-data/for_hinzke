@@ -41,7 +41,7 @@ module_suchen_ui <- function(id = "suchen", label = "m_suchen", type = "all") {
 #' Missing description
 #' @noRd
 
-module_suchen_server <- function(id = "suchen", type = "all", con) {
+module_suchen_server <- function(id = "suchen", type = "all") {
   moduleServer(
     id,
     function(input, output, session) {

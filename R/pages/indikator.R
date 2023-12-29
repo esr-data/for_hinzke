@@ -1,7 +1,8 @@
 #' Necessary Packages/Functions
 
 box::use(
-  ../../R/utils/utils[get_sql, add_param_in_url],
+  ../../R/utils/database[get_query, get_sql, load_table_by_variable],
+  ../../R/utils/routing[add_param_in_url],
   shiny[
     NS, moduleServer, observeEvent,
     uiOutput, renderUI,
@@ -13,7 +14,6 @@ box::use(
   shiny.router[get_page, get_query_param, change_page],
   shinycssloaders[withSpinner],
   reactable[reactable, reactableOutput, renderReactable, colDef],
-  DBI[dbGetQuery],
   sortable[bucket_list, add_rank_list]
 )
 
@@ -78,7 +78,7 @@ module_indikator_ui <- function(id = "indikator", label = "m_indikator", type = 
 #' Missing description
 #' @export
 
-module_indikator_server <- function(id = "indikator", type = "all", con) {
+module_indikator_server <- function(id = "indikator", type = "all") {
   moduleServer(
     id,
     function(input, output, session) {
@@ -98,7 +98,7 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
       input_var <- reactiveVal(data.frame())
       input_tag <- reactiveVal(data.frame())
 
-      filter_param <- indikator_translate_filter_param(con)
+      filter_param <- indikator_translate_filter_param()
 
       # URL-Parameter werden zwischengespeichert, um den Verlauf/eine Aktualisierung besser nachzuvollziehen
       # Jeder mögliche URL-Parameter hat einen Eintrag in der reaktiven Liste und "" steht für NULL/Kein Eintrag
@@ -141,8 +141,8 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
                   parameter$hf <- param_hf
 
                   if (param_hf == 0){
-                    input_var(indikator_get_variables(con)) #TODO
-                    input_tag(get_sql("indikator_get_tag_by_variable", TRUE, con))
+                    input_var(indikator_get_variables()) #TODO
+                    input_tag(get_sql("indikator_get_tag_by_variable", TRUE))
                     updatePickerInput(session, "select_tag",      choices = sort(input_tag()$beschr))
                     updatePickerInput(session, "select_variable", choices = sort(input_var()$beschr[input_var()$relevant]))
                     aenderung <- TRUE
@@ -171,7 +171,7 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
                   }
 
                   # Aktualisierung der Variablen aus Basis der Tags
-                  input_var(indikator_get_variables_by_tags(input_var(), selected_tags, con))
+                  input_var(indikator_get_variables_by_tags(input_var(), selected_tags))
                   updatePickerInput(
                     session = session,
                     inputId = "select_variable",
@@ -202,11 +202,11 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
 
                   } else {
 
-                    variable <- dbGetQuery(con, paste0("SELECT id, beschr FROM variable WHERE id =", param_in_vr))
+                    variable <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_in_vr))
 
                     if (nrow(variable) == 1){
 
-                      tabelle <- load_table_by_variable(variable$id, con)
+                      tabelle <- load_table_by_variable(variable$id)
 
                       daten$filter  <- data.frame()
                       daten$gruppen <- sort(c(tabelle$gruppe, "Zeit"))
@@ -471,72 +471,6 @@ module_indikator_server <- function(id = "indikator", type = "all", con) {
 #' Missing description
 #' @noRd
 
-load_table_by_variable <- function(variable, con){
-
-  daten <-
-    dbGetQuery(
-      con,
-      sprintf(
-        "SELECT daten.id, variable.beschr as variable, jahr, wert, wert_einheit.beschr as einheit
-         FROM daten
-         LEFT JOIN wert_einheit ON daten.wert_einheit_id = wert_einheit.id
-         LEFT JOIN variable     ON daten.variable_id = variable.id
-         WHERE variable_id = %s",
-        variable
-      )
-    )
-
-  reichweite <-
-    "SELECT reichweite.id as id, reichweite.beschr as reichweite, rtyp.beschr as reichweite_typ, rklasse.beschr as reichweite_klasse
-     FROM reichweite
-     LEFT JOIN reichweite_typ rtyp ON reichweite.reichweite_typ_id = rtyp.id
-     LEFT JOIN reichweite_klasse rklasse ON rtyp.reichweite_klasse_id = rklasse.id
-     WHERE reichweite.id IN (SELECT reichweite_id FROM daten_reichweite WHERE daten_id IN (SELECT id FROM daten WHERE variable_id = %s))" |>
-    sprintf(variable) |>
-    dbGetQuery(conn = con)
-
-  daten_reichweite <-
-    dbGetQuery(
-      con,
-      sprintf(
-        "SELECT daten_id, reichweite_id
-         FROM daten_reichweite
-         WHERE daten_id IN (SELECT id FROM daten WHERE variable_id = %s)",
-        variable
-      )
-    )
-
-  reichweite$gruppe <-
-    ifelse(
-      reichweite$reichweite_klasse == "Räumliche Gebiete",
-      reichweite$reichweite_klasse,
-      reichweite$reichweite_typ
-    )
-
-  daten[,unique(reichweite$gruppe)] <- NA
-
-  for (i in 1:nrow(daten)){
-    x <- daten_reichweite[daten_reichweite$daten_id == daten$id[i],]
-    for (j in 1:nrow(x)){
-      k <- reichweite$id == x$reichweite_id[j]
-      l <- c(daten[i, reichweite$gruppe[k]], reichweite$reichweite[k])
-      l <- l[!is.na(l)]
-      daten[i, reichweite$gruppe[k]] <- paste(l, collapse = ", ")
-    }
-  }
-
-  for (i in unique(reichweite$gruppe)){
-    daten[,i] <- ifelse(is.na(daten[,i]), "Insgesamt", daten[,i])
-  }
-
-  names(daten) <- gsub("jahr", "Zeit", names(daten))
-
-  return(list(daten = daten, gruppe = unique(reichweite$gruppe)))
-}
-
-#' Missing description
-#' @noRd
-
 indikator_draw_reactable <- function(daten){
 
   if (is.null(daten))  return(reactable(data.frame(keine = "daten")))
@@ -686,7 +620,7 @@ write_explorer_filter_observer <- function(filter_param_bez){
 #' @noRd
 
 indikator_get_variables <- function(con){
-  output <- dbGetQuery(con, "SELECT id, beschr FROM variable")
+  output <- get_query("SELECT id, beschr FROM variable")
   output$relevant <- TRUE
   return(output)
 }
@@ -752,7 +686,7 @@ indikator_recode_param_int <- function(x, vec = FALSE){
 #' Missing description
 #' @noRd
 
-indikator_get_variables_by_tags <- function(variable, selected_tags, con){
+indikator_get_variables_by_tags <- function(variable, selected_tags){
 
   if (length(selected_tags) == 0){
     variable$relevant <- TRUE
@@ -760,8 +694,7 @@ indikator_get_variables_by_tags <- function(variable, selected_tags, con){
   }
 
   tag_link <-
-    dbGetQuery(
-      con,
+    get_query(
       "SELECT reihe_id, tags
        FROM view_tag_link_aggregated_beschr
        WHERE tabelle_id = (SELECT id FROM tabelle WHERE bez = 'variable')"
@@ -787,8 +720,7 @@ indikator_translate_filter_param <- function(con){
     data.frame(
       beschr =
         c(
-          dbGetQuery(
-            con,
+          get_query(
             "SELECT beschr
        FROM reichweite_typ
        WHERE reichweite_klasse_id != (SELECT id FROM reichweite_klasse WHERE beschr = 'Räumliche Gebiete')"
