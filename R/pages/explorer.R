@@ -2,14 +2,17 @@
 
 box::use(
   ../../R/utils/routing[get_hf_param],
+  ../../R/utils/network[get_network_data, draw_network],
   shiny[
     NS, moduleServer, observeEvent,
+    reactiveValuesToList, reactiveValues,
     fluidPage, tagList,
     markdown, actionButton,
     h2, div, icon,
     uiOutput, renderUI
   ],
-  shiny.router[change_page, get_query_param, get_page]
+  shiny.router[change_page, get_query_param, get_page],
+  visNetwork[visNetworkOutput, renderVisNetwork]
 )
 
 #' Missing description
@@ -29,6 +32,11 @@ module_explorer_ui <- function(id = "explorer", label = "m_explorer") {
         actionButton(ns("vergleichen"), label = "Vergleichen", class = "link_button", icon = icon("chart-bar")),
         actionButton(ns("datensatz"),   label = "Datensätze",  class = "link_button", icon = icon("database")),
         actionButton(ns("karten"),      label = "Karten",      class = "link_button", icon = icon("earth-europe"))
+      ),
+      div(
+        class = "network-panel",
+        style = "height: 500px; width: 800px; background-color: var(--very-light-grey); margin: 20px; padding: 2px; box-shadow: 0px 0px 5px 0px var(--grey);",
+        visNetworkOutput(ns("network"), width = "100%", height = "100%")
       )
     )
   )
@@ -68,6 +76,19 @@ module_explorer_server <- function(id = "explorer") {
           }
         },
         ignoreNULL = FALSE
+      )
+
+      network <- reactiveValues(data = get_network_data())
+
+      observeEvent(
+        network, {
+          if (!is.null(network)){
+            output$network <-
+              renderVisNetwork({
+                draw_network(reactiveValuesToList(network)$data, ns("current_node_id"), 1)
+              })
+          }
+        }
       )
 
 

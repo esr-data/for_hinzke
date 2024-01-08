@@ -18,36 +18,57 @@ Inhalt:
     Frage:     Schaffen wir quantitativ genügend Ganztagsangebote?
     Ziel:      Schulen in Deutschland sind Ganztagsschulen
     Indikator: Anteil der Ganztagsschulen in Deutschland
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
   - ID:        ganztag_vielfalt
     Titel:     Vielfalt der Ganztagsangebote
     Frage:     Schaffen wir vielfältige Ganztagsangebote?
     Ziel:      Ganztagsunterricht wird vielseitig gestaltet
     Indikator: Vielfalt der Angebote im Rahmen der Ganztagsbetreuung
+    Variable:  studienabsolventen_t
+    Auswahl:   keine
+    Darstellungen: Vergleich, Tabelle
   - ID:        ganztag_kooperation
     Titel:     Kooperationen zwischen Schule und Zivilgesellschaft im Ganztag
     Frage:     Schaffen wir Kooperationen zwischen Schule und Zivilgesellschaft?
     Ziel:      Zivilgesellschaftlicher Akteure sind in den Ganztag eingebunden
     Indikator: Einbindung zivilgesellschaftlicher Akteure
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
   - ID:        ganztag_sozial
     Titel:     Sozialer Ausgleich bei Ausbau der Ganztagsangebote
     Frage:     Schaffen wir es Ganztagsschule sozial einzuführen?
     Ziel:      Insbesondere in Schulen mit niedrigem Sozialindex sind zivilgesellschaftliche Akteure eingebunden
     Indikator: Einbindung zivilgesellschaftlicher Akteure nach Sozialindex
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
   - ID:        ganztag_multiprofessionel
     Titel:     Multiprofessionele Teams an Schulen
     Frage:     Schaffen wir es multiprofessionelle Teams in den Schulen zu verankern?
     Ziel:      Multiprofessionelle Teams an Schulen
     Indikator: Anteil Schulpersonal außerhalb der Lehrkräfte an Schulpersonal
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
   - ID:        ganztag_digital
     Titel:     IT-Infrastruktur an Schulen
     Frage:     Schaffen wir die Voraussetzungen für digitale Bildungsangebote?
     Ziel:      Schulen haben WLAN
     Indikator: Anteil Schulen mit WLAN über 100 Mbit
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
   - ID:        ganztag_lage
     Titel:     Die Lage an den Schulen aus Sicht der Schulleitungen
     Frage:     Schaffen wir es die wahrgenomme Lage an den Schulen zu verbessern?
     Ziel:      Die Lage an Schulen wird als gut eingeschätzt
     Indikator: Anteil Schulleitungen die Lage an ihrer Schule insgesamt als gut bezeichnen
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
 
 Aktivitaet:
   - Label: 'Studie: Vereine, Stiftungen und Co - die neuen Bildungspartner?'

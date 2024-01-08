@@ -43,7 +43,11 @@ box::use(
   shinycssloaders[withSpinner],
   dplyr[rename],
   purrr[map2],
-  DT[datatable, JS]
+  DT[datatable, JS],
+  shinyjs[
+    removeCssClass,
+    addCssClass
+  ]
 )
 #TODO irrelevanten Verknüpfungen aussortieren!
 
@@ -112,9 +116,9 @@ module_monitor_inhalt_ui <- function(id = "monitor_inhalt", label = "m_monitor_i
               column(
                 width = 3,
                 pickerInput(
-                  inputId = ns("gliederung"),
-                  label = "Wähle eine Gliederung",
-                  choices = c(),
+                  inputId  = ns("gliederung"),
+                  label    = "Wähle eine Gliederung",
+                  choices  = c(),
                   multiple = FALSE
                 ),
                 pickerInput(
@@ -198,18 +202,10 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                 # current$parameter <- parameter_default
                 # change_page("monitor?hf=1")
               } else {
-                current$content <- content_monitor[[param_tp]]
-                output$title    <- renderUI({h1(class = "monitor-subpage-title-headline", current$content[["Titel"]])})
+                current$content        <- content_monitor[[param_tp]]
+                output$title           <- renderUI({h1(class = "monitor-subpage-title-headline", current$content[["Titel"]])})
                 output$information_box <- renderUI({draw_information_box(current$content)})
-                output$main_panel <- renderUI({draw_main_content(current$content)})
-                output$select_variable <-
-                  renderUI({
-                    pickerInput(
-                      inputId = ns("picker_content"),
-                      choices = current$content$Titel,
-                      multiple = FALSE
-                    )
-                  })
+                output$main_panel      <- renderUI({draw_main_content(current$content)})
               }
             }
 
@@ -262,14 +258,35 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                 change_in_choice <- TRUE
 
                 variable_ueberschriften <- current$content$Inhalt$Titel
-
-                current$variable <- load_table_by_variable(138)
+                y <<-
+                current$variable <-
+                  load_table_by_variable(
+                    get_query(
+                      sprintf(
+                        "SELECT id FROM variable WHERE bez_lang = '%s'",
+                        unlist(current$content$Inhalt$Variable[param_ind])
+                      )
+                    )$id
+                  )
 
                 updatePickerInput(
                   session  = session,
                   inputId  = "gliederung",
                   choices  = c("---", current$variable$gruppe),
                   selected = c("---")
+                )
+
+                moegliche_darstellungen <-
+                  current$content$Inhalt$Darstellungen[param_ind] |>
+                  unlist() |>
+                  strsplit(split = ", ") |>
+                  unlist()
+
+                updateRadioButtons(
+                  session  = session,
+                  inputId  = "darstellung",
+                  choices  = moegliche_darstellungen,
+                  selected = moegliche_darstellungen[1]
                 )
 
                 create_var_buttons <- function(x, buttonset, choosed){
@@ -776,120 +793,124 @@ create_link_with_svg <- function(link_id, link_text) {
 
 
 draw_indikator_content <- function(variable, darstellung, gliederung, kategorie){
-
-  if (is.null(variable)) return(HTML(""))
-  if (is.null(darstellung)) return(HTML(""))
-  if (is.null(gliederung)) gliederung <- "---"
-
-  daten       <- variable$daten
-  daten$id    <- NULL
-  print(gliederung)
-  gruppen     <- variable$gruppe[!(variable$gruppe %in% gliederung)]
-
-  if (gliederung %in% "---"){
-
-  }
-
-  gliederung2 <- variable$gruppe[variable$gruppe %in% gliederung]
-  if (length(gliederung) == 0){
-    kategorie <- c()
-  }
-
-  for (i in gruppen){
-    daten <- daten[daten[,i] %in% c("Insgesamt", "Deutschland"),]
-    daten[,i] <- NULL
-  }
-
-  if (length(kategorie) > 0){
-    daten <- daten[daten[,gliederung2] %in% kategorie,]
-  }
-
-
-  daten <- daten[,!(names(daten) %in% variable$gruppe) | names(daten) == gliederung]
-
-  # if (!is.null(gliederung)){
-  #   if (length(gliederung) > 0){
-  #     if (gliederung != "---"){
-  #
-  #       gliederung_angepasst <- TRUE
-  #
-  #     }
-  #   }
-  # }
-
-  daten[,gliederung] %in% kategorie
-
-  if (darstellung == "Tabelle") {
-
-    return(
-      datatable(
-        daten,
-        extensions = 'Buttons',
-        rownames   = FALSE,
-        options = list(
-          dom = 'lBfrtip',
-          buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
-          pageLength = 20,
-          initComplete = JS(
-            "function(settings, json) {",
-            "$(this.api().table().header()).css({'background-color': '#185365', 'color': '#fff'});",
-            "}"
-          ),
-          language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/German.json')
-        )
-      )
-    )
-  } else if (darstellung == "Zeitverlauf"){
-    # daten$gruppe <- daten[,gliederung2]
-    # daten$wert <- as.numeric(daten$wert)
-    # config(
-    #   toImageButtonOptions = list(filename = str_c("SV Monitor Wissenschaft")),
-    #   modeBarButtonsToRemove = c("lasso2d", "zoomIn2d", "zoomOut2d"),
-    #   locale = "de",
-    #   displaylogo = FALSE,
-    #   p = ggplotly(
-    #     ggplot(daten, aes(x = Zeit, y = wert, group = gruppe)) +
-    #       geom_line() +
-    #       suppressWarnings(geom_point(aes(
-    #         text = paste0("Jahr: ", Zeit, "<br>Wert: ",
-    #                       prettyNum(round(wert, 1), big.mark = ".", decimal.mark = ","))), color = "#195365")) +
-    #       theme_pubr() +
-    #       theme(plot.title = element_text(hjust = -0.45, vjust = 2.12),
-    #             plot.margin = unit(c(1, 0.5, 1, 1), "cm"),
-    #             axis.title.y = element_text(margin = margin(t = 0, r = 30, b = 0, l = 0)),
-    #             axis.text.x = element_text(angle = 45, hjust = 1)
-    #       ) +
-    #       labs(
-    #         x = "",
-    #         y = paste0(daten$Messeinheit[1], "\n"),
-    #         title = paste0("", "\n")
-    #       ) +
-    #       scale_x_continuous(breaks = c(
-    #         min(daten$Zeit):max(daten$Zeit)
-    #       )) +
-    #       scale_color_manual(values = "#195365")
-    #   )
-    # ) %>%
-    #   layout(
-    #     annotations =
-    #       list(
-    #         x = 1,
-    #         y = -0.3,
-    #         text = paste0(
-    #           "Quelle: "
-    #         ),
-    #         showarrow = F,
-    #         xref = 'paper',
-    #         yref = 'paper',
-    #         xanchor = 'right',
-    #         yanchor = 'auto',
-    #         xshift = 0,
-    #         yshift = 0,
-    #         font = list(size = 10, color = "black")
-    #       )
-    #   )
-
-  }
+  variable    <<- variable
+  darstellung <<- darstellung
+  gliederung  <<- gliederung
+  kategorie   <<- kategorie
+#
+#   if (is.null(variable)) return(HTML(""))
+#   if (is.null(darstellung)) return(HTML(""))
+#   if (is.null(gliederung)) gliederung <- "---"
+#
+#   daten       <- variable$daten
+#   daten$id    <- NULL
+#   print(gliederung)
+#   gruppen     <- variable$gruppe[!(variable$gruppe %in% gliederung)]
+#
+#   if (gliederung %in% "---"){
+#
+#   }
+#
+#   gliederung2 <- variable$gruppe[variable$gruppe %in% gliederung]
+#   if (length(gliederung) == 0){
+#     kategorie <- c()
+#   }
+#
+#   for (i in gruppen){
+#     daten <- daten[daten[,i] %in% c("Insgesamt", "Deutschland"),]
+#     daten[,i] <- NULL
+#   }
+#
+#   if (length(kategorie) > 0){
+#     daten <- daten[daten[,gliederung2] %in% kategorie,]
+#   }
+#
+#
+#   daten <- daten[,!(names(daten) %in% variable$gruppe) | names(daten) == gliederung]
+#
+#   # if (!is.null(gliederung)){
+#   #   if (length(gliederung) > 0){
+#   #     if (gliederung != "---"){
+#   #
+#   #       gliederung_angepasst <- TRUE
+#   #
+#   #     }
+#   #   }
+#   # }
+#
+#   daten[,gliederung] %in% kategorie
+#
+#   if (darstellung == "Tabelle") {
+#
+#     return(
+#       datatable(
+#         daten,
+#         extensions = 'Buttons',
+#         rownames   = FALSE,
+#         options = list(
+#           dom = 'lBfrtip',
+#           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+#           pageLength = 20,
+#           initComplete = JS(
+#             "function(settings, json) {",
+#             "$(this.api().table().header()).css({'background-color': '#185365', 'color': '#fff'});",
+#             "}"
+#           ),
+#           language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/German.json')
+#         )
+#       )
+#     )
+#   } else if (darstellung == "Zeitverlauf"){
+#     # daten$gruppe <- daten[,gliederung2]
+#     # daten$wert <- as.numeric(daten$wert)
+#     # config(
+#     #   toImageButtonOptions = list(filename = str_c("SV Monitor Wissenschaft")),
+#     #   modeBarButtonsToRemove = c("lasso2d", "zoomIn2d", "zoomOut2d"),
+#     #   locale = "de",
+#     #   displaylogo = FALSE,
+#     #   p = ggplotly(
+#     #     ggplot(daten, aes(x = Zeit, y = wert, group = gruppe)) +
+#     #       geom_line() +
+#     #       suppressWarnings(geom_point(aes(
+#     #         text = paste0("Jahr: ", Zeit, "<br>Wert: ",
+#     #                       prettyNum(round(wert, 1), big.mark = ".", decimal.mark = ","))), color = "#195365")) +
+#     #       theme_pubr() +
+#     #       theme(plot.title = element_text(hjust = -0.45, vjust = 2.12),
+#     #             plot.margin = unit(c(1, 0.5, 1, 1), "cm"),
+#     #             axis.title.y = element_text(margin = margin(t = 0, r = 30, b = 0, l = 0)),
+#     #             axis.text.x = element_text(angle = 45, hjust = 1)
+#     #       ) +
+#     #       labs(
+#     #         x = "",
+#     #         y = paste0(daten$Messeinheit[1], "\n"),
+#     #         title = paste0("", "\n")
+#     #       ) +
+#     #       scale_x_continuous(breaks = c(
+#     #         min(daten$Zeit):max(daten$Zeit)
+#     #       )) +
+#     #       scale_color_manual(values = "#195365")
+#     #   )
+#     # ) %>%
+#     #   layout(
+#     #     annotations =
+#     #       list(
+#     #         x = 1,
+#     #         y = -0.3,
+#     #         text = paste0(
+#     #           "Quelle: "
+#     #         ),
+#     #         showarrow = F,
+#     #         xref = 'paper',
+#     #         yref = 'paper',
+#     #         xanchor = 'right',
+#     #         yanchor = 'auto',
+#     #         xshift = 0,
+#     #         yshift = 0,
+#     #         font = list(size = 10, color = "black")
+#     #       )
+#     #   )
+#
+#   }
 
   return(HTML(""))
 }
