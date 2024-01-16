@@ -8,6 +8,7 @@ box::use(
   ../../R/pages/datensaetze[module_datensaetze_ui],
   ../../R/pages/studies[module_studies_ui],
   ../../R/pages/stories[module_stories_ui],
+  ../../R/pages/stories_inhalt[module_stories_inhalt_ui],
   ../../R/pages/monitor[module_monitor_ui],
   ../../R/pages/explorer[module_explorer_ui],
   ../../R/pages/handlung_1[module_handlung_1_ui],
@@ -27,6 +28,7 @@ box::use(
   bsplus[use_bs_tooltip],
   shiny.router[router_ui, route],
   shinyjs[useShinyjs],
+  shinyWidgets[searchInput],
   cicerone[use_cicerone]
 )
 
@@ -64,6 +66,7 @@ draw_ui <- function(){
         router_ui(
           route("/",              module_home_ui()),
           route("stories",        module_stories_ui()),
+          route("stories_inhalt", module_stories_inhalt_ui()),
           route("monitor",        module_monitor_ui()),
           route("monitor_inhalt", module_monitor_inhalt_ui()),
           route("explorer",       module_explorer_ui()),
@@ -140,12 +143,12 @@ draw_sidebar <- function(){
     ),
     div(
       class = "sidebar_group",
-      h4("Inhalt", class = "sidebar_title", style = "margin-top: 40px;"),
+      h4("Navigation", class = "sidebar_title", style = "margin-top: 40px;"),
       uiOutput("sidebar_dynamic")
     ),
     div(
       class = "sidebar_group",
-      h4("Mehr über uns", class = "sidebar_title", style = "margin-top: 40px;"),
+      h4("Weitere Inhalte", class = "sidebar_title", style = "margin-top: 40px;"),
       div(
         style = "background-color: white;",
         actionButton("sb_team",        label = "SV DATA",     class = "sidebar_button", icon = icon("user-group")),
@@ -186,7 +189,20 @@ draw_header <- function(){
       HTML("<img class='brand__logo' src='https://stifterverband.org//themes/custom/cake/res/logo_stifterverband_wide.svg' alt='Logo Stifterverband'>")
     ),
     div(
-      class = "top__right"
+      class = "top__right",
+      div(
+        class = "top-search",
+        searchInput(
+          inputId     = "suchen",
+          placeholder = "Datenbank durchsuchen ...",
+          btnSearch   = icon("search"),
+          btnReset    = icon("remove"),
+          width       = "100%"
+        ) # |>
+          # as.character() |>
+          # gsub(pattern = "!important", replacement = "", fixed = TRUE) |>
+          # HTML()
+      )
     ),
     HTML("</header>")
 

@@ -204,7 +204,7 @@ li {
 /* Content-Panel -------------------------------------------------------------------------------- */
 
 .panel-content, panel-content {
-  padding: 20px 20px;
+  padding: 40px;
   background-color: white;
   width: 100%;
 }
@@ -459,6 +459,26 @@ p.rank-list-title {
   background-color: white;
 }
 
+#home-slick_output {
+  margin: 0px!important;
+}
+
+.moodie_title::before,
+.moodie_title::after {
+  content: '';
+  display: block;
+  width: 100px;
+  height: 3px;
+  margin: 10px 0;
+  background-color: var(--blue);
+}
+
+.moodie_title {
+  text-transform: uppercase;
+  font-size: 51px;
+  margin-bottom: 30px;
+}
+
 /*
 @media (max-width: 767px){
   .navbar-header, navbar-header{
@@ -504,3 +524,267 @@ p.rank-list-title {
 }
 */
 
+
+/* STORY-PREVIEW-CARDS -------------------------------------------------------------------------- */
+
+.cards-in-box {
+    display: flex;
+    flex-direction: row;
+    min-width: 450px;
+    flex-wrap: wrap;
+}
+
+.card-link:hover {
+  text-decoration: none;
+}
+
+.quarto-grid-item.card.h-100.card-left {
+  height: 375px;
+  width: 300px;
+  border: 2px solid var(--blue);
+	margin: 20px;
+	background-color: var(--very-light-grey);
+	transition: all .5s ease;
+}
+
+h5.no-anchor.card-title.listing-title {
+    text-align: center;
+    font-weight: 900;
+    font-size: 18px;
+    padding: 6px 15px;
+    margin: 0;
+    min-height: 53px;
+}
+
+.listing-author,
+.listing-author-head {
+    font-size: 16px;
+    color: var(--blue);
+}
+
+
+img.thumbnail-image.card-img {
+    margin: 0 auto;
+    display: block;
+    height: 200px;
+    width: 100%;
+}
+
+.card-attribution.card-text-small.start {
+    padding: 15px;
+}
+
+.card-link:hover {
+  text-decoration: none;
+}
+
+.card-link:hover div .card-body h5,
+.card-link:hover div .card-body .card-text-small .listing-author-head,
+.card-link:hover div .card-body .card-text-small .listing-author {
+  color: white;
+}
+
+.card-link:hover .quarto-grid-item.card.h-100.card-left {
+  background-color: var(--color-blue);
+}
+
+.card-link .quarto-grid-item.card.h-100.card-left.hf1-card {
+  border-color: var(--color-bildung);
+}
+
+.card-link .quarto-grid-item.card.h-100.card-left.hf2-card {
+  border-color: var(--color-forschung);
+}
+
+.card-link:hover .quarto-grid-item.card.h-100.card-left.hf1-card {
+  background-color: var(--color-bildung);
+  box-shadow: 4px 3px 6px 0px var(--color-bildung-trans);
+  margin: 20px 15px 20px 25px;
+}
+
+.card-link:hover .quarto-grid-item.card.h-100.card-left.hf2-card {
+  background-color: var(--color-forschung);
+  box-shadow: 4px 3px 6px 0px var(--color-forschung-trans);
+  margin: 20px 15px 20px 25px;
+}
+
+
+/* title -------------------------------------------------------------------- */
+
+.subpage-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 25px auto;
+}
+
+.subpage-title-headline {
+  color: var(--blue);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-transform: uppercase;
+  position: relative;
+  padding: 20px 0;
+  z-index: 1;
+}
+/*
+.subpage-title-headline.hf1 {
+  color: var(--color-bildung);
+}
+
+.subpage-title-headline.hf2 {
+  color: var(--color-forschung);
+}
+*/
+
+.subpage-title-headline::before,
+.subpage-title-headline::after {
+  content: '';
+  display: block;
+  width: 100px;
+  height: 3px;
+  position: absolute;
+  left: 0;
+  background-color: var(--blue);
+}
+/*
+.subpage-title-headline.hf1::before,
+.subpage-title-headline.hf1::after {
+  background-color: var(--color-bildung);
+}
+
+.subpage-title-headline.hf2::before,
+.subpage-title-headline.hf2::after {
+  background-color: var(--color-forschung);
+}
+*/
+
+.subpage-title-headline::before {
+  top: 0;
+}
+
+.subpage-title-headline::after {
+  bottom: 0;
+}
+
+.header-title-clipgraph {
+    content: '';
+    height: 120px;
+    width: 48%;
+    background-color: var(--blue);
+    position: absolute;
+    right: 0;
+    clip-path: path('M0.46875 327H699V0H343.814C199.729 68.1138 77.8418 181.41 0.46875 327Z');
+}
+
+.header-title-clipgraph.hf1 {
+  background-color: var(--color-bildung);
+}
+
+.header-title-clipgraph.hf2 {
+  background-color: var(--color-forschung);
+}
+
+
+/* SUCHFELDER ----------------------------------------------------------------------------------*/
+/* Es gibt zwei Suchfelder -> Beim Explorer (id: suchen-suchen) und im Header (id: suchen) */
+
+#suchen-suchen_text,
+#suchen-suchen_reset,
+#suchen-suchen_search{
+  font-size: 18px;
+  height: 40px;
+}
+
+.search-text .form-control:focus {
+    border-color: var(--blue);
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(25,83,101,.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(25,83,101,.6);
+}
+
+/* SUCHE HEADER */
+
+#suchen{
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+#suchen_text {
+  width: 100%;
+  max-width: 250px;
+  transition: all 1s ease;
+  border-radius: 0px!important;
+  font-size: 18px;
+  color: var(--grey);
+  height: 42px;
+}
+
+#suchen_text:focus {
+  max-width: 550px;
+  background-color: var(--very-light-grey);
+  color: black;
+}
+
+#suchen-suchen_text{
+  border-radius: 0px!important;
+}
+
+#suchen-suchen_text:focus{
+  background-color: var(--very-light-grey);
+  color: black;
+}
+
+#suchen_reset,
+#suchen_search {
+  border: none;
+  background-color: transparent;
+  z-index: 3;
+  position: absolute;
+  left: auto;
+  right: 5px;
+  font-size: 18px;
+  color: transparent;
+  padding: 9px 6px 7px 6px;
+}
+
+#suchen_search{
+  right: 30px;
+}
+
+#suchen_reset{
+  font-size: 20px;
+  padding: 7px 6px 5px 6px;
+}
+
+#suchen_text .input-group-btn{
+  position: absolute;
+}
+
+#suchen_text .input-group-btn button{
+  position: absolute;
+}
+
+#suchen .input-group-btn {
+  position: absolute;
+  /*display: none!important;*/
+  color: transparent;
+}
+
+#suchen_text:focus + .input-group-btn #suchen_reset,
+#suchen_text:focus + .input-group-btn #suchen_search{
+  color: var(--blue);
+}
+
+#suchen_text:focus + .input-group-btn #suchen_reset:hover,
+#suchen_text:focus + .input-group-btn #suchen_search:hover{
+  color: var(--red);
+}
+
+.top-search .shiny-input-container{
+  margin: auto;
+}
+
+/* ---------------------------------------------------------------------------------------------*/
