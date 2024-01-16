@@ -12,12 +12,18 @@ for (i in 1:length(r_files)){
     pkg <- r_file[(x + 1):(y - 1)]
     pkg <-
       pkg[
-        !grepl("R/", pkg) &
+        !grepl("/", pkg) &
           grepl("[", pkg, fixed = TRUE)
       ]
     pkg <-
       pkg |>
       strsplit("[", fixed = TRUE) |>
+      lapply(\(x) x[1]) |>
+      unlist() |>
+      trimws()
+    pkg <-
+      pkg |>
+      strsplit(" = ", fixed = TRUE) |>
       lapply(\(x) x[1]) |>
       unlist() |>
       trimws()

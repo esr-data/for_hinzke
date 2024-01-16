@@ -2,12 +2,16 @@
 #' Necessary Packages/Functions
 #'
 box::use(
+  ../../R/pkgs/search/magpie_get_results[get_results],
   shiny[HTML, div, icon, p],
   DBI[dbGetQuery, dbConnect],
-  RSQLite[SQLite]
+  RSQLite[SQLite],
+  data.table[fread]
 )
 
-con   <- dbConnect(SQLite(), "data/magpie.sqlite")
+con <- dbConnect(SQLite(), "data/magpie.sqlite")
+con_cache <- dbConnect(SQLite(), "data/search_cache.sqlite")
+search_cache <- fread("data/search_cache.csv")
 
 #' Missing description
 #' @export
@@ -95,4 +99,25 @@ load_table_by_variable <- function(variable){
   names(daten) <- gsub("jahr", "Zeit", names(daten))
 
   return(list(daten = daten, gruppe = unique(reichweite$gruppe)))
+}
+
+#' Missing description
+#' @export
+
+search_database <- function(search_term, table = NA){
+  results <-
+    get_results(
+      search_term,
+      db_values_long = as.data.frame(search_cache),
+      conn  = con,
+      table = table
+    )
+  return(results)
+}
+
+#' Missing description
+#' @export
+
+get_cache_labels <- function(){
+  dbGetQuery(con_cache, "SELECT * FROM column")
 }

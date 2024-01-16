@@ -9,6 +9,7 @@ box::use(
   ../../R/pages/monitor[module_monitor_server],
   ../../R/pages/studies[module_studies_server],
   ../../R/pages/stories[module_stories_server],
+  ../../R/pages/stories_inhalt[module_stories_inhalt_server],
   ../../R/pages/monitor_inhalt[module_monitor_inhalt_server],
   ../../R/build/sidebar[
     draw_sidebar_home,
@@ -29,14 +30,17 @@ box::use(
   ],
   shinyjs[
     removeCssClass,
-    addCssClass
+    addCssClass,
+    runjs
   ],
   shiny.router[
     change_page,
     router_server,
     get_page,
     get_query_param
-  ]
+  ],
+  shinyWidgets[updateSearchInput],
+  utils[URLencode]
 )
 
 # Global Variables
@@ -225,6 +229,29 @@ server <- function(input, output, session) {
     }
   )
 
+  # --- Suche im Header ----------------------------------------------------------------------------
+
+  observeEvent(input$suchen, {
+    suchwort <- input$suchen
+    print(suchwort)
+    if (!is.null(suchwort)){
+      if (length(suchwort) == 1){
+        if (!is.na(suchwort)){
+          if (suchwort != ""){
+            hf <- ""
+            if (sidebar$button$value_1 != ""){
+              hf <- paste0("hf=", gsub("handlung", "", sidebar$button$value_1), "&")
+            }
+            updateSearchInput(session = session, inputId = "suchen", value = "")
+            runjs("document.getElementById('suchen_text').blur();")
+            change_page(paste0("suchen?", hf, "term=", URLencode(suchwort)))
+          }
+        }
+      }
+    }
+
+  })
+
   # --- Routing ------------------------------------------------------------------------------------
 
   router_server()
@@ -237,6 +264,7 @@ server <- function(input, output, session) {
   module_home_server()
   module_studies_server()
   module_stories_server()
+  module_stories_inhalt_server()
   module_monitor_server()
   module_monitor_inhalt_server()
 }
@@ -266,14 +294,6 @@ change_url_by_button_values <- function(value_1, value_2, current_url){
 
   param_hf <- get_hf_param(current_url)
   explorer <- explorer_subpages
-
-  #TODO DEBUGING - SPÄTER LOESCHEN
-  # current_url <<- current_url
-  # page     <<- page
-  # param_hf <<- param_hf
-  # explorer <<- explorer
-  # value_1  <<- value_1
-  # value_2  <<- value_2
 
   if (value_2 == "explorer" & page %in% explorer$url) {
     value_2 <- page
@@ -377,6 +397,9 @@ get_button_values_from_url <- function(url){
       value_1 <- paste0("handlung", url_param)
     }
     rm(url_param)
+  } else if (url[1] %in% paste0("handlung", 1:2)){
+    value_1 <- url[1]
+    url[1] <- ""
   }
 
   value_2 <- url[1]
@@ -390,6 +413,10 @@ get_button_values_from_url <- function(url){
 
   if (value_2 %in% c("monitor", "monitor_inhalt")){
     value_2 <- "monitor"
+  }
+
+  if (value_2 %in% c("stories", "stories_inhalt")){
+    value_2 <- "stories"
   }
 
   return(c(value_1, value_2))
