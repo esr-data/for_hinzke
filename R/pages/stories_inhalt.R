@@ -1,7 +1,7 @@
 #' Necessary Packages/Functions
 
 box::use(
-  ../../R/utils/stories[get_story_by_id],
+  ../../R/utils/stories[get_story_by_id, get_story_size_by_id],
   ../../R/utils/routing[get_hf_param],
   shiny[
     NS, moduleServer, observeEvent,
@@ -22,8 +22,8 @@ module_stories_inhalt_ui <- function(id = "stories_inhalt", label = "m_stories_i
     div(
       style = "max-width: 1200px; padding: 50px; margin: 20px auto; border: 2px solid var(--grey); background-color: white",
       div(
-        style = "margin-left: 90%;",
-        actionButton(ns("back_button"), "zurück")
+        style = "margin-left: 90%; padding-bottom: 10px;",
+        actionButton(ns("back_button"), "zurück", class = "button-normal")
       ),
       uiOutput(ns("stories"))
     )
@@ -47,7 +47,10 @@ module_stories_inhalt_server <- function(id = "stories_inhalt") {
               paste0(
                 "<embed src='stories/",
                 get_story_by_id(param_st),
-                "' style = 'width: 100%; height: 90vh;'>"
+                "' style = 'width: 100%;",
+                "height: ",
+                get_story_size_by_id(param_st),
+                ";'>"
               ) |>
               HTML()
             output$stories <- renderUI({ui_stories})

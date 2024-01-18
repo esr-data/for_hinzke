@@ -44,7 +44,7 @@ box::use(
 )
 
 # Global Variables
-print_events <-FALSE
+print_events <- FALSE
 guide <- plan_tutorial_tour()
 explorer_subpages <- report_explorer_subpages()
 
@@ -176,13 +176,14 @@ server <- function(input, output, session) {
         }
 
         if (to_change){
-          adjust_sidebar_button_classes(sidebar$button$value_1, sidebar$button$value_2)
+          adjust_sidebar_button_classes(
+            sidebar$button$value_1,
+            sidebar$button$value_2
+          )
         }
       }
     }
   )
-
-  # values in sidebar$button
 
   observeEvent(
     sidebar$button, {
@@ -231,9 +232,8 @@ server <- function(input, output, session) {
 
   # --- Suche im Header ----------------------------------------------------------------------------
 
-  observeEvent(input$suchen, {
-    suchwort <- input$suchen
-    print(suchwort)
+  observeEvent(input$nav_suchen, {
+    suchwort <- input$nav_suchen
     if (!is.null(suchwort)){
       if (length(suchwort) == 1){
         if (!is.na(suchwort)){
@@ -244,7 +244,7 @@ server <- function(input, output, session) {
             }
             updateSearchInput(session = session, inputId = "suchen", value = "")
             runjs("document.getElementById('suchen_text').blur();")
-            change_page(paste0("suchen?", hf, "term=", URLencode(suchwort)))
+            change_page(paste0("suchen?", hf, "term=", URLencode(suchwort, reserved = TRUE)))
           }
         }
       }
@@ -296,6 +296,8 @@ change_url_by_button_values <- function(value_1, value_2, current_url){
   explorer <- explorer_subpages
 
   if (value_2 == "explorer" & page %in% explorer$url) {
+    value_2 <- page
+  } else if (value_2 == "stories" & page %in% c("stories_inhalt")) {
     value_2 <- page
   } else if (
     value_2 == "monitor" &
