@@ -2,7 +2,7 @@
 #' Necessary Packages/Functions
 #'
 box::use(
-  ../../R/pkgs/search/magpie_get_results[get_results],
+  ../../R/pkgs/search/get_search_results[get_results],
   shiny[HTML, div, icon, p],
   DBI[dbGetQuery, dbConnect],
   RSQLite[SQLite],

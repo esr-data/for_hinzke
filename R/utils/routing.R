@@ -50,6 +50,15 @@ add_param_in_url <- function(current_url, current_page, parameter, value, old_va
 
   current_page <- paste0("#!/", current_page)
   new_url <- current_url
+
+  # SPÄTER LÖSCHEN NUR FÜR DEBUGGING:
+  # current_page <<- current_page
+  # new_url <<- new_url
+  # current_url <<- current_url
+  # parameter <<- parameter
+  # value <<- value
+  # old_value <<-old_value
+
   if (grepl(current_page, current_url, fixed = TRUE)){
 
     if (value == ""){

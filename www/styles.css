@@ -213,6 +213,27 @@ li {
   padding: 25px;
 }
 
+/*  Standard-Buttons ---------------------------------------------------------------------------- */
+
+.button-normal {
+  font-weight: 700;
+  padding: 8px 15px;
+  letter-spacing: 0.6px;
+  border: 2px solid var(--blue);
+  transition: .3s ease-in-out;
+  border-radius: 0px;
+  font-size: 18px;
+}
+
+.button-normal:hover,
+.button-normal:active,
+.button-normal:focus,
+.button-normal:active:focus{
+    background-color: var(--blue);
+    border-color:     var(--blue);
+    color:            white;
+}
+
 /* Tutorial ------------------------------------------------------------------------------------- */
 
 .driver-popover-title {
@@ -706,13 +727,13 @@ img.thumbnail-image.card-img {
 
 /* SUCHE HEADER */
 
-#suchen{
+#nav_suchen{
   width: 100%;
   display: flex;
   flex-direction: row-reverse;
 }
 
-#suchen_text {
+#nav_suchen_text {
   width: 100%;
   max-width: 250px;
   transition: all 1s ease;
@@ -722,7 +743,7 @@ img.thumbnail-image.card-img {
   height: 42px;
 }
 
-#suchen_text:focus {
+#nav_suchen_text:focus {
   max-width: 550px;
   background-color: var(--very-light-grey);
   color: black;
@@ -737,8 +758,8 @@ img.thumbnail-image.card-img {
   color: black;
 }
 
-#suchen_reset,
-#suchen_search {
+#nav_suchen_reset,
+#nav_suchen_search {
   border: none;
   background-color: transparent;
   z-index: 3;
@@ -750,36 +771,36 @@ img.thumbnail-image.card-img {
   padding: 9px 6px 7px 6px;
 }
 
-#suchen_search{
+#nav_suchen_search{
   right: 30px;
 }
 
-#suchen_reset{
+#nav_suchen_reset{
   font-size: 20px;
   padding: 7px 6px 5px 6px;
 }
 
-#suchen_text .input-group-btn{
+#nav_suchen_text .input-group-btn{
   position: absolute;
 }
 
-#suchen_text .input-group-btn button{
+#nav_suchen_text .input-group-btn button{
   position: absolute;
 }
 
-#suchen .input-group-btn {
+#nav_suchen .input-group-btn {
   position: absolute;
   /*display: none!important;*/
   color: transparent;
 }
 
-#suchen_text:focus + .input-group-btn #suchen_reset,
-#suchen_text:focus + .input-group-btn #suchen_search{
+#nav_suchen_text:focus + .input-group-btn #nav_suchen_reset,
+#nav_suchen_text:focus + .input-group-btn #nav_suchen_search{
   color: var(--blue);
 }
 
-#suchen_text:focus + .input-group-btn #suchen_reset:hover,
-#suchen_text:focus + .input-group-btn #suchen_search:hover{
+#nav_suchen_text:focus + .input-group-btn #nav_suchen_reset:hover,
+#nav_suchen_text:focus + .input-group-btn #nav_suchen_search:hover{
   color: var(--red);
 }
 

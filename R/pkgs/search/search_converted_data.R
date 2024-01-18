@@ -2,7 +2,7 @@
 box::use(
   dplyr = dplyr[filter, select, mutate, group_by_at, summarise, vars],
   utils = utils[adist],
-  ms_string = . / string_prep[preprocess_str]
+  ms_string = . / utils[preprocess_str]
 )
 
 print_messages <- FALSE

@@ -3,6 +3,7 @@
 box::use(
   ../../R/utils/routing[add_param_in_url],
   ../../R/utils/database[get_query, search_database, get_cache_labels],
+  ../../R/utils/ui[draw_search],
   shiny[
     NS, moduleServer, observeEvent,
     fluidPage, fluidRow, tagList,
@@ -12,7 +13,7 @@ box::use(
     reactiveValues,
     HTML
   ],
-  shinyWidgets[searchInput, updateSearchInput],
+  shinyWidgets[updateSearchInput, searchInput],
   shinycssloaders[withSpinner],
   reactable[reactable, reactableLang, colDef],
   shiny.router[get_page, get_query_param, change_page],
@@ -42,16 +43,14 @@ module_suchen_ui <- function(id = "suchen", label = "m_suchen", type = "all") {
           ),
           div(
             style = "max-width: 700px; padding: 10px; display: flex; margin: 0 auto;",
-            searchInput(
+            draw_search(
               inputId     = ns("suchen"),
               placeholder = "Begriffe in der Datenbank suchen ...",
               btnSearch   = icon("search"),
               btnReset    = icon("remove"),
-              width       = "100%"
-            ) #|>
-              # as.character() |>
-              # gsub(pattern = "!important", replacement = "", fixed = TRUE) |>
-              # HTML()
+              width       = "100%",
+              label       = NULL
+            )
           )
         )
       ),
@@ -75,7 +74,6 @@ module_suchen_server <- function(id = "suchen", type = "all") {
     id,
     function(input, output, session) {
       ns <- session$ns
-
 
       current <-
         reactiveValues(
@@ -131,8 +129,8 @@ module_suchen_server <- function(id = "suchen", type = "all") {
                 current_url  = session$clientData$url_hash,
                 current_page = "suchen",
                 parameter    = "term",
-                value        = URLencode(input$suchen),
-                old_value    = get_query_param("term")
+                value        = URLencode(input$suchen, reserved = TRUE),
+                old_value    = URLencode(get_query_param("term"), reserved = TRUE)
               )
             )
           }

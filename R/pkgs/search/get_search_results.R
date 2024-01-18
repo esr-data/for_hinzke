@@ -1,8 +1,8 @@
 
 box::use(
   stringr    = stringr[str_split_1, str_trim],
-  ms_string  = . / string_prep[extract_operators],
-  ms_data    = . / convert_magpie_data[get_valid_conn, get_column_vector, get_db_data_long, get_db_data_unique],
+  ms_string  = . / utils[extract_operators],
+  ms_data    = . / convert_magpie_data[get_column_vector, get_db_data_unique],
   ms_search  = . / search_converted_data[search_unique_db_values],
   ms_rank    = . / rank_search_results[rank_search_results, filter_by_ranking_weight],
   ms_combine = . / combine_by_logical_operators[combine_by_logical_operators, aggregate_ranking],
@@ -11,9 +11,8 @@ box::use(
 
 print_messages <- FALSE
 
-#' Missing description
+# Get all DB matches, their origin and their ranking given a search term and converted magpie data 
 #' @export
-
 get_results <- function(search_term,
                         db_values_long,
                         min_ranking_weight = 0.65,
@@ -22,7 +21,7 @@ get_results <- function(search_term,
                         max_distance = 2,
                         limit_results_to = NA) {
   search_strs <-
-    unlist(lapply(stringr$str_split_1(search_term, "\\&|\\|"), FUN = str_trim))
+    unlist(lapply(stringr$str_split_1(search_term, "\\&|\\|"), FUN = stringr$str_trim))
 
   operators <-
     ms_string$extract_operators(search_term = search_term)
@@ -60,7 +59,6 @@ get_results <- function(search_term,
         current_results = final_results,
         operator = operators[i]
       )
-
   }
   final_results <-
     ms_combine$aggregate_ranking(final_results = final_results)

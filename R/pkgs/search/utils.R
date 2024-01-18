@@ -1,7 +1,5 @@
 
 box::use(
-  DBI = DBI[dbGetQuery, dbIsValid],
-  dplyr = dplyr[filter, select, mutate, group_by_at],
   stringr = stringr[str_replace_all, str_squish]
 )
 
@@ -22,4 +20,9 @@ extract_operators <- function(search_term) {
   operators <- unlist(stringr$str_extract_all(search_term, "[\\|&]"))
   operators <- c("", operators)
   return (operators)
+}
+
+#' @export
+raise_invalid_connection_error <- function() {
+  stop("You cannot use svMagpie, therefore you need to pass a valid connection object!")
 }

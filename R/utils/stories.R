@@ -38,6 +38,10 @@ get_stories <- function(){
     output$author[i] <- paste(get_authors(output$href[i]), collapse = ";")
   }
   output$id <- 1:nrow(output)
+  output$size <- "1200px"
+  output$size[output$folder == "hf2_gruendung"] <- "2700px"
+  output$size[output$folder == "hf1_arbeiter_doktor"] <- "6000px"
+  output$size[output$folder == "hf1_lktrichter"] <- "1900px"
   return(output)
 }
 
@@ -120,6 +124,17 @@ get_story_by_id <- function(id){
     return(stories$href[match(id, stories$id)])
   }
   return(stories$href[1])
+}
+
+get_story_size_by_id <- function(id){
+  if (is.null(id)) return("1200px")
+  if (length(id) != 1) return("1200px")
+  if (is.na(id)) return("1200px")
+
+  if (id %in% stories$id){
+    return(stories$size[match(id, stories$id)])
+  }
+  return("1200px")
 }
 
 stories <- get_stories()

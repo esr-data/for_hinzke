@@ -18,6 +18,7 @@ box::use(
   ../../R/pages/team[module_team_ui],
   ../../R/pages/karten[module_karten_ui],
   ../../R/pages/monitor_inhalt[module_monitor_inhalt_ui],
+  ../../R/utils/ui[draw_search],
   shiny[
     NS, moduleServer, observeEvent,
     fluidPage, tagList, tags, HTML,
@@ -192,16 +193,13 @@ draw_header <- function(){
       class = "top__right",
       div(
         class = "top-search",
-        searchInput(
-          inputId     = "suchen",
+        draw_search(
+          inputId     = "nav_suchen",
           placeholder = "Datenbank durchsuchen ...",
           btnSearch   = icon("search"),
           btnReset    = icon("remove"),
           width       = "100%"
-        ) # |>
-          # as.character() |>
-          # gsub(pattern = "!important", replacement = "", fixed = TRUE) |>
-          # HTML()
+        )
       )
     ),
     HTML("</header>")
