@@ -1,0 +1,24 @@
+drittmittel_hochschule:
+  label: "Drittmittel an Hochschulen (je Hochschule)"
+  sql: datensatz_drittmittel_hochschule
+  beschreibung: Datensatz zu den Drittmittel an Hochschule auf Ebene der Hochschule als Zeitreihe.
+  variable: 1
+  handlungsfeld: 2
+drittmittel_aggregate:
+  label: "Drittmittel an Hochschulen (Aggregate)"
+  sql: datensatz_drittmittel_aggregate
+  beschreibung: Datensatz zu den Drittmittel an Hochschule auf Aggregatebene, z.B. Bundesländer oder nach Trägern aggregiert.
+  variable: 1
+  handlungsfeld: 2
+fue_erhebung:
+  label: "FuE-Erhebung"
+  sql: datensatz_fue_erhebung
+  beschreibung: Datensatz zu den Drittmittel an Hochschule auf Aggregatebene, z.B. Bundesländer oder nach Trägern aggregiert.
+  variable: 1
+  handlungsfeld: 2
+hbr_report:
+  label: "Hochschulbildungsreprot"
+  sql: datensatz_hbr_report
+  beschreibung: Datensatz zu den Drittmittel an Hochschule auf Aggregatebene, z.B. Bundesländer oder nach Trägern aggregiert.
+  variable: 1
+  handlungsfeld: 2

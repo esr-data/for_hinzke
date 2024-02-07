@@ -29,7 +29,7 @@ module_home_ui <- function(id = "home", label = "m_home") {
           uiOutput(ns("willkommen"))
         ),
         div(
-          style = "padding: 50px; border: 2px solid var(--grey); border-radius: 8px;",
+          style = "padding: 70px; border: 2px solid var(--grey); border-radius: 8px;",
           slickROutput(ns("slick_output"), width = '500px', height = '500px')
         )
       ),
