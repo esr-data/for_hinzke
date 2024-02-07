@@ -1,6 +1,7 @@
 
 box::use(
-  shiny
+  shiny,
+  httr[timeout, GET]
 )
 
 read_markdown <- function(slug){
@@ -10,7 +11,15 @@ read_markdown <- function(slug){
   text <-
     suppressWarnings(
       try(
-        readLines(sprintf("http://172.16.0.17:3000/artikel/%s/markdown", slug)),
+        as.character(
+          GET(
+            sprintf(
+              "http://172.16.0.17:3000/artikel/%s/markdown",
+              slug
+            ),
+            timeout(.5)
+          )
+        ),
         silent = TRUE
       )
     )

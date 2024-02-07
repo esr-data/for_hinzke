@@ -205,7 +205,7 @@ module_indikator_server <- function(id = "indikator", type = "all") {
                     variable <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_in_vr))
 
                     if (nrow(variable) == 1){
-
+                      print(variable$id)
                       tabelle <- load_table_by_variable(variable$id)
 
                       daten$filter  <- data.frame()

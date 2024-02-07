@@ -439,6 +439,30 @@ p.rank-list-title {
   clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
 }
 
+/* Karrusel --------- */
+
+#home-slick_output {
+  margin: 0px!important;
+}
+
+.slick-prev:before, .slick-next:before {
+  color: var(--grey);
+  font-size: 40px;
+  opacity: 1;
+}
+
+.slick-prev {
+  left: -50px;
+}
+
+.slick-next {
+  right: -27.5px;
+}
+
+.slick-prev:hover:before, .slick-next:hover:before {
+  color: var(--blue);
+}
+
 /* Content-Box ---------------------------------------------------------------------------------- */
 
 .content-box {
@@ -478,10 +502,6 @@ p.rank-list-title {
   margin: 0 auto;
   padding: 65px 80px;
   background-color: white;
-}
-
-#home-slick_output {
-  margin: 0px!important;
 }
 
 .moodie_title::before,
@@ -806,6 +826,20 @@ img.thumbnail-image.card-img {
 
 .top-search .shiny-input-container{
   margin: auto;
+}
+
+.book {
+  /*writing-mode: vertical-rl;*/
+  margin-right: 20px;
+  border: 1px solid black;
+  border-radius: 0px;
+  background-color: var(--blue);
+  color: white;
+  font-weight: 900;
+  width: 100%;
+  text-align: left;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 /* ---------------------------------------------------------------------------------------------*/

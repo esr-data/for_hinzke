@@ -6,12 +6,14 @@ box::use(
   shiny[HTML, div, icon, p],
   DBI[dbGetQuery, dbConnect],
   RSQLite[SQLite],
-  data.table[fread]
+  data.table[fread],
+  duckdb[duckdb]
 )
 
-con <- dbConnect(SQLite(), "data/magpie.sqlite")
-con_cache <- dbConnect(SQLite(), "data/search_cache.sqlite")
-search_cache <- fread("data/search_cache.csv")
+#con <- dbConnect(SQLite(), "data/magpie.sqlite")
+con <- dbConnect(duckdb(), "data/magpie.db", read_only = TRUE)
+# search_cache <- fread("data/search_cache.csv")
+search_cache <- dbGetQuery(con, "SELECT * FROM search_cache")
 
 #' Missing description
 #' @export
@@ -119,5 +121,5 @@ search_database <- function(search_term, table = NA){
 #' @export
 
 get_cache_labels <- function(){
-  dbGetQuery(con_cache, "SELECT * FROM column")
+  dbGetQuery(con, "SELECT * FROM search_cache_column")
 }

@@ -41,7 +41,8 @@ pkg_list <-
   unique() |>
   sort()
 
-pkg_list <- pkg_list[!(pkg_list %in% x[,"Package"])]
+pkg_list <- pkg_list[!(pkg_list %in% rownames(installed.packages()))]
+pkg_list <- pkg_list[!(pkg_list %in% "keaVis")]
 if (length(pkg_list) > 0) install.packages(pkg_list)
 
 rm(pkg_list)

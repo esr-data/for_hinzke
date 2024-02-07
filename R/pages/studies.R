@@ -93,6 +93,7 @@ create_box_studies <-
           sprintf(
             "https://stifterverband.shinyapps.io/%s/", path
           ),
+        target = "_blank",
         div(
           class = sprintf("studies_box %s", tolower(typ)),
           div(
@@ -100,8 +101,8 @@ create_box_studies <-
             title
           ),
           img(
-            class = "studies_img",
-            src = sprintf("img/%s", img_front),
+            class  = "studies_img",
+            src    = sprintf("img/%s", img_front),
             onmouseover = sprintf("this.src = 'img/%s'", img_back),
             onmouseout  = sprintf("this.src = 'img/%s'", img_front)
           ),
@@ -168,7 +169,7 @@ create_all_boxes_studies <- function(type){
           "Bildung",
           "Hochschul-Barometer",
           "TODO",
-          "TODO",
+          "studie_hochschulbarometer_red.png",
           "TODO",
           "TODO",
           "Hochschul-Barometer"
@@ -212,9 +213,9 @@ create_all_boxes_studies <- function(type){
         c(
           "Bildung",
           "Stiftungsprofessuren",
-          "In diesem Datenportal stellt der Stifterverband Daten zu den über ihn eingerichteten Stiftungsprofessuren zur Verfügung (Stand 11.10.2023).",
-          "TODO",
-          "TODO",
+          "Übersicht und Daten zu Stiftungsprofessuren, u.a. im Rahmen einer interaktiven Deutschlandkarte",
+          "studie_professur.svg",
+          "studie_professur_alt.svg",
           "Der Stifterverband fördert seit Mitte der 1980er-Jahre Stiftungsprofessuren an deutschen Hochschulen. Die Anzahl und die Bedeutung von Stiftungsprofessuren haben über die Jahre zugenommen, denn Wirtschaft und Wissenschaft profitieren gleichermaßen von ihnen.",
           "Stiftungsprofessuren"
         )
