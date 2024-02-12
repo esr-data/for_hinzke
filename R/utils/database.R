@@ -3,8 +3,9 @@
 #'
 box::use(
   ../../R/pkgs/search/get_search_results[get_results],
+  ../../R/utils/log[write_log],
   shiny[HTML, div, icon, p],
-  DBI[dbGetQuery, dbConnect],
+  DBI[dbGetQuery, dbConnect, dbDisconnect],
   RSQLite[SQLite],
   data.table[fread],
   duckdb[duckdb]
@@ -47,14 +48,18 @@ load_table_by_variable <- function(variable){
   daten <-
     get_query(
       sprintf(
-        "SELECT daten.id, variable.beschr as variable, jahr, wert, wert_einheit.beschr as einheit
+        "SELECT daten.id, variable.beschr as variable, zeit_start, zeit_ende, zeit_einheit.beschr as zeit_einheit ,
+                wert, wert_einheit.beschr as einheit
          FROM daten
          LEFT JOIN wert_einheit ON daten.wert_einheit_id = wert_einheit.id
+         LEFT JOIN zeit_einheit ON daten.zeit_einheit_id = zeit_einheit.id
          LEFT JOIN variable     ON daten.variable_id = variable.id
          WHERE variable_id = %s",
         variable
       )
     )
+
+  daten$jahr <- as.numeric(ifelse(daten$zeit_einheit == "Jahr", substr(daten$zeit_ende, 1, 4), NA))
 
   reichweite <-
     "SELECT reichweite.id as id, reichweite.beschr as reichweite, rtyp.beschr as reichweite_typ, rklasse.beschr as reichweite_klasse
@@ -122,4 +127,13 @@ search_database <- function(search_term, table = NA){
 
 get_cache_labels <- function(){
   dbGetQuery(con, "SELECT * FROM search_cache_column")
+}
+
+#' Missing description
+#' @export
+
+disconnect_db <- function(){
+  write_log("Verbindung zur Datenbank geschlossen!")
+  dbDisconnect(con, shutdown = TRUE)
+  return(invisible(NULL))
 }
