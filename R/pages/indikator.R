@@ -205,7 +205,6 @@ module_indikator_server <- function(id = "indikator", type = "all") {
                     variable <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_in_vr))
 
                     if (nrow(variable) == 1){
-                      print(variable$id)
                       tabelle <- load_table_by_variable(variable$id)
 
                       daten$filter  <- data.frame()
@@ -675,7 +674,7 @@ indikator_ini_param_hnd <- function(x){
 #' Missing description
 #' @noRd
 
-indikator_recode_param_int <- function(x, vec = FALSE){
+indikator_recode_param_int <- function(x, vec = FALSE){ #TODO in utils packen
   if (is.null(x)) return("")
   if (vec) x <- strsplit(x, ",")[[1]]
   x <- suppressWarnings(as.integer(x))
