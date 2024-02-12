@@ -110,3 +110,14 @@ recode_parameter <- function(x, is_vector = FALSE, is_integer = TRUE, value_set 
   if (any(is.na(x))) return("")
   return(sort(x))
 }
+
+#' Missing description
+#' @export
+
+recode_param_int <- function(x, vec = FALSE){
+  if (is.null(x)) return("")
+  if (vec) x <- strsplit(x, ",")[[1]]
+  x <- suppressWarnings(as.integer(x))
+  if (any(is.na(x))) return("")
+  return(sort(x))
+}

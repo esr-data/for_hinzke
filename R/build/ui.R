@@ -23,13 +23,13 @@ box::use(
     NS, moduleServer, observeEvent,
     fluidPage, tagList, tags, HTML,
     navbarPage, icon, actionButton,
-    column, div, h4, h5, br,
+    column, div, h4, h5, br, a,
     uiOutput
   ],
   bsplus[use_bs_tooltip],
   shiny.router[router_ui, route],
   shinyjs[useShinyjs],
-  shinyWidgets[searchInput],
+  shinyWidgets[searchInput, radioGroupButtons],
   cicerone[use_cicerone]
 )
 
@@ -58,10 +58,7 @@ draw_ui <- function(){
     fluidPage(
       style = "padding:0; background-color: #F2F2F2; display: flex;",
       id    = "main-body",
-      div(
-        id  = "sidebar",
-        draw_sidebar()
-      ),
+      draw_sidebar(),
       div(
         id  = "content-body",
         router_ui(
@@ -121,35 +118,44 @@ draw_footer <- function() {
 #' @noRd
 
 draw_sidebar <- function(){
-  tagList(
+  div(
+    id = "sidebar",
     div(
       class = "sidebar_group",
-      h4("Handlungsfelder", class = "sidebar_title", style = "margin-top: 40px;"),
+      h4("Formate", class = "sidebar_title"),
       div(
         style = "background-color: white;",
-        actionButton("sb_handlung1",  label = HTML("Bildung &<br>Kompetenzen"),   class = "sidebar_button_hf_1"),
-        actionButton("sb_handlung2",  label = HTML("Forschung &<br>Innovation"),  class = "sidebar_button_hf_2"),
+        actionButton("sb_explorer", label = "Daten Explorer", class = "sidebar_button", icon = icon("magnifying-glass")),
+        uiOutput("sidebar_dynamic_explorer"),
+        actionButton("sb_monitor",  label = "Monitoring",     class = "sidebar_button", icon = icon("chart-pie")),
+        uiOutput("sidebar_dynamic_monitor"),
+        actionButton("sb_stories",  label = "Analysen",       class = "sidebar_button", icon = icon("newspaper")),
+        uiOutput("sidebar_dynamic_stories"),
+        actionButton("sb_studies",  label = "Projekte",       class = "sidebar_button", icon = icon("square-poll-vertical")),
+        uiOutput("sidebar_dynamic_studies")
+      )
+    ),
+    div(
+      id = "sidebar_group_filter",
+      class = "sidebar_group div_hide",
+      h4("Filter", class = "sidebar_title"),
+      class = "radio_handlung_sidebar",
+      radioGroupButtons(
+        inputId      = "sb_handlung",
+        label        = NULL,
+        choiceValues = c("alle", "bildung", "forschung"),
+        choiceNames  = c("Alle Inhalte", "Bildung &<br>Kompetenzen", "Forschung &<br>Innovation"),
+        selected     = NULL,
+        direction    = "vertical",
+        checkIcon    = list(
+          yes = tags$i(class = "fa fa-check-square"),
+          no  = tags$i(class = "fa fa-square-o")
+        )
       )
     ),
     div(
       class = "sidebar_group",
-      h4("Formate", class = "sidebar_title", style = "margin-top: 40px;"),
-      div(
-        style = "background-color: white;",
-        actionButton("sb_stories",  label = "Stories",  class = "sidebar_button", icon = icon("newspaper")),
-        actionButton("sb_monitor",  label = "Monitor",  class = "sidebar_button", icon = icon("chart-pie")),
-        actionButton("sb_explorer", label = "Explorer", class = "sidebar_button", icon = icon("magnifying-glass")),
-        actionButton("sb_studies",  label = "Studies",  class = "sidebar_button", icon = icon("square-poll-vertical")),
-      )
-    ),
-    div(
-      class = "sidebar_group",
-      h4("Navigation", class = "sidebar_title", style = "margin-top: 40px;"),
-      uiOutput("sidebar_dynamic")
-    ),
-    div(
-      class = "sidebar_group",
-      h4("Weitere Inhalte", class = "sidebar_title", style = "margin-top: 40px;"),
+      h4("Weitere Inhalte", class = "sidebar_title"),
       div(
         style = "background-color: white;",
         actionButton("sb_team",        label = "SV DATA",     class = "sidebar_button", icon = icon("user-group")),
@@ -168,42 +174,54 @@ draw_sidebar <- function(){
 
 draw_header <- function(){
   tagList(
-    HTML("<header class='top' style = 'display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; background-color: white; max-width: var(--max-width); margin: 0 auto; padding: 25px;'>"),
+    HTML("<header class='top sticky'>"),
     div(
-      class = "top__left",
-      style = "display: flex;",
-      actionButton(
-        "button_minimize",
-        label = "",
-        class = "sidebar_button",
-        icon = icon("bars"),
-        style = "width: auto; border: 0px solid white; font-size: 24px; color: var(--blue)"
-      ),
-      h5(
-        "SV DATENPORTAL",
-        id    = "header-left-title",
-        style = "font-weight: 900; font-size: 26px; margin: auto 0;"
-      ),
-    ),
-    div(
-      class = "top__middle",
-      HTML("<img class='brand__logo' src='https://stifterverband.org//themes/custom/cake/res/logo_stifterverband_wide.svg' alt='Logo Stifterverband'>")
-    ),
-    div(
-      class = "top__right",
+      class = "header-panel",
       div(
-        class = "top-search",
-        draw_search(
-          inputId     = "nav_suchen",
-          placeholder = "Datenbank durchsuchen ...",
-          btnSearch   = icon("search"),
-          btnReset    = icon("remove"),
-          width       = "100%"
+        class = "header-left",
+        style = "display: flex;",
+        actionButton(
+          "button_minimize",
+          label = "",
+          class = "sidebar_button",
+          icon = icon("bars"),
+          style = "width: auto; border: 0px solid white; font-size: 24px; color: var(--blue)"
+        ),
+        a(
+          h5(
+            "SV DATENPORTAL",
+            id    = "header-left-title",
+            style = "font-weight: 900; font-size: 26px; margin: auto 0;"
+          ),
+          class = "header_link",
+          href = "/#!/"
+        ),
+      ),
+      div(
+        class = "header-middle",
+        a(
+          HTML("<img class='brand__logo' src='https://stifterverband.org//themes/custom/cake/res/logo_stifterverband_wide.svg' alt='Logo Stifterverband'>"),
+          class = "header_link",
+          href = "/#!/"
+        )
+      ),
+      div(
+        class = "header-right",
+        style = "display: flex; flex-direction: row-reverse;",
+        actionButton("sb_help", label = NULL, icon("circle-question")),
+        div(
+          class = "top-search",
+          draw_search(
+            inputId     = "nav_suchen",
+            placeholder = "Datenbank durchsuchen ...",
+            btnSearch   = icon("search"),
+            btnReset    = icon("remove"),
+            width       = "100%"
+          )
         )
       )
     ),
-    HTML("</header>")
-
+    HTML("</header>"),
+    div(class = "header-bottom")
   )
 }
-

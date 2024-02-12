@@ -37,3 +37,14 @@ read_markdown <- function(slug){
   }
   return(shiny::markdown(text))
 }
+
+
+markdown_cache <-
+  list(
+    willkommen        = read_markdown("willkommen"),
+    storybeschreibung = read_markdown("storybeschreibung")
+  )
+
+read_markdown_cache <- function(slug){
+  markdown_cache[[slug]]
+}
