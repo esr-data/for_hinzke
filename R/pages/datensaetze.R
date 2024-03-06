@@ -59,8 +59,18 @@ get_available_datensaetze <- function(){
 }
 
 test <- function(){
+
+
+ apex(
+    data = data.frame(Anzahl = nrow(daten)),
+    mapping = aes(Anzahl)
+  )
+
+
   x <- get_available_datensaetze()
-  daten <- get_sql(x$sql[1], TRUE)
+  daten <- get_sql(x$sql[2], TRUE)
+
+  apexcharter
 
   daten$id <- NULL
 

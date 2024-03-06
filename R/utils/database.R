@@ -1,8 +1,8 @@
-
 #' Necessary Packages/Functions
 #'
+
 box::use(
-  ../../R/pkgs/search/get_search_results[get_results],
+  ../../R/pkgs/search/search[search_tables, get_data_to_search],
   ../../R/utils/log[write_log],
   shiny[HTML, div, icon, p],
   DBI[dbGetQuery, dbConnect, dbDisconnect],
@@ -11,10 +11,8 @@ box::use(
   duckdb[duckdb]
 )
 
-#con <- dbConnect(SQLite(), "data/magpie.sqlite")
 con <- dbConnect(duckdb(), "data/magpie.db", read_only = TRUE)
-# search_cache <- fread("data/search_cache.csv")
-search_cache <- dbGetQuery(con, "SELECT * FROM search_cache")
+data_to_search <- get_data_to_search(con = con)
 
 #' Missing description
 #' @export
@@ -37,7 +35,14 @@ get_sql <- function(x, query_sql = FALSE){
 #' @export
 
 get_query <- function(x){
-  dbGetQuery(con, x)
+  dbGetQuery(conn = con, x)
+}
+
+#' Missing description
+#' @export
+
+get_search_data <- function(){
+  data_to_search
 }
 
 #' Missing description
@@ -113,12 +118,15 @@ load_table_by_variable <- function(variable){
 
 search_database <- function(search_term, table = NA){
   results <-
-    get_results(
+    search_tables(
       search_term,
-      db_values_long = as.data.frame(search_cache),
-      conn  = con,
-      table = table
+      min_ranking_weight     = 0.53,
+      data_to_search_through = data_to_search,
+      beautify_results       = FALSE,
+      table                  = table,
+      print_messages         = FALSE
     )
+
   return(results)
 }
 

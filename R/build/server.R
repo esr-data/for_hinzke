@@ -5,6 +5,7 @@ box::use(
   ../../R/pages/explorer[module_explorer_server, report_explorer_subpages],
   ../../R/pages/indikator[module_indikator_server],
   ../../R/pages/suchen[module_suchen_server],
+  ../../R/pages/suchen_ergebnis[module_suche_ergebnis_server],
   ../../R/pages/home[module_home_server],
   ../../R/pages/monitor[module_monitor_server],
   ../../R/pages/studies[module_studies_server],
@@ -197,13 +198,9 @@ server <- function(input, output, session) {
       if (length(suchwort) == 1){
         if (!is.na(suchwort)){
           if (suchwort != ""){
-            hf <- ""
-            if (sidebar$button$value_1 != ""){
-              hf <- paste0("hf=", gsub("handlung", "", sidebar$button$value_1), "&")
-            }
-            updateSearchInput(session = session, inputId = "suchen", value = "")
-            runjs("document.getElementById('suchen_text').blur();")
-            change_page(paste0("suchen?", hf, "term=", URLencode(suchwort, reserved = TRUE)))
+            updateSearchInput(session = session, inputId = "nav_suchen", value = "")
+            runjs("document.getElementById('nav_suchen_text').blur();")
+            change_page(paste0("suchen?term=", URLencode(suchwort, reserved = TRUE)))
           }
         }
       }
@@ -220,6 +217,7 @@ server <- function(input, output, session) {
   module_explorer_server()
   module_indikator_server()
   module_suchen_server()
+  module_suche_ergebnis_server()
   module_home_server()
   module_studies_server()
   module_stories_server()

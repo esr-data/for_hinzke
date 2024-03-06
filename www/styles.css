@@ -963,4 +963,143 @@ img.thumbnail-image.card-img {
   text-decoration: none;
 }
 
+/* Reactable in den Suchergebnisse */
+
+.suche-tabelle-treffer {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  text-align: center;
+  width: fit-content;
+  border-bottom: 2px solid white;
+  transition: all .25s ease;
+}
+
+.suche-tabelle-beschr {
+  padding: 8px;
+  color: var(--blue);
+  font-size: 20px;
+}
+
+.suche-tabelle-typ {
+  margin: 4px;
+  padding: 4px 8px;
+  background: var(--grey);
+  color: white;
+  border: 1px solid var(--grey);
+  border-radius: 10px;
+  font-size: 20px;
+  height: fit-content;
+}
+
+.suche-tabelle-range {
+  text-align: center;
+  margin: 12px 0;
+  padding: 6px;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.suche-tabelle-typ.treffer-reichweite {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.suche-tabelle-typ.treffer-variable {
+    background-color: var(--blue);
+    border-color: var(--blue);
+}
+
+.suche-tabelle-typ.treffer-variable {
+    background-color: var(--beige);
+    border-color: var(--beige);
+}
+
+.treffer-link {
+  display: none;
+}
+
+.treffer-link div {
+  text-align: center;
+  font-weight: 900;
+  line-height: 1;
+  width: min-content;
+}
+
+.treffer-link i {
+  color: var(--blue);
+  font-size: 22px;
+  margin: auto 8px;
+}
+
+.treffer-link:hover {
+  text-decoration:none!important;
+}
+
+.treffer-link:hover i,
+.treffer-link:hover div {
+  color: var(--red);
+  text-decoration:none!important;
+}
+
+.suche-tabelle-treffer-container {
+  display: flex;
+}
+
+.suche-tabelle-treffer-container i {
+  margin: auto 10px;
+  color: var(--very-dark-grey);
+  font-size: 30px;
+}
+
+.suchergebnisse div div .rt-thead {
+    display: none;
+}
+
+.rt-tr-highlight:hover .rt-td .rt-td-inner .rt-text-content div .suche-tabelle-treffer-container .suche-tabelle-treffer {
+  border-bottom: 2px solid var(--blue);
+	font-weight: 900;
+}
+
+.rt-tr-highlight:hover .rt-td .rt-td-inner .rt-text-content div div a.treffer-link {
+  display: flex;
+}
+
+.suchergebnisse .reactable .Reactable .rt-tbody .rt-tr-group {
+  border-bottom: 2px dashed var(--light-grey);
+}
+
+.treffer-mehrfachtreffer-symbol {
+  transition: all .5s ease;
+  color: var(--grey);
+  font-size: 26px;
+}
+
+.rt-tr-highlight:hover .rt-td .rt-td-inner .rt-text-content div .suche-tabelle-treffer-container .treffer-mehrfachtreffer-symbol {
+    --fa-rotate-angle: 40deg;
+    color: var(--red);
+}
+
+.suchergebnisse .reactable .Reactable .rt-pagination {
+  font-size: 20px;
+}
+
+/*---------------------------------------------------------------------------------------------------*/
+
+.suchergebnisse-fuer {
+  padding: 8px;
+  background-color: var(--color-background);
+  color: var(--red);
+}
+
+.suchergebnisse-fuer .fa-solid {
+  color: var(--red);
+  font-size: 12px;
+}
+
+.suchergebnisse-fuer .fa-quote-left {
+  padding-left: 5px;
+  padding-right: 0px;
+}
+
 
