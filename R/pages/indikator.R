@@ -108,7 +108,7 @@ module_indikator_server <- function(id = "indikator", type = "all") {
             paste0(
               "parameter <- reactiveValues(",
               paste(
-                paste(c("in_gp", "in_tg", "hf", "in_vr", filter_param$param), "= ''"),
+                paste(c("gruppe", "tag", "hf", "var", filter_param$param), "= ''"),
                 collapse = ","
               ),
               ")"
@@ -150,24 +150,24 @@ module_indikator_server <- function(id = "indikator", type = "all") {
 
                 }
 
-                # PARAMETER IN_TG - Update der Tags __________________________________________________
+                # PARAMETER tag - Update der Tags __________________________________________________
 
-                param_in_tg <-
-                  get_query_param("in_tg") |>
+                param_tag <-
+                  get_query_param("tag") |>
                   indikator_recode_param_int(vec = TRUE)
 
                 # Nur Änderungen vornehmen, wenn sich etwas geändert hat
-                if (!(all(param_in_tg %in% parameter$in_tg) &
-                      all(parameter$in_tg %in% param_in_tg))){
+                if (!(all(param_tag %in% parameter$tag) &
+                      all(parameter$tag %in% param_tag))){
 
-                  parameter$in_tg <- param_in_tg
-                  selected_tags   <- input_tag()$beschr[input_tag()$id %in% param_in_tg]
+                  parameter$tag <- param_tag
+                  selected_tags   <- input_tag()$beschr[input_tag()$id %in% param_tag]
 
                   # Picker updaten, wenn ich die ausgewählten Items unterscheiden:
                   # Das ist der Fall, wenn die Paramter-Eingabe über die URL und nicht den Picker erfolgt
                   if (!(all(selected_tags %in% input$select_tag) &
                         all(input$select_tag %in% selected_tags))){
-                    updatePickerInput(session, "select_tag", selected = input_tag()$beschr[input_tag()$id %in% param_in_tg])
+                    updatePickerInput(session, "select_tag", selected = input_tag()$beschr[input_tag()$id %in% param_tag])
                   }
 
                   # Aktualisierung der Variablen aus Basis der Tags
@@ -181,16 +181,16 @@ module_indikator_server <- function(id = "indikator", type = "all") {
                   aenderung <- TRUE
                 }
 
-                # PARAMETER IN_VR - Update der Variablen _____________________________________________
+                # PARAMETER var - Update der Variablen _____________________________________________
 
-                param_in_vr <-
-                  get_query_param("in_vr") |>
+                param_var <-
+                  get_query_param("var") |>
                   indikator_recode_param_int()
 
-                if (param_in_vr != parameter$in_vr){
-                  parameter$in_vr <- param_in_vr
+                if (param_var != parameter$var){
+                  parameter$var <- param_var
 
-                  if (param_in_vr == ""){
+                  if (param_var == ""){
 
                     daten$filter  <- data.frame()
                     daten$gruppen <- c()
@@ -202,7 +202,7 @@ module_indikator_server <- function(id = "indikator", type = "all") {
 
                   } else {
 
-                    variable <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_in_vr))
+                    variable <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_var))
 
                     if (nrow(variable) == 1){
                       tabelle <- load_table_by_variable(variable$id)
@@ -222,18 +222,18 @@ module_indikator_server <- function(id = "indikator", type = "all") {
                   aenderung <- TRUE
                 }
 
-                # PARAMETER IN_GP - Update der Gruppenauswahl / Eimer ________________________________
+                # PARAMETER gruppe - Update der Gruppenauswahl / Eimer ________________________________
 
-                param_in_gp <-
-                  get_query_param("in_gp") |>
+                param_gruppe <-
+                  get_query_param("gruppe") |>
                   indikator_recode_param_int(vec = TRUE)
 
-                if (!(all(param_in_gp %in% parameter$in_gp) &
-                      all(parameter$in_gp %in% param_in_gp))){
+                if (!(all(param_gruppe %in% parameter$gruppe) &
+                      all(parameter$gruppe %in% param_gruppe))){
 
-                  parameter$in_gp <- param_in_gp
+                  parameter$gruppe <- param_gruppe
                   daten_gruppe <- 1:length(daten$gruppen)
-                  daten_gruppe <- daten_gruppe[daten_gruppe %in% param_in_gp]
+                  daten_gruppe <- daten_gruppe[daten_gruppe %in% param_gruppe]
 
                   if (length(daten_gruppe) > 0){
                     daten$auswahl <- daten$gruppen[daten_gruppe]
@@ -274,8 +274,7 @@ module_indikator_server <- function(id = "indikator", type = "all") {
                 # PARAMETER der Filter _______________________________________________________________
 
                 for (filter_id in filter_param$param){
-                  # in_re15
-                  #filter_id <- "in_re15"
+
                   param_filter <-
                     get_query_param(filter_id) |>
                     indikator_recode_param_int(vec = TRUE)
@@ -381,13 +380,12 @@ module_indikator_server <- function(id = "indikator", type = "all") {
               add_param_in_url(
                 current_url  = current_url,
                 current_page = "indikator",
-                parameter    = "in_tg",
+                parameter    = "tag",
                 value        = new_value,
-                old_value    = get_query_param("in_tg")
+                old_value    = get_query_param("tag")
               )
 
             if (new_url != current_url){
-              # print(paste("tag", 1)) # BENCH-PRINT
               change_page(new_url)
             }
           }
@@ -412,13 +410,12 @@ module_indikator_server <- function(id = "indikator", type = "all") {
               add_param_in_url(
                 current_url  = current_url,
                 current_page = "indikator",
-                parameter    = "in_vr",
+                parameter    = "var",
                 value        = new_value,
-                old_value    = get_query_param("in_vr")
+                old_value    = get_query_param("var")
               )
 
             if (new_url != current_url){
-              # print(paste("var", 1)) # BENCH-PRINT
               change_page(new_url)
             }
           }
@@ -435,6 +432,7 @@ module_indikator_server <- function(id = "indikator", type = "all") {
 
               current_url <- session$clientData$url_hash
               new_value   <- (1:length(daten$gruppen))[daten$gruppen %in% input$eimer_unterscheiden]
+
               if (length(new_value) == 0){
                 new_value <- ""
               } else {
@@ -445,9 +443,9 @@ module_indikator_server <- function(id = "indikator", type = "all") {
                 add_param_in_url(
                   current_url  = current_url,
                   current_page = "indikator",
-                  parameter    = "in_gp",
+                  parameter    = "gruppe",
                   value        = new_value,
-                  old_value    = get_query_param("in_gp")
+                  old_value    = get_query_param("gruppe")
                 )
 
               if (new_url != current_url){

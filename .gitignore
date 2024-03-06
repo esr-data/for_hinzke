@@ -75,3 +75,6 @@ rsconnect/
 *.sqlite
 *.csv
 *.db
+*.db.wal
+
+work_in_progress/*.R

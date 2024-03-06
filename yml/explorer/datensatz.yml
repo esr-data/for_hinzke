@@ -6,7 +6,7 @@ drittmittel_hochschule:
   handlungsfeld: 2
 drittmittel_aggregate:
   label: "Drittmittel an Hochschulen (Aggregate)"
-  sql: datensatz_drittmittel_aggregate
+  sql: datensatz_drittmittel_aggregiert
   beschreibung: Datensatz zu den Drittmittel an Hochschule auf Aggregatebene, z.B. Bundesländer oder nach Trägern aggregiert.
   variable: 1
   handlungsfeld: 2

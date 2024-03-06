@@ -1,55 +1,61 @@
+WITH
+ datenbasis AS (
+  SELECT *
+  FROM daten
+  WHERE daten.id IN (
+   SELECT reihe_id as id
+   FROM tag_link
+   WHERE tabelle_id = (SELECT id FROM tabelle WHERE bez = 'daten') AND
+         tag_id = (SELECT id FROM tag WHERE bez_lang = 'drittmittel_datensatz')
+  )
+ )
 SELECT
- daten.id AS id,
- daten.jahr,
+ datenbasis.id AS daten_id,
  variable.beschr AS variable,
- hochschule.beschr AS hochschule,
+ date_part('year', datenbasis.zeit_ende) AS jahr,
+ COALESCE(land.beschr, bundesland.beschr) AS bundesland,
  traeger.beschr AS traeger,
- bundesland.beschr AS bundesland,
- land.beschr AS land,
  hochschulart.beschr AS hochschulart,
- CAST(daten.wert AS numeric) AS wert,
+ CAST(datenbasis.wert AS numeric) AS wert,
  wert_einheit.beschr AS wert_einheit
-FROM tag_link
-LEFT JOIN daten
- ON tag_link.reihe_id = daten.id AND
-    tag_link.tabelle_id = (SELECT id FROM tabelle WHERE bez = 'daten') AND
-    tag_link.tag_id = (SELECT id FROM tag WHERE bez_lang = 'drittmittel_datensatz')
+FROM datenbasis
 LEFT JOIN (
  SELECT *
  FROM daten_reichweite
  LEFT JOIN reichweite ON daten_reichweite.reichweite_id = reichweite.id
  WHERE reichweite.reichweite_typ_id = (SELECT id FROM reichweite_typ WHERE bez_lang = 'hochschule')
-) hochschule ON daten.id = hochschule.daten_id
+) hochschule ON datenbasis.id = hochschule.daten_id
 LEFT JOIN (
  SELECT *
  FROM daten_reichweite
  LEFT JOIN reichweite ON daten_reichweite.reichweite_id = reichweite.id
  WHERE reichweite.reichweite_typ_id = (SELECT id FROM reichweite_typ WHERE bez_lang = 'traeger')
-) traeger ON daten.id = traeger.daten_id
+) traeger ON datenbasis.id = traeger.daten_id
 LEFT JOIN (
  SELECT *
  FROM daten_reichweite
  LEFT JOIN reichweite ON daten_reichweite.reichweite_id = reichweite.id
  WHERE reichweite.reichweite_typ_id = (SELECT id FROM reichweite_typ WHERE bez_lang = 'hochschulart')
-) hochschulart ON daten.id = hochschulart.daten_id
+) hochschulart ON datenbasis.id = hochschulart.daten_id
 LEFT JOIN (
  SELECT *
  FROM daten_reichweite
  LEFT JOIN reichweite ON daten_reichweite.reichweite_id = reichweite.id
  WHERE reichweite.reichweite_typ_id = (SELECT id FROM reichweite_typ WHERE bez_lang = 'bundesland')
-) bundesland ON daten.id = bundesland.daten_id
+) bundesland ON datenbasis.id = bundesland.daten_id
 LEFT JOIN (
  SELECT *
  FROM daten_reichweite
  LEFT JOIN reichweite ON daten_reichweite.reichweite_id = reichweite.id
  WHERE reichweite.reichweite_typ_id = (SELECT id FROM reichweite_typ WHERE bez_lang = 'land')
-) land ON daten.id = land.daten_id
-LEFT JOIN wert_einheit ON daten.wert_einheit_id = wert_einheit.id
-LEFT JOIN variable ON daten.variable_id = variable.id
-LEFT JOIN (
- SELECT daten_id, GROUP_CONCAT(beschr, ';') AS beschr
- FROM daten_quelle daten_quelle
- LEFT JOIN quelle quelle ON daten_quelle.quelle_id = quelle.id
- GROUP BY daten_id
-) quelle_agg ON daten.id = quelle_agg.daten_id
-WHERE daten.id IS NOT NULL AND hochschule IS NULL
+) land ON datenbasis.id = land.daten_id
+LEFT JOIN wert_einheit ON datenbasis.wert_einheit_id = wert_einheit.id
+LEFT JOIN variable ON datenbasis.variable_id = variable.id
+WHERE datenbasis.id IS NOT NULL AND hochschule.beschr IS NULL
+ORDER BY
+ jahr DESC,
+ land DESC,
+ bundesland DESC NULLS LAST,
+ traeger DESC NULLS LAST,
+ hochschulart ASC NULLS LAST,
+ variable DESC
