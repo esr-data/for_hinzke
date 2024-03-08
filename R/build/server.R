@@ -93,7 +93,10 @@ server <- function(input, output, session) {
   observeEvent(
     get_page(),{
       page <- get_page()
-      if (page != current$page) current$page <- page
+      if (page != current$page){
+        current$page <- page
+        runjs("window.scrollTo(0,0);")
+      }
     }
   )
 
