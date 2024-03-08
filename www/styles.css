@@ -17,11 +17,12 @@
   --very-dark-grey:  #575757;
   --beige:           #ada58b;
   --dark-beige:      #8A8161;
-  --color-bildung:   #C3DA46;
-  --color-forschung: #A96BF1;
+  --mint:            #91BEA0;
+  --color-bildung:         #C3DA46;
+  --color-forschung:       #A96BF1;
   --color-bildung-trans:   #C3DA46cc;
   --color-forschung-trans: #A96BF1cc;
-  --color-background: #F2F2F2;
+  --color-background:      #F2F2F2;
 
   /*font*/
   --font-size: 18px;
