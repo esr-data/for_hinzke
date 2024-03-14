@@ -1103,4 +1103,7 @@ img.thumbnail-image.card-img {
   padding-right: 0px;
 }
 
-
+.suchergebnisse .reactable .Reactable .rt-table .rt-tbody .rt-no-data {
+  font-weight: 900;
+  font-size: 22px;
+}
