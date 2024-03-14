@@ -7,7 +7,7 @@ box::use(
 #' @export
 get_network_data <- function(){
 
-  tag <- get_query("SELECT * FROM tag")
+  tag <- get_query("SELECT * FROM tag WHERE NOT bez IN ('covid19')")
 
   #TODO Daten ergänzen; später auslagern!!
 

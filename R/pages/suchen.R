@@ -70,9 +70,10 @@ module_suchen_ui <- function(id = "suchen", label = "m_suchen", type = "all") {
       div(
         style = "padding: 10px; margin-top: 20px; margin-bottom: 20px;",
         withSpinner(
-          uiOutput(ns("results")),
+          uiOutput(ns("ergebnisse")),
           type = 4,
-          color = "#195365"
+          color = "#195365",
+          id = ns("ergebnisse_spinner")
         )
       )
     )
@@ -94,11 +95,6 @@ module_suchen_server <- function(id = "suchen", type = "all") {
             suchwort = "start"
           ),
           suche = ""
-        )
-
-      suche <-
-        reactiveValues(
-          ergebnisse = NULL
         )
 
       observeEvent(
@@ -157,29 +153,32 @@ module_suchen_server <- function(id = "suchen", type = "all") {
 
       observeEvent(
         current$suche, {
-          if (current$suche != ""){
-            suche$ergebnisse <- search_and_prepare(current$suche)
-          } else {
-            output$results <- renderUI({HTML("")})
-          }
-        }
-      )
 
-      observeEvent(
-        suche$ergebnisse, {
-          output$results <-
+          output$ergebnisse <-
             renderUI({
-              div(
+
+              if (current$suche != ""){
+                ergebnisse <- search_and_prepare(current$suche)
                 div(
-                  style = "margin-bottom: 28px;",
-                  HTML(sprintf("<h3 style = 'display: flex'><div style = 'padding: 8px'>Suchergebnisse für:</div> <div class = 'suchergebnisse-fuer'><sub><i class='fa-solid fa-quote-right'></i></sub>%s<sup><i class='fa-solid fa-quote-left'></i></sup></div></h3>", current$suche))
-                ),
-                div(
-                  class = "suchergebnisse",
-                  draw_reactable(suche$ergebnisse)
+                  div(
+                    style = "margin-bottom: 28px;",
+                    HTML(sprintf("<h3 style = 'display: flex'><div style = 'padding: 8px'>Suchergebnisse für:</div> <div class = 'suchergebnisse-fuer'><sub><i class='fa-solid fa-quote-right'></i></sub>%s<sup><i class='fa-solid fa-quote-left'></i></sup></div></h3>", current$suche))
+                  ),
+                  div(
+                    class = "suchergebnisse",
+                    draw_reactable(ergebnisse)
+                  )
                 )
-              )
+
+              } else {
+                HTML("")
+              }
+
             })
+
+
+
+
         }
       )
 
@@ -203,8 +202,11 @@ search_and_prepare <- function(suchwort){
       suche <-
         suche |>
         lapply(\(.) .[,variablen]) |>
-        rlist::list.rbind() |>
-        rbind(mehrfach_suche[,variablen])
+        rlist::list.rbind()
+      if (nrow(mehrfach_suche) > 0){
+        suche <- rbind(suche, mehrfach_suche[,variablen])
+      }
+
     } else {
       suche <- suche[[1]]
       suche <- suche[,variablen]
@@ -235,6 +237,26 @@ search_and_prepare <- function(suchwort){
 }
 
 draw_reactable <- function(suche){
+
+  if (nrow(suche) < 1){
+    return(
+      reactable(
+        data.frame(x = 0, y = 0)[0,],
+        columns =
+          list(
+            x = colDef(name = ""),
+            y = colDef(name = "")
+          ),
+        borderless = TRUE,
+        highlight  = TRUE,
+        language   =
+          reactableLang(
+            noData = "Keine Einträge in der Datenbank gefunden."
+          )
+      )
+    )
+  }
+
   suche$treffer_div <- paste("<div style = 'display: flex; margin: 12px 0;'>", suche$treffer_div, "<div style = 'width: 12px'></div>", suche$link, "</div>")
   suche$nr <- paste0("<div class = 'suche-tabelle-range'>", 1:nrow(suche), "</div>")
   reactable(
@@ -430,3 +452,32 @@ recode_treffer_id_in_link <- function(treffer_id){
     treffer_id
   )
 }
+
+
+
+
+#
+# showSpinner <- function(id, expr) {
+#   session <- shiny::getDefaultReactiveDomain()
+#
+#   idns <- session$ns(id)
+#   session$sendCustomMessage("shinycssloaders.show_spinner",  list(id = idns))
+#
+#   if (missing(expr)) {
+#     value <- invisible(NULL)
+#   } else {
+#     value <- expr
+#     on.exit(hideSpinner(id))
+#   }
+#
+#   value
+# }
+#
+# hideSpinner <- function(id) {
+#   session <- shiny::getDefaultReactiveDomain()
+#
+#   idns <- session$ns(id)
+#   session$sendCustomMessage("shinycssloaders.hide_spinner", list(id = idns))
+#
+#   invisible(NULL)
+# }
