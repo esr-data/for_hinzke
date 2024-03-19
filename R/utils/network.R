@@ -89,9 +89,9 @@ get_network_data <- function(){
   nodes[,"color.highlight.background"] <- "#195365"
 
   nodes$shape <- "dot"
-  nodes$shape[nodes$label == "Datensatz"]      <- "database"
-  nodes$shape[nodes$label == "SV Datenportal"] <- "box"
-  nodes$shape[nodes$id %in% tag$id[tag$eltern_id == tag$id[tag$bez_lang == "datensatz"]]] <- "triangle"
+  nodes$shape[nodes$label %in% "Datensatz"]      <- "database"
+  nodes$shape[nodes$label %in% "SV Datenportal"] <- "box"
+  nodes$shape[nodes$id %in% tag$id[tag$eltern_id %in% tag$id[tag$bez_lang %in% "datensatz"]]] <- "triangle"
   i <- c("Innovation", "Bildung", "Hochschule", "Wissen", "Forschung", "Forschung und Entwicklung", "Studium", "Wissenschaft")
   nodes$shape[nodes$label %in% i] <- "hexagon"
   rm(i)
@@ -102,7 +102,7 @@ get_network_data <- function(){
 
   nodes$group <- NA
 
-  i <- tag$id[tag$beschr == "Datensatz" | tag$beschr == "MINT-DataLab (Datensatz)"]
+  i <- tag$id[tag$beschr %in% "Datensatz" | tag$beschr %in% "MINT-DataLab (Datensatz)"]
   i <- nodes$label %in% tag$beschr[tag$id %in% i | tag$eltern_id %in% i]
   nodes$group[i] <- "daten"
 
@@ -114,7 +114,7 @@ get_network_data <- function(){
   i <- nodes$label %in% tag$beschr[tag$id %in% i | tag$eltern_id %in% i]
   nodes$group[i] <- "bildung"
 
-  ebene_1 <- tag$id[tag$eltern_id %in% tag$id[tag$bez == "zmb"]]
+  ebene_1 <- tag$id[tag$eltern_id %in% tag$id[tag$bez %in% "zmb"]]
   ebene_2 <- tag$id[tag$eltern_id %in% ebene_1]
   ebene_3 <- tag$id[tag$eltern_id %in% ebene_2]
   i <- nodes$label %in% tag$beschr[tag$id %in% c(ebene_1, ebene_2, ebene_3)]
@@ -126,28 +126,28 @@ get_network_data <- function(){
   nodes$group[i] <- "allgemein"
 
 
-  i <- nodes$group == "daten"
+  i <- nodes$group %in% "daten"
   nodes$color.background[i] <- "#D3E5D9"
   nodes$color.border[i] <- "#3E694D"
   nodes$color.highlight.border[i]     <- "#91BEA0"
   nodes$color.highlight.background[i] <- nodes$color.highlight.border[i]
   rm(i)
 
-  i <- nodes$group == "innovation"
+  i <- nodes$group %in% "innovation"
   nodes$color.background[i] <- "#D5B9F6"
   nodes$color.border[i] <- "#48108D"
   nodes$color.highlight.border[i]     <- "#9650EB"
   nodes$color.highlight.background[i] <- nodes$color.highlight.border[i]
   rm(i)
 
-  i <- nodes$group == "bildung"
+  i <- nodes$group %in% "bildung"
   nodes$color.background[i] <- "#E9FE89"
   nodes$color.border[i] <- "#83A100"
   nodes$color.highlight.border[i]     <- "#AFD700"
   nodes$color.highlight.background[i] <- nodes$color.highlight.border[i]
   rm(i)
 
-  i <- nodes$group == "allgemein"
+  i <- nodes$group %in% "allgemein"
   nodes$color.background[i] <- "#DFDBD1"
   nodes$color.border[i] <- "#5C5640"
   nodes$color.highlight.border[i]     <- "#AEA68B"

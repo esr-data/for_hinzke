@@ -19,7 +19,8 @@ formatNumeric <- function(x, digits = 2){
 
 convert_zeit <- function(x, to_warn = TRUE, return_data_frame = FALSE){
   x$zeit <- NA
-  x$zeit <- ifelse(x$zeit_einheit == "Jahr", substr(x$zeit_ende, 1, 4), x$zeit)
+  x$zeit <- ifelse(x$zeit_einheit %in% "Jahr",  substr(x$zeit_ende, 1, 4), x$zeit)
+  x$zeit <- ifelse(x$zeit_einheit %in% "Jahre", paste(substr(x$zeit_start, 1, 4), substr(x$zeit_ende, 1, 4), sep = "-"), x$zeit)
   if (any(is.na(x$zeit)) & to_warn) warning("Konvertierung des Zeitformates: Unbekannte Zeiteinheit!")
 
   if (!return_data_frame) return(x$zeit)
