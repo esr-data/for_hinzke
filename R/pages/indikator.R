@@ -3,6 +3,7 @@
 box::use(
   ../../R/utils/database[get_query, get_sql, load_table_by_variable],
   ../../R/utils/routing[add_param_in_url],
+  ../../R/pkgs/svNum/numeric[format_wert_if_numeric],
   shiny[
     NS, moduleServer, observeEvent,
     uiOutput, renderUI,
@@ -486,7 +487,7 @@ indikator_draw_reactable <- function(daten){
         name  = "Wert",
         width = 100,
         align = "right",
-        cell  = function(value) ifelse(suppressWarnings(!is.na(as.numeric(value))), format(as.numeric(value), big.mark = ".", decimal.mark = ","), value)
+        cell  = format_wert_if_numeric
       ),
       einheit  = colDef(name = "Einheit",  minWidth = 100, align = "left")
     )
@@ -654,9 +655,6 @@ indikator_ini_param_tg <- function(x){
 #' Missing description
 #' @noRd
 
-#' Missing description
-#' @noRd
-
 indikator_ini_param_hnd <- function(x){
   if (is.null(x)) return("")
   x <-
@@ -731,14 +729,6 @@ indikator_translate_filter_param <- function(con){
   output$param <- paste0("in_", paste0(substr(output$bez, 1, 1), substr(output$bez, nchar(output$bez), nchar(output$bez)), nchar(output$bez)))
   stopifnot("Parameter der Filter im Explorer sind nicht einzigartig" = all(!duplicated(output$param)))
   return(output)
-}
-
-#' Missing description
-#' @noRd
-
-indikator_gsub_zeit <- function(x, type = 1){
-  if (type == 1) return(gsub("Zeit", "zeit", x))
-  return(x)
 }
 
 #' Missing description

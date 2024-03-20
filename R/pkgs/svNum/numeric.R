@@ -14,7 +14,7 @@ roundFive <- function(x, digits = 0){
 }
 
 formatNumeric <- function(x, digits = 2){
-  format(roundFive(x, digits), decimal.mark = ",", big.mark = ".")
+  format(roundFive(x, digits), decimal.mark = ",", big.mark = ".", nsmall = 0)
 }
 
 convert_zeit <- function(x, to_warn = TRUE, return_data_frame = FALSE){
@@ -30,4 +30,20 @@ convert_zeit <- function(x, to_warn = TRUE, return_data_frame = FALSE){
   x$zeit       <- NULL
   names(x)[names(x) == "zeit_start"] <- "zeit"
   return(x)
+}
+
+format_wert_if_numeric <- function(x){
+  checkmate::assert_atomic_vector(x)
+  lapply(
+    x,
+    \(.){
+      if (!is.na(suppressWarnings(as.numeric(.)))){
+        formatNumeric(as.numeric(.))
+      } else {
+        .
+      }
+    }
+  ) |>
+    unlist() |>
+    trimws()
 }

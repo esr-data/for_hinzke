@@ -4,6 +4,7 @@
 box::use(
   ../../R/pkgs/search/search[search_tables, get_data_to_search],
   ../../R/utils/log[write_log],
+  ../../R/pkgs/svNum/numeric[convert_zeit],
   shiny[HTML, div, icon, p],
   DBI[dbGetQuery, dbConnect, dbDisconnect],
   RSQLite[SQLite],
@@ -64,8 +65,6 @@ load_table_by_variable <- function(variable){
       )
     )
 
-  daten$jahr <- as.numeric(ifelse(daten$zeit_einheit == "Jahr", substr(daten$zeit_ende, 1, 4), NA))
-
   reichweite <-
     "SELECT reichweite.id as id, reichweite.beschr as reichweite, rtyp.beschr as reichweite_typ, rklasse.beschr as reichweite_klasse
      FROM reichweite
@@ -108,7 +107,7 @@ load_table_by_variable <- function(variable){
     daten[,i] <- ifelse(is.na(daten[,i]), "Insgesamt", daten[,i])
   }
 
-  names(daten) <- gsub("jahr", "Zeit", names(daten))
+  daten$Zeit <- convert_zeit(daten)
 
   return(list(daten = daten, gruppe = unique(reichweite$gruppe)))
 }
