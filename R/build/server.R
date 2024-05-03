@@ -15,6 +15,7 @@ box::use(
   ../../R/utils/routing[add_param_in_url, recode_param_int],
   ../../R/utils/tutorial[plan_tutorial_tour],
   ../../R/utils/routing[get_hf_param],
+  ../../R/pages/fdz[module_fdz_server],
   shiny[
     observeEvent, reactiveValues,
     renderUI, HTML, div,
@@ -132,7 +133,7 @@ server <- function(input, output, session) {
         "studies",   "stories",
         "monitor",   "explorer",
         "impressum", "datenschutz",
-        "team"
+        "team", "fdz"
       )){
         if (i %in% c(page_category)){
           addCssClass(paste0("sb_", i), "btn-warning")
@@ -165,6 +166,7 @@ server <- function(input, output, session) {
   observeEvent(input$sb_impressum,   {change_page("impressum")})
   observeEvent(input$sb_team,        {change_page("team")})
   observeEvent(input$sb_datenschutz, {change_page("datenschutz")})
+  observeEvent(input$sb_fdz,         {change_page("fdz")})
 
   observeEvent(input$sbd_explorer_suche,     {change_page("suchen")})
   observeEvent(input$sbd_explorer_indikator, {change_page("indikator")})
@@ -227,6 +229,7 @@ server <- function(input, output, session) {
   module_stories_inhalt_server()
   module_monitor_server()
   module_monitor_inhalt_server()
+  module_fdz_server()
 
 }
 

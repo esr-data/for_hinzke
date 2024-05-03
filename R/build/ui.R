@@ -16,6 +16,7 @@ box::use(
   ../../R/pages/handlung_2[module_handlung_2_ui],
   ../../R/pages/impressum[module_impressum_ui],
   ../../R/pages/datenschutz[module_datenschutz_ui],
+  ../../R/pages/fdz[module_fdz_ui],
   ../../R/pages/team[module_team_ui],
   ../../R/pages/karten[module_karten_ui],
   ../../R/pages/monitor_inhalt[module_monitor_inhalt_ui],
@@ -80,7 +81,8 @@ draw_ui <- function(){
           route("impressum",      module_impressum_ui()),
           route("datenschutz",    module_datenschutz_ui()),
           route("team",           module_team_ui()),
-          route("karten",         module_karten_ui())
+          route("karten",         module_karten_ui()),
+          route("fdz",            module_fdz_ui())
         )
       )
     ),
@@ -161,6 +163,7 @@ draw_sidebar <- function(){
       div(
         style = "background-color: white;",
         actionButton("sb_team",        label = "SV DATA",     class = "sidebar_button", icon = icon("user-group")),
+        actionButton("sb_fdz",            label = "FDZ",         class = "sidebar_button", icon = icon("right-to-bracket")),
         actionButton("sb_impressum",   label = "Impressum",   class = "sidebar_button"), #, icon = icon("circle-info")
         actionButton("sb_datenschutz", label = "Datenschutz", class = "sidebar_button") #, icon = icon("shield-halved")
         # actionButton("sb_ziviz",     label = "ZiviZ",       class = "sidebar_button", icon = icon("people-group")),

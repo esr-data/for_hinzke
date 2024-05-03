@@ -1,5 +1,5 @@
 
-/* Root Variable Definition --------------------------------------------------------------------- */
+/* Root Variable Definition ------------------------------------------------- */
 
 :root{
   /*colors*/
@@ -33,9 +33,9 @@
 /*TODO wofür wird das gebraucht - einsortieren*/
 .modal-dialog {
   max-width: 100%;
-  width: 98%; /* Fast die ganze Breite */
-  height: calc(100% - 60px); /* Höhe, wie zuvor definiert */
-  margin: 0 auto; /* Zentriert das Modal */
+  width: 98%;
+  height: calc(100% - 60px);
+  margin: 0 auto;
     }
     .modal-content {
       height: 100%;
@@ -47,12 +47,15 @@
       overflow-y: auto;
     }
 
-/* Fundamentale Elemente ------------------------------------------------------------------------ */
+/* Fundamentale Elemente ---------------------------------------------------- */
 
 .body, body {
   font-family: var(--font-family);
   font-size:   var(--font-size);
   background-color: white;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 #content-body {
@@ -72,7 +75,7 @@
   display: none!important;
 }
 
-/* Font ----------------------------------------------------------------------------------------- */
+/* Font --------------------------------------------------------------------- */
 
 h1, h2, h3, h4, h5, h6, p,
 .h1, .h2, .h3, .h4, .h5, .h6, .p {
@@ -89,7 +92,7 @@ li {
   color: var(--blue);
 }
 
-/* Header --------------------------------------------------------------------------------------- */
+/* Header ------------------------------------------------------------------- */
 
 header.sticky {
   position: sticky;
@@ -115,7 +118,7 @@ header.sticky {
   z-index: 100;
 }
 
-/* Sidebar -------------------------------------------------------------------------------------- */
+/* Sidebar ------------------------------------------------------------------ */
 
 .navbar {
   margin-bottom: 0;
@@ -143,13 +146,13 @@ header.sticky {
   margin-bottom: 15px;
 }
 
-/* Sidebar-Title -------------------------------------------------------------------------------- */
+/* Sidebar-Title ------------------------------------------------------------ */
 
 .sidebar_title {
   margin-top: 20px;
 }
 
-/* Sidebar-Buttons ------------------------------------------------------------------------------ */
+/* Sidebar-Buttons ---------------------------------------------------------- */
 
 .sidebar_button,
 .sidebar_dynamic_button {
@@ -205,7 +208,7 @@ header.sticky {
   color:        var(--blue);
 }
 
-/* Sidebar-Checkbox ----------------------------------------------------------------------------- */
+/* Sidebar-Checkbox --------------------------------------------------------- */
 
 #sb_handlung div div button {
   display: flex;
@@ -246,7 +249,7 @@ button.active:has(input[value="forschung"]){
 }
 
 
-/* Content-Panel -------------------------------------------------------------------------------- */
+/* Content-Panel ------------------------------------------------------------ */
 
 .panel-content, panel-content {
   padding: 40px;
@@ -258,7 +261,14 @@ button.active:has(input[value="forschung"]){
   padding: 0 25px 25px 25px;
 }
 
-/*  Standard-Buttons ---------------------------------------------------------------------------- */
+.column-content-center-align {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/*  Standard-Buttons -------------------------------------------------------- */
 
 .button-normal {
   font-weight: 700;
@@ -283,7 +293,7 @@ button.active:has(input[value="forschung"]){
   outline: none!important;
 }
 
-/* Tutorial ------------------------------------------------------------------------------------- */
+/* Tutorial ----------------------------------------------------------------- */
 
 .driver-popover-title {
   color: var(--blue);
@@ -319,7 +329,7 @@ button.driver-prev-btn:hover:active {
   color: white!important;
 }
 
-/* Boxen bei Studies ---------------------------------------------------------------------------- */
+/* Boxen bei Studies -------------------------------------------------------- */
 
 .studies_box {
   background-color: white;
@@ -367,7 +377,7 @@ button.driver-prev-btn:hover:active {
   line-height: 20px;
 }
 
-/* Tooltips ------------------------------------------------------------------------------------- */
+/* Tooltips ----------------------------------------------------------------- */
 
 .tooltip.bottom .tooltip-arrow {
   border-bottom-color: var(--blue);
@@ -381,7 +391,7 @@ button.driver-prev-btn:hover:active {
   box-shadow: 2px 2px 2px 0px var(--grey);
 }
 
-/* Widgets -------------------------------------------------------------------------------------- */
+/* Widgets ------------------------------------------------------------------ */
 
 label.control-label{
   font-weight: 700;
@@ -389,7 +399,7 @@ label.control-label{
   margin: 0 0 10px;
 }
 
-/* Sortable ------------------------------------------------------------------------------------- */
+/* Sortable ----------------------------------------------------------------- */
 
 .default-sortable .rank-list-item:hover:not(.disabled) {
   background-color: var(--light-primary);
@@ -431,7 +441,7 @@ p.rank-list-title {
   font-size: 18px;
 }
 
-/* Link-Button ---------------------------------------------------------------------------------- */
+/* Link-Button -------------------------------------------------------------- */
 
 .link_button {
   margin: 1%;
@@ -457,7 +467,7 @@ p.rank-list-title {
   width: 100%;
 }
 
-/* Triangle-Handlung ---------------------------------------------------------------------------- */
+/* Triangle-Handlung -------------------------------------------------------- */
 
 .handlung1_triangle {
   /* content:  '';
@@ -488,7 +498,7 @@ p.rank-list-title {
   clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
 }
 
-/* Karrusel --------- */
+/* Karrusel ----------------------------------------------------------------- */
 
 #home-slick_output {
   margin: 0px!important;
@@ -512,9 +522,7 @@ p.rank-list-title {
   color: var(--blue)!important;
 }
 
-/* Content-Box ---------------------------------------------------------------------------------- */
-
-
+/* Content-Box -------------------------------------------------------------- */
 
 @media (max-width: 1400px){ /*767px*/
   #main-body {
@@ -643,8 +651,7 @@ p.rank-list-title {
 }
 */
 
-
-/* STORY-PREVIEW-CARDS -------------------------------------------------------------------------- */
+/* STORY-PREVIEW-CARDS ------------------------------------------------------ */
 
 .cards-in-box {
     display: flex;
@@ -785,7 +792,7 @@ img.thumbnail-image.card-img {
 }
 
 
-/* SUCHFELDER ----------------------------------------------------------------------------------*/
+/* SUCHFELDER ----------------------------------------------------------------*/
 /* Es gibt zwei Suchfelder -> Beim Explorer (id: suchen-suchen) und im Header (id: suchen) */
 
 #suchen-suchen_text,
@@ -908,8 +915,6 @@ img.thumbnail-image.card-img {
   }
 }
 
-}
-
 .book {
   /*writing-mode: vertical-rl;*/
   margin-right: 20px;
@@ -924,7 +929,7 @@ img.thumbnail-image.card-img {
   margin-bottom: 4px;
 }
 
-/* ---------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------*/
 
 #sb_help {
   padding: 0;
@@ -964,7 +969,7 @@ img.thumbnail-image.card-img {
   text-decoration: none;
 }
 
-/* Reactable in den Suchergebnisse */
+/* Reactable in den Suchergebnisse ------------------------------------------ */
 
 .suche-tabelle-treffer {
   display: flex;
@@ -1085,7 +1090,7 @@ img.thumbnail-image.card-img {
   font-size: 20px;
 }
 
-/*---------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 
 .suchergebnisse-fuer {
   padding: 8px;
@@ -1107,3 +1112,45 @@ img.thumbnail-image.card-img {
   font-weight: 900;
   font-size: 22px;
 }
+
+/*Team-Cards -----------------------------------------------------------------*/
+
+.row .col, .row [class^="col-"] {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.team-member img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.team-member {
+  text-align: center;
+  margin: 20px;
+}
+
+.team-card {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  transition: box-shadow .3s;
+  cursor: pointer;
+}
+
+.team-card:hover {
+  box-shadow: 0 0 11px rgba(33,33,33,.2);
+}
+
+.mail-link {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.mail-link:hover {
+  text-decoration: underline;
+}
+
+
