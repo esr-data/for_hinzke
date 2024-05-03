@@ -1,0 +1,92 @@
+/**
+ * @license
+ * MyFonts Webfont Build ID 3281445, 2016-09-12T02:25:07-0400
+ * 
+ * The fonts listed in this notice are subject to the End User License
+ * Agreement(s) entered into by the website owner. All other parties are 
+ * explicitly restricted from using the Licensed Webfonts(s).
+ * 
+ * You may obtain a valid license at the URLs below.
+ * 
+ * Webfont: BaskervilleMT-Semibold by Monotype 
+ * URL: http://www.myfonts.com/fonts/mti/baskerville-mt/semi-bold/
+ * Copyright: Digitized data copyright Monotype Typography, Ltd 1991-1997. All rights reserved. Monotype Baskerville&#x00AE; is a trademark of Monotype Typography, Ltd which may be registered in certain jurisdictions.
+ * Licensed pageviews: 250,000
+ * 
+ * Webfont: BaskervilleMT-SemiboldItalic by Monotype 
+ * URL: http://www.myfonts.com/fonts/mti/baskerville-mt/semi-bold-italic/
+ * Copyright: Digitized data copyright Monotype Typography, Ltd 1991-1997. All rights reserved. Monotype Baskerville&#x00AE; is a trademark of Monotype Typography, Ltd which may be registered in certain jurisdictions.
+ * Licensed pageviews: 250,000
+ * 
+ * Webfont: BaskervilleMT-Bold by Monotype 
+ * URL: http://www.myfonts.com/fonts/mti/baskerville-mt/bold/
+ * Copyright: Digitized data copyright Monotype Typography, Ltd 1991-1995. All rights reserved. Monotype Baskerville&#x00AE; is a trademark of Monotype Typography, Ltd which may be registered in certain jurisdictions.
+ * Licensed pageviews: 250,000
+ * 
+ * Webfont: BaskervilleMT-Italic by Monotype 
+ * URL: http://www.myfonts.com/fonts/mti/baskerville-mt/italic/
+ * Copyright: Digitized data copyright Monotype Typography, Ltd 1991-1995. All rights reserved. Monotype Baskerville&#x00AE; is a trademark of Monotype Typography, Ltd which may be registered in certain jurisdictions.
+ * Licensed pageviews: 250,000
+ * 
+ * Webfont: BaskervilleMT by Monotype 
+ * URL: http://www.myfonts.com/fonts/mti/baskerville-mt/baskerville-mt/
+ * Copyright: Digitized data copyright Monotype Typography, Ltd 1991-1995. All rights reserved. Monotype Baskerville&#x00AE; is a trademark of Monotype Typography, Ltd which may be registered in certain jurisdictions.
+ * Licensed pageviews: 250,000
+ * 
+ * Webfont: BaskervilleMT-BoldItalic by Monotype 
+ * URL: http://www.myfonts.com/fonts/mti/baskerville-mt/bold-italic/
+ * Copyright: Digitized data copyright Monotype Typography, Ltd 1991-1995. All rights reserved. Monotype Baskerville&#x00AE; is a trademark of Monotype Typography, Ltd which may be registered in certain jurisdictions.
+ * Licensed pageviews: 250,000
+ * 
+ * Webfont: BrandonTextWeb-Bold by HVD Fonts
+ * URL: http://www.myfonts.com/fonts/hvdfonts/brandon-text/bold/
+ * Copyright: Copyright (c) 2015 by Hannes von Doehren. All rights reserved.
+ * Licensed pageviews: 1,000,000
+ * 
+ * Webfont: BrandonTextWeb-Italic by HVD Fonts
+ * URL: http://www.myfonts.com/fonts/hvdfonts/brandon-text/italic/
+ * Copyright: Copyright (c) 2015 by Hannes von Doehren. All rights reserved.
+ * Licensed pageviews: 1,000,000
+ * 
+ * Webfont: BrandonTextWeb-Regular by HVD Fonts
+ * URL: http://www.myfonts.com/fonts/hvdfonts/brandon-text/regular/
+ * Copyright: Copyright (c) 2015 by Hannes von Doehren. All rights reserved.
+ * Licensed pageviews: 1,000,000
+ * 
+ * 
+ * License: http://www.myfonts.com/viewlicense?type=web&buildid=3281445
+ * 
+ * © 2016 MyFonts Inc
+*/
+
+
+/* @import must be at top of file, otherwise CSS will not work */
+@import url("//hello.myfonts.net/count/321225");
+
+  
+@font-face {font-family: 'BaskervilleMT-Semibold';src: url('webfonts/321225_0_0.eot');src: url('webfonts/321225_0_0.eot?#iefix') format('embedded-opentype'),url('webfonts/321225_0_0.woff2') format('woff2'),url('webfonts/321225_0_0.woff') format('woff'),url('webfonts/321225_0_0.ttf') format('truetype');}
+ 
+  
+@font-face {font-family: 'BaskervilleMT-SemiboldItalic';src: url('webfonts/321225_1_0.eot');src: url('webfonts/321225_1_0.eot?#iefix') format('embedded-opentype'),url('webfonts/321225_1_0.woff2') format('woff2'),url('webfonts/321225_1_0.woff') format('woff'),url('webfonts/321225_1_0.ttf') format('truetype');}
+ 
+  
+@font-face {font-family: 'BaskervilleMT-Bold';src: url('webfonts/321225_2_0.eot');src: url('webfonts/321225_2_0.eot?#iefix') format('embedded-opentype'),url('webfonts/321225_2_0.woff2') format('woff2'),url('webfonts/321225_2_0.woff') format('woff'),url('webfonts/321225_2_0.ttf') format('truetype');}
+ 
+  
+@font-face {font-family: 'BaskervilleMT-Italic';src: url('webfonts/321225_3_0.eot');src: url('webfonts/321225_3_0.eot?#iefix') format('embedded-opentype'),url('webfonts/321225_3_0.woff2') format('woff2'),url('webfonts/321225_3_0.woff') format('woff'),url('webfonts/321225_3_0.ttf') format('truetype');}
+ 
+  
+@font-face {font-family: 'BaskervilleMT';src: url('webfonts/321225_4_0.eot');src: url('webfonts/321225_4_0.eot?#iefix') format('embedded-opentype'),url('webfonts/321225_4_0.woff2') format('woff2'),url('webfonts/321225_4_0.woff') format('woff'),url('webfonts/321225_4_0.ttf') format('truetype');}
+ 
+  
+@font-face {font-family: 'BaskervilleMT-BoldItalic';src: url('webfonts/321225_5_0.eot');src: url('webfonts/321225_5_0.eot?#iefix') format('embedded-opentype'),url('webfonts/321225_5_0.woff2') format('woff2'),url('webfonts/321225_5_0.woff') format('woff'),url('webfonts/321225_5_0.ttf') format('truetype');}
+ 
+  
+@font-face {font-family: 'BrandonTextWeb-Bold';src: url('webfonts/321225_6_0.eot');src: url('webfonts/321225_6_0.eot?#iefix') format('embedded-opentype'),url('webfonts/321225_6_0.woff2') format('woff2'),url('webfonts/321225_6_0.woff') format('woff'),url('webfonts/321225_6_0.ttf') format('truetype');}
+ 
+  
+@font-face {font-family: 'BrandonTextWeb-Italic';src: url('webfonts/321225_7_0.eot');src: url('webfonts/321225_7_0.eot?#iefix') format('embedded-opentype'),url('webfonts/321225_7_0.woff2') format('woff2'),url('webfonts/321225_7_0.woff') format('woff'),url('webfonts/321225_7_0.ttf') format('truetype');}
+ 
+  
+@font-face {font-family: 'BrandonTextWeb-Regular';src: url('webfonts/321225_8_0.eot');src: url('webfonts/321225_8_0.eot?#iefix') format('embedded-opentype'),url('webfonts/321225_8_0.woff2') format('woff2'),url('webfonts/321225_8_0.woff') format('woff'),url('webfonts/321225_8_0.ttf') format('truetype');}
+ 
