@@ -78,3 +78,6 @@ rsconnect/
 *.db.wal
 
 work_in_progress/*.R
+downloads/*
+!downloads/.gitkeep
+_experiment/
