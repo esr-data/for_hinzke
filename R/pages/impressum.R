@@ -1,11 +1,7 @@
 #' Necessary Packages/Functions
 
 box::use(
-  ../../R/utils/ui[draw_under_construction],
-  shiny[
-    NS, moduleServer,
-    fluidPage, tagList, h2, div
-  ]
+  shiny[NS, moduleServer, fluidPage, div, markdown]
 )
 
 #' Missing description
@@ -16,8 +12,10 @@ module_impressum_ui <- function(id = "impressum", label = "m_impressum") {
   fluidPage(
     div(
       class = "panel-content",
-      h2("Impressum"),
-      draw_under_construction()
+      div(
+        style = "margin: 40px; max-width: 800px;",
+        markdown(readLines("md/impressum.md"))
+      )
     )
   )
 }
