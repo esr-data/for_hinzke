@@ -43,7 +43,8 @@ markdown_cache <-
   list(
     willkommen        = read_markdown("willkommen"),
     storybeschreibung = read_markdown("storybeschreibung"),
-    fdz               = read_markdown("forschungsdatenzentrum-wissenschaftsstatistik")
+    fdz               = read_markdown("forschungsdatenzentrum-wissenschaftsstatistik"),
+    svData            = read_markdown("svData")
   )
 
 read_markdown_cache <- function(slug){

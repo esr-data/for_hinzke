@@ -16,6 +16,8 @@ box::use(
   ../../R/utils/tutorial[plan_tutorial_tour],
   ../../R/utils/routing[get_hf_param],
   ../../R/pages/fdz[module_fdz_server],
+  ../../R/pages/team[module_team_server],
+
   shiny[
     observeEvent, reactiveValues,
     renderUI, HTML, div,
@@ -230,6 +232,7 @@ server <- function(input, output, session) {
   module_monitor_server()
   module_monitor_inhalt_server()
   module_fdz_server()
+  module_team_server()
 
 }
 
