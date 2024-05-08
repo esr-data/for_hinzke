@@ -4,6 +4,7 @@
 box::use(
   ../../R/pages/explorer[module_explorer_server, report_explorer_subpages],
   ../../R/pages/indikator[module_indikator_server],
+  ../../R/pages/vergleichen[module_vergleichen_server],
   ../../R/pages/suchen[module_suchen_server],
   ../../R/pages/suchen_ergebnis[module_suche_ergebnis_server],
   ../../R/pages/home[module_home_server],
@@ -221,6 +222,7 @@ server <- function(input, output, session) {
 
   module_explorer_server()
   module_indikator_server()
+  module_vergleichen_server()
   module_suchen_server()
   module_suche_ergebnis_server()
   module_home_server()
