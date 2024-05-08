@@ -181,7 +181,7 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
         filter_typ <- daten$filter$type
         
         if("Zeit" %in% filter_typ){
-        browser()  
+        
           if(all(grepl("Zeit", filter_typ))) {
             zeit <- c(filter[1], filter[length(filter)])
             filter <- NULL
