@@ -77,6 +77,8 @@ rsconnect/
 *.db
 *.db.wal
 
+www/webfonts/*
+!www/webfonts/.gitkeep
 work_in_progress/*.R
 downloads/*
 !downloads/.gitkeep

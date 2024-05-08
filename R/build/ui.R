@@ -50,6 +50,7 @@ draw_ui <- function(){
       tags$link(rel = "icon",                         sizes = "192x192", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/touch-icon-192x192.png"),
       tags$link(rel = "shortcut icon",                                   href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/favicon.ico"),
       tags$link(rel = "stylesheet", type = "text/css", href = paste0("styles.css?version=", Sys.time())),
+      tags$link(rel = "stylesheet", type = "text/css", href = "WebKit_bounding.css"),
       tags$title("SV Datenportal")
     ),
     use_bs_tooltip(),
