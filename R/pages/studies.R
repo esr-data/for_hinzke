@@ -4,7 +4,7 @@ box::use(
   shiny[
     NS, moduleServer, observeEvent,
     fluidPage, tagList,
-    markdown,
+    markdown, HTML, tags,
     h2, a, p, div, img,
     uiOutput, renderUI
   ],
@@ -37,7 +37,9 @@ module_studies_ui <- function(id = "studies", label = "m_studies") {
 
         # Box
 
-        uiOutput(ns("studies"))
+        uiOutput(ns("studies")),
+        uiOutput(ns("foreign_studies")) #ToDo: Design-Frage: Betreiben wir dieses Auslagern aus den eigentlichen UIs in renderUIs in der Form so stark weiter oder sollten wir das nur machen, wenn auch tatsächlich was berechnet wird? Ich suche die Sachen immer eher direkt in der UI, aber ich glaube es gibt auch den Hang bei dem Projekt das alles in renderUis auszulagern
+
       )
     )
   )
@@ -60,14 +62,15 @@ module_studies_server <- function(id = "studies", con) {
             if (is.null(param_hf)) param_hf <- 0
 
             if (param_hf == 1){
-              ui_titel <- "Studien zu Bildung & Kompetenz"
+              ui_titel <- "Studienprojekte zu Bildung & Kompetenz"
               output$studies <- renderUI({create_all_boxes_studies("handlung1")})
             } else if (param_hf == 2){
-              ui_titel <- "Studien zu Forschung & Innovation"
+              ui_titel <- "Studienprojekte zu Forschung & Innovation"
               output$studies <- renderUI({create_all_boxes_studies("handlung2")})
             } else {
-              ui_titel <- "Alle Studien"
+              ui_titel <- "Alle Studienprojekte"
               output$studies <- renderUI({create_all_boxes_studies("all")})
+              output$foreign_studies <- renderUI({create_linklist_foreign_projekts()})
             }
 
             output$titel <- renderUI({h2(style = "text-align: center;", ui_titel)})
@@ -102,7 +105,7 @@ create_box_studies <-
           ),
           img(
             class  = "studies_img",
-            src    = sprintf("img/%s", img_front),
+            src    = sprintf("img/projects/%s", img_front),
             onmouseover = sprintf("this.src = 'img/%s'", img_back),
             onmouseout  = sprintf("this.src = 'img/%s'", img_front)
           ),
@@ -142,54 +145,54 @@ create_all_boxes_studies <- function(type){
           "Innovation",
           "Gründungsradar",
           "Der Gründungsradar untersucht die Gründungsförderung an deutschen Hochschulen.",
+          "studie_gruendungsradar.png",
           "TODO",
-          "TODO",
-          "Der Gründungsradar untersucht zum sechsten Mal die Güte der Gründungsförderung an deutschen Hochschulen und stellt diese vergleichend dar. Er unterstreicht dabei die Bedeutung der Hochschulen für das Innovationsgeschehen und zeigt deren Anstrengungen für eine wirkungsvolle Gründungskultur. Die vorliegende Ausgabe nutzt die gleiche Methodik und das gleiche Indikatorenset mit 46 Indikatoren wie die vorhergehende Befragung 2020. Somit sind Zeitvergleiche zwischen den Erhebungen möglich. An der Befragung nahmen 196 Hochschulen teil , für die das Thema Gründungsförderung eine Rolle spielt (184 im Jahr 2020). Der Gründungsradar bietet damit eine valide Datengrundlage für das Gründungsgeschehen und die Gründungsförderung an deutschen Hochschulen.",
+          "Der Gründungsradar untersucht die Güte der Gründungsförderung an deutschen Hochschulen und stellt diese vergleichend dar. Er unterstreicht dabei die Bedeutung der Hochschulen für das Innovationsgeschehen und zeigt deren Anstrengungen für eine wirkungsvolle Gründungskultur. Die vorliegende Ausgabe nutzt die gleiche Methodik und das gleiche Indikatorenset mit 46 Indikatoren wie die vorhergehende Befragung 2020. Somit sind Zeitvergleiche zwischen den Erhebungen möglich. An der Befragung nahmen 196 Hochschulen teil , für die das Thema Gründungsförderung eine Rolle spielt (184 im Jahr 2020). Der Gründungsradar bietet damit eine valide Datengrundlage für das Gründungsgeschehen und die Gründungsförderung an deutschen Hochschulen.",
           "Gruendungsradar"
         ),
         c(
           "Innovation",
           "Drittmittel an Hochschulen",
+          "Drittmittelstatistik der Hochschulen - nach Bundesland, Hochschule, Hochschultyp und -trägerschaft.",
           "TODO",
           "TODO",
-          "TODO",
-          "TODO",
+          "Drittmittel an Hochschulen sind finanzielle Zuwendungen von externen Quellen, die im Idealfall innovative Forschung und Lehre fördern, neue Projekte ermöglichen und den wissenschaftlichen Fortschritt beschleunigen. Es gibt verschiedene Drittmittelgeber (u. a. DFG, Bund, EU, Unternehmen und Stiftungen), wobei gerade die Drittmittel aus der Wirtschaft immer wieder Diskussionsgegenstand sind. Auf der Seite des Stifterverbandes sind die Dittmittel - zurückgehend bis 2006 - detailiert und interaktiv filterbar. Durchforsten Sie, wie viele Drittmittel von welchem Mittelgeber wann in welchem Bereich eingeworben/vergeben worden.",
           "DrittmittelAnHochschulen/"
         ),
         c(
           "Sonstige",
           "Engagement-Barometer",
+          "Untersuchung der Zivilgesellschaft in der Covid19-Pademie.",
+          "studie_engagement.jpg",
           "TODO",
-          "TODO",
-          "TODO",
-          "TODO",
+          "In der Panelbefragung von Führungskräfte aus Infrastruktureinrichtungen, Landes- und Bundesverbänden, und gemeinnützigen Organisationen geht es um die Auswirkungen der Covid-19-Pandemie auf die Zivilgesellschaft und wie diese auch zu Problemlösungen beitragn kann.",
           "Engagement-Barometer"
         ),
         c(
           "Bildung",
           "Hochschul-Barometer",
+          "Einschätzungen zu Hochschulpolitik durch die Hochschulleitungen.",
+          "studie_hochschulbarometer.png",
           "TODO",
-          "studie_hochschulbarometer_red.png",
-          "TODO",
-          "TODO",
+          "Die Ergebnisse des Hochschul-Barometers spiegeln die Einschätzungen eines großen Teils der deutschen Hochschullandschaft wider. An den Befragungen des Hochschul-Barometers nehmen immer etwa 160 Hochschulleitungen und damit über 40 Prozent der angeschriebenen Hochschulen teil. Die Erhebung gibt es seit 2011 und entsprechend sind Längsschnitteinschätzungen möglich. Neben einem allgemienen Fragenset gibt es wechselnde Schwerpunktthemen/Frageblöcke.",
           "Hochschul-Barometer"
         ),
         c(
           "Bildung",
           "Hochschul-Bildungs-Report",
+          "Monitoring für das Hochschulsystem von 2010 bis 2020",
+          "studie_hbr.svg",
           "TODO",
-          "TODO",
-          "TODO",
-          "TODO",
+          "Der Hochschul-Bildungs-Report ist die zentrale Publikation der Bildungsinitiative \"Zukunft machen\". Darin haben der Stifterverband und McKinsey seit 2013 jährlich auf sechs Handlungsfeldern die deutsche Hochschulbildung analysiert. Der Report schließt mit der im Frühjahr 2022 erschienenen Ausgabe die Beobachtung einer Dekade ab. Er lieferte messbare Ziele für das Jahr 2020, die im Dialog mit Experten aus den Stifterverbands-Mitgliedsunternehmen, Wissenschaftsorganisationen und Vertretern der Zivilgesellschaft formuliert wurden. Und er gab Empfehlungen, wie diese Ziele zu erreichen waren.",
           "Hochschul-Bildungs-Report"
         ),
         c(
           "Bildung",
           "Länderchecks",
+          "Bundeslandsvergleiche mit verschiedenen Themen",
+          "studie_laenderchecks.jpg",
           "TODO",
-          "TODO",
-          "TODO",
-          "TODO",
+          "Mit dem Ländercheck überprüft der Stifterverband den Stand und die Wirkungen des föderalen Wettbewerbs auf unterschiedlichen Feldern der akademischen Bildungs- und Innovationspolitik und zeichnet Landkarten Deutschlands, die Orientierung bieten für politische Standortdebatten.",
           "Laenderchecks"
         ),
         c(
@@ -204,10 +207,10 @@ create_all_boxes_studies <- function(type){
         c(
           "Bildung",
           "Private Hochschulen",
-          "TODO",
-          "TODO",
-          "TODO",
-          "TODO",
+          "Fakten und Analysen zu privaten Hochschulen",
+          "studie_privat.jpg",
+          "studie_private_alt.PNG",
+          "In der Studienreihe wirft der Stifterverband einen Blick auf den Sektor privater Hochschulen und untersucht, wie sich der Sektor auch unter Berücksichtigung von Transformationsprozessen im gesamten Hochschulwesen, in der Gesellschaft und in der Arbeitswelt entwickelt.",
           "PrivateHochschulen"
         ),
         c(
@@ -237,4 +240,26 @@ create_all_boxes_studies <- function(type){
   )
 
 }
+
+#' Missing description
+#' @noRd
+
+create_linklist_foreign_projekts <- function(){
+  div(
+    HTML('<hr style="width: 50px; text-align: left; margin-left: 0; margin-top: 7px; margin-bottom: 25px; border-top: 3px solid #e73f0c;">'),
+    p("Datenportale anderer Organisationen zu den Bereichen Bildung, Wissenschaft und Innovation:"),
+    tags$ul(
+      tags$li(tags$a("www.hsi.de")),
+      tags$li(tags$a("www.che.de")),
+      tags$li(tags$a("www.heads.de")),
+      tags$li(tags$a("www.bmbf.de")),
+      tags$li(tags$a("www.destatis.de")),
+      tags$li(tags$a("www.eurostat.de")),
+      tags$li(tags$a("www.weltbank.de")),
+      tags$li(tags$a("www.oecd.de")),
+      tags$li(tags$a("www.statista.de"))
+    )
+  )
+}
+
 
