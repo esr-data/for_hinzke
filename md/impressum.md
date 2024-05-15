@@ -1,7 +1,6 @@
 ## Impressum
 
 </br>
-</br>
 
 Stifterverband für die Deutsche Wissenschaft e.V.
 

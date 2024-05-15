@@ -293,6 +293,74 @@ button.active:has(input[value="forschung"]){
   outline: none!important;
 }
 
+/* Monitor-Buttons ---------------------------------------------------------- */
+
+.back_button_monitor {
+ color: white;
+ border-radius: 0px;
+ background-color: var(--blue);
+ border-color: var(--blue);
+ border-radius: 0px;
+ transition: all 0.3s ease;
+ margin-left: 34px;
+}
+
+.back_button_monitor:hover {
+  color: white;
+  background-color: var(--blue);
+  border-color: var(--blue);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.monitor_hf1_button {
+  font-size: 20px;
+  width: 45%;
+  height: 150px;
+  white-space: normal;
+  border-radius: 0px;
+  border-color: var(--color-bildung);
+  background-color: var(--color-bildung);
+  transition: all 0.3s ease;
+}
+
+.monitor_hf2_button {
+  font-size: 20px;
+  width: 45%;
+  height: 150px;
+  white-space: normal;
+  border-radius: 0px;
+  border-color: var(--color-forschung);
+  background-color: var(--color-forschung);
+  transition: all 0.3s ease;
+}
+
+.monitor_hf1_button:hover {
+  background-color: var(--color-bildung);
+  border-color: var(--color-bildung);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.monitor_hf2_button:hover {
+  background-color: var(--color-forschung);
+  border-color: var(--color-bildung);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.monitor_arrow {
+  font-size: 50px;
+  color: var(--blue);
+  padding: 0 20px;
+  line-height: 150px;
+}
+.monitor_overview {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
 /* Tutorial ----------------------------------------------------------------- */
 
 .driver-popover-title {
@@ -334,6 +402,7 @@ button.driver-prev-btn:hover:active {
 .studies_box {
   background-color: white;
   max-width: 240px;
+  height: 400px;
   padding: 20px;
   border: 2px solid var(--grey);
   margin: 20px;
@@ -465,6 +534,32 @@ p.rank-list-title {
 #explorer_handlung1-suche,
 #explorer_handlung2-suche {
   width: 100%;
+}
+
+/* lists / link-lists --------------------------------------------------------*/
+
+.custom-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.custom-list li {
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 20px;
+}
+
+.custom-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 14px;
+  background-image: url('data:image/svg+xml;utf8,<svg class=\"link__arrow\" width=\"10\" height=\"14\" viewBox=\"0 0 10 14\" xmlns=\"http://www.w3.org/2000/svg\"><path class=\"link__arrow-path\" d=\"M2.55058 14L0.854004 12.3497L6.4527 6.99767L0.854004 1.65025L2.55058 0L9.84645 6.99767L2.55058 14Z\"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 /* Triangle-Handlung -------------------------------------------------------- */

@@ -7,8 +7,8 @@ box::use(
     NS, moduleServer, observeEvent,
     fluidPage, fluidRow, tagList,
     uiOutput, renderUI,
-    h1,
-    div, HTML,
+    h1, column,
+    div, HTML, markdown,
     actionButton
   ],
   shiny.router[get_query_param, get_page]
@@ -24,8 +24,23 @@ module_stories_ui <- function(id = "stories", label = "m_stories", type = "all")
       div(
         class = "panel-content",
         uiOutput(ns("header")),
-        uiOutput(ns("beschreibung")),
-        uiOutput(ns("stories"))
+              div(
+          style = "background-color: #EAEDEF; padding: 20px; margin: 20px;",
+          div(
+            style = "color: #195365; margin: 0;",
+            markdown(readLines("md/storybeschreibung.md"))
+          )
+        ),
+        fluidRow(
+          column(
+            width = 10,
+            uiOutput(ns("stories"))
+          ),
+          column(
+            width = 2,
+            uiOutput(ns("tagging"))
+          )
+        )
       )
     )
   )
@@ -77,12 +92,11 @@ module_stories_server <- function(id = "stories", con) {
             output$beschreibung <- renderUI({read_markdown_cache("storybeschreibung")})
 
             output$stories <- renderUI({div(class = "cards-in-box", ui_stories)})
+
+            output$tagging <- renderUI({})
           }
         }, ignoreNULL = FALSE
       )
     }
   )
 }
-
-
-

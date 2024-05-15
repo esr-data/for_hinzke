@@ -193,63 +193,75 @@ ggsave(
   dpi    = 300,
   scale  = .7
 )
-# --- DRITTMITTEL ----------------------------------------------------------------------------------
+# --- DRITTMITTEL --------------------------------------------------------------
 
 df <-
-  svMagpie::get_query(
-    "SELECT variable, EXTRACT(YEAR FROM zeit_start) as jahr, CAST(wert AS numeric) FROM view_daten
-     WHERE
-     zeit_start = '2021-01-01' AND
-     region IS NOT NULL AND
-     region IN ('Deutschland') AND
-     reichweite IS NULL AND
-     variable IN ('Drittmittel von andere internationalen Organisationen',
-                  'Drittmittel vom Bund',
-                  'Drittmittel von der Bundesanstalt für Arbeit',
-                  'Drittmittel von der DFG',
-                  'Drittmittel insgesamt',
-                  'Drittmittel von der EU',
-                  'Drittmittel von Gemeinden und Zweckverbänden',
-                  'Drittmittel von Hochschulfördergesellschaften',
-                  'Drittmittel der Länder (ohne Trägermittel)',
-                  'Drittmittel des sonstigen öffentlichen Bereichs',
-                  'Drittmittel von Stiftungen',
-                  'Drittmittel von der Wirtschaft')"
+  data.frame(
+    Jahr   = c(2009, 2014,2019),
+    Prozent = c(22.9, 19.7 , 17.2)
   )
 
-# 'Drittmittel von DFG-Einzelförderungen',
-# 'Drittmittel von DFG-Koordinierten Programmen',
-# 'Drittmittel von von der DFG-Exzellenzstrategie',
-# 'Drittmittel von sonstigen DFG-Förderungen'
+g <- svVis::create_bar(df, factor(Jahr), Prozent)
 
-df$wert_relativ <- df$wert / df$wert[df$variable == "Drittmittel insgesamt"] * 100
-df <- df[df$variable != "Drittmittel insgesamt",]
+g <-
+  ggdraw() +
+  draw_plot(g, -.1, .15, 1.2, 0.9) +
+  draw_text(
+    "Anteil Drittmittel\naus der Wirtschaft",
+    0.5, 0.1,
+    colour = "#195365",
+    size = 18,
+    fontface = "bold",
+    family = "Calibri",
+    lineheight = .75
+  )
 
-df$count <- df$wert_relativ
-df$fraction = df$count / sum(df$count)
-df$ymax = cumsum(df$fraction)
-df$ymin = c(0, head(df$ymax, n=-1))
-library(ggplot2)
-ggplot(
+ggsave(
+  "www/img/projects/studie_drittmittel_alt.svg",
+  g,
+  width  = 1200,
+  height = 1200,
+  units  = "px",
+  dpi    = 300,
+  scale  = .7
+)
+
+# --- Enagement ----------------------------------------------------------------
+
+df <-
+  data.frame(
+    Antwort = c("nein", "ja"),
+    Prozent = c(95, 5)
+  )
+
+g <- svVis::create_donut(
   df,
-  aes(
-    fill = variable,
-    ymax = ymax,
-    ymin = ymin,
-    xmax = 3.5, xmin = 3
+  Prozent,
+  kat_var_if_num = Antwort,
+  custom_caption = ""
+)
+
+g <-
+  ggdraw() +
+  draw_plot(g, -.1, .15, 1.2, 0.9) +
+  draw_text(
+    "Rein digitale\nOrganisationen",
+    0.5, 0.1,
+    colour = "#195365",
+    size = 11,
+    fontface = "bold",
+    family = "Calibri",
+    lineheight = .75
   )
-) +
-  geom_rect() +
-  coord_polar(theta = "y") +
-  xlim(c(0, 3.5)) +
-  labs(
-    title = str_c(stri_wrap(plot_title, width = 160), collapse = "\n"), subtitle = paste(plot_subtitle,
-                                                                                                  "\n\n"), caption = str_c("N = ", sum(donut_plot_data[["n"]]),
-                                                                                                                           ". ", "Quelle: ", source, "."), fill = "") + theme_pubr() +
-  theme(text = element_text(size = 8, color = "#195365",
-                            family = "Trebuchet MS"), axis.text = element_blank(),
-        axis.ticks = element_blank(), axis.line = element_blank(),
-        legend.position = c(0.5, 0.5), legend.background = element_rect(fill = alpha("white",
-                                                                                     1)), plot.title = element_text(face = "bold"),
-        plot.subtitle = element_text(face = "italic")) +
-  scale_fill_manual(values = color_set)
+
+g
+
+ggsave(
+  "www/img/projects/studie_engagement_alt.svg",
+  g,
+  width  = 1200,
+  height = 1200,
+  units  = "px",
+  dpi    = 300,
+  scale  = .7
+)

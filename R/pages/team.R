@@ -8,7 +8,7 @@ box::use(
   shiny[
     NS, moduleServer,
     fluidPage, fluidRow, column, uiOutput,
-    tagList, h2, h4, div, br, img,
+    tagList, h1, h4, div, br, img,
     renderUI
   ]
 )
@@ -21,7 +21,12 @@ module_team_ui <- function(id = "team", label = "m_team") {
   fluidPage(
     div(
       class = "panel-content",
-      h2(class = "moodie_title", "SV Data"),
+      div(
+        class = "subpage-title",
+        h1(class = "subpage-title-headline", "SV Data"),
+        div(class = "header-title-clipgraph")
+      ),
+      br(),
       fluidRow(
         column(
           width = 8,
@@ -37,76 +42,77 @@ module_team_ui <- function(id = "team", label = "m_team") {
           )
         )
       ),
+      br(),
       fluidRow(
         width = 12,
         create_team_member(
+          "Dr. Lukas Antoine",
+          "lukas.antoine@stifterverband.de",
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
+          "Teammitglied",
+          "https://www.stifterverband.org/ueber_uns/mitarbeiter/antoine_lukas"
+        ),
+        create_team_member(
           "Katharina Brunner",
           "katharina.brunner@stifterverband.de",
-          "https://i.mint-vernetzt.de/ug7WRqmUk9DkbBYWsCmynfjw-lkGSJejtDPJXg6XkE8/rs:fill:144:144:1/g:ce/dpr:2/bl:0/aHR0cHM6Ly94ZW1xZXFiZWV2aGxpdnpibWZiby5zdXBhYmFzZS5jby9zdG9yYWdlL3YxL29iamVjdC9wdWJsaWMvaW1hZ2VzL2NiLzcwZDZiMmZmOTA1NTI5OWU5ZDI1ZDg5NzA4YjE1Yi9hdmF0YXIuanBn",
-          "Expertin Data Wrangling",
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
+          "Teammitglied",
           "https://www.stifterverband.org/ueber_uns/mitarbeiter/brunner_katharina"
         ),
         create_team_member(
           "Marian Burk",
           "marian.burk@stifterverband.de",
           "https://www.stifterverband.org/sites/default/files/styles/max_1300x1300/public/burk_marian.jpg?itok=d2CGjmxI",
-          "Experten-Experte",
+          "Teammitglied",
           "https://www.stifterverband.org/ueber_uns/mitarbeiter/burk_marian"
         ),
         create_team_member(
           "Svenja Elsner",
           "svenja.elsner@stifterverband.de",
           "https://www.stifterverband.org/sites/default/files/styles/max_1300x1300/public/elsner_svenja.jpg?itok=tJRKKp2y",
-          "Visualisierungs-Expertin",
+          "Teammitglied",
           "https://www.stifterverband.org/ueber_uns/mitarbeiter/elsner_svenja"
         ),
         create_team_member(
           "Jessica Ernst",
           "jessica.ernst@stifterverband.de",
           "https://www.stifterverband.org/sites/default/files/styles/max_1300x1300/public/ernst_jessica.jpg?itok=1mmq3ZwI",
-          "SV Data Projektmanagement",
+          "Projektmanagement",
           "https://www.stifterverband.org/ueber_uns/mitarbeiter/ernst_jessica"
         ),
         create_team_member(
           "Dr. Barbara Grave",
           "barbara.grave@stifterverband.de",
           "https://www.stifterverband.org/sites/default/files/styles/max_1300x1300/public/grave_1000x562.jpg?itok=iw4yoofe",
-          "IT-Expertin",
+          "Teammitglied",
           "https://www.stifterverband.org/ueber_uns/mitarbeiter/grave_barbara"
         ),
         create_team_member(
           "Dr. Malte Hückstädt",
           "malte.hueckstaet@stifterverband.de",
           "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
-          "Visualisierungs-Experte",
+          "Teammitglied",
           "https://www.stifterverband.org/ueber_uns/mitarbeiter/hueckstaedt_malte"
         ),
         create_team_member(
           "Kim Elena Micke",
           "kimelena.micke@stifterverband.de",
           "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
-          "Datenbank-Expertin",
+          "Teammitglied",
           "https://www.stifterverband.org/ueber_uns/mitarbeiter/micke_kim_elena"
         ),
         create_team_member(
           "Dr. Johannes Schmitt",
           "johannes.schmitt@stifterverband.de",
           "https://www.stifterverband.org/sites/default/files/styles/max_1300x1300/public/schmitt_johannes.jpg?itok=Hjqct1-Z",
-          "Co-Leitung SV Data",
+          "Co-Leitung",
           "https://www.stifterverband.org/ueber_uns/mitarbeiter/schmitt_johannes"
         ),
         create_team_member(
           "Eike Schröder",
           "eike.schroeder@stifterverband.de",
           "https://www.stifterverband.org/sites/default/files/styles/max_1300x1300/public/schroeder_eike.jpg?itok=EdvddyOg",
-          "Co-Leitung SV Data",
-          "https://www.stifterverband.org/ueber_uns/mitarbeiter/schroeder_eike"
-        ),
-        create_team_member(
-          "Lukas ?",
-          "lukas.?@stifterverband.de",
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
-          "Wird sich zeigen",
+          "Co-Leitung",
           "https://www.stifterverband.org/ueber_uns/mitarbeiter/schroeder_eike"
         )
       )
