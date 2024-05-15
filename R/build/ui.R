@@ -164,7 +164,7 @@ draw_sidebar <- function(){
       div(
         style = "background-color: white;",
         actionButton("sb_team",        label = "SV DATA",     class = "sidebar_button", icon = icon("user-group")),
-        actionButton("sb_fdz",            label = "FDZ",         class = "sidebar_button", icon = icon("right-to-bracket")),
+        actionButton("sb_fdz",         label = "FDZ",         class = "sidebar_button", icon = icon("right-to-bracket")),
         actionButton("sb_impressum",   label = "Impressum",   class = "sidebar_button"), #, icon = icon("circle-info")
         actionButton("sb_datenschutz", label = "Datenschutz", class = "sidebar_button") #, icon = icon("shield-halved")
         # actionButton("sb_ziviz",     label = "ZiviZ",       class = "sidebar_button", icon = icon("people-group")),
