@@ -7,7 +7,7 @@ box::use(
   shiny[
     NS, moduleServer,
     fluidPage, fluidRow, column, uiOutput,
-    tagList, h2, h4, div, br, img,
+    tagList, h1, h4, div, br, img, HTML,
     downloadButton, renderUI, downloadHandler
   ]
 )
@@ -20,7 +20,12 @@ module_fdz_ui <- function(id = "fdz", label = "m_fdz") {
   fluidPage(
     div(
       class = "panel-content",
-      h2(class = "moodie_title", "Forschungsdatenzentrum Wissenschaftsstatistik (FDZ)"),
+      div(
+        class = "subpage-title",
+        h1(class = "subpage-title-headline", HTML("Forschungsdatenzentrum<br>Wissenschaftsstatistik (FDZ)")),
+        div(class = "header-title-clipgraph")
+      ),
+      br(),
       fluidRow(
         column(
           width = 8,
@@ -28,7 +33,7 @@ module_fdz_ui <- function(id = "fdz", label = "m_fdz") {
           create_team_member(
             "Lena Finger",
             "lena.finger@stifterverband.de",
-            "https://profile-images.xing.com/images/7ca995fcfbab6e44c8ae7c4610ea59af-3/lena-finger.256x256.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
             "Leitung FDZ",
             "https://www.stifterverband.org/ueber_uns/mitarbeiter/finger_Lena"
           )
