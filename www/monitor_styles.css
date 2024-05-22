@@ -234,6 +234,18 @@ ul li {
 
 .content-ask-aim-ind {
   border: solid 1px;
+  border-color: #3D8656;
+  padding: 10px;
+}
+
+.content-ask-aim-ind ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.content-ask-aim-ind li {
+  padding-left: 5px;
 }
 
 .content-footer {
