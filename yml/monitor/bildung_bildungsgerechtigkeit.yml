@@ -1,0 +1,48 @@
+Titel: Bildungsgerechtigkeit
+ID: bildung_bildungsgerechtigkeit
+Untertitel: Wie gerecht ist das deutsche Bildungssystem?
+Einfuehrungstext:
+    Die Erhöhung der Bildungsgerechtigkeit in Deutschland ist von zentraler Bedeutung, da sie die Chancengleichheit
+    fördert und allen Kindern, unabhängig von ihrem sozialen oder kulturellen Hintergrund, gleiche
+    Bildungsmöglichkeiten bietet. Dies ist entscheidend, um soziale Ungleichheiten zu verringern und trägt
+    wesentlich zur wirtschaftlichen Entwicklung und Wettbewerbsfähigkeit bei. Bildungsgerechtigkeit stärkt den
+    sozialen Zusammenhalt und die Integration in der Gesellschaft, indem sie Menschen aus verschiedenen sozialen Herkünften
+    gemeinsame Erfahrungen ermöglicht und zur Persönlichkeitsentwicklung und demokratischen Werten beiträgt.
+    Zudem fördert sie Innovation und Kreativität, indem sie Raum für unterschiedliche Perspektiven und Herangehensweisen
+    schafft.
+
+Inhalt:
+  - ID:        bildungsgerechtigkeit_trichter
+    Titel:     Bildungstrichter - Vom Arbeiterkind zum Doktor
+    Frage:     Bekommen Nichtakademikerkinder ähnliche Bildungschancen wie Akademikerkinder?
+    Ziel:      Die Bildungschancen von Nichtakademikerkindern werden größer
+    Indikator: Prozentwertdifferenzen auf Stufen des Bildungstrichters im Vergleich zur jeweiligen Vorerhebung
+    Variable:  studienanfanger_dual
+    Auswahl:   Sonderform
+    Darstellungen: Trichter, Sonderauswertung
+
+Aktivitaet:
+  - Label: 'Förderprogramm: Studienpioniere'
+    URL:   https://www.stifterverband.org/studienpioniere
+  - Label: 'Studie: Hochschul-Bildungs-Report'
+    URL:   https://www.hochschulbildungsreport.de/sites/hsbr/files/hochschul-bildungs-report_abschlussbericht_2022.pdf
+  - Label: 'Diskussionspapier: Vom Arbeiterkind zum Doktor'
+    URL:   https://www.stifterverband.org/medien/vom_arbeiterkind_zum_doktor
+
+Datenbasis:
+  - Label: Sozialerhebung des Deutschen Studentenwerks
+    URL:   https://www.studierendenwerke.de/themen/hochschulpolitik/sozialerhebung
+  - Label: DZHW
+    URL:   https://www.dzhw.eu/publikationen/pub_show?pub_id=5626&pub_type=kbr
+  - Label: Bildungsbericht
+    URL:   https://www.bildungsbericht.de/de
+  - Label: Statistisches Bundesamt
+    URL:   https://www-genesis.destatis.de/genesis/online?language=de&sequenz=tabellen&selectionname=213*#abreadcrumb
+  - Label: KOAB
+    URL:   https://istat.de/service/projekte/kooperationsprojekt-absolventenstudien-koab/fuer-absolventinnen
+  - Label: Bundesbericht Wissenschaftlicher Nachwuchs
+    URL:   https://www.buwin.de/
+
+Link:
+  - Label: Themenseite Bidungsgerechtigkeit Bildungsserver
+    URL:   https://www.bildungsserver.de/bildungsgerechtigkeit-12862-de.html

@@ -1,0 +1,63 @@
+Titel: Globale Indikatoren
+ID: global
+Untertitel: Wie viele Menschen verlieren wir im Bildunsgsystem?
+Einfuehrungstext:
+  Das Vorhandensein von funktionalen Analphabeten sowie Menschen ohne Schulabschluss und Berufsausbildung
+  in einer Gesellschaft stellt eine Herausforderung dar, vor allem in einer Welt, die zunehmend komplexe
+  Fähigkeiten und fortgeschrittene Bildung erfordert. Diese Personen stehen oft vor signifikanten Hindernissen
+  im Arbeitsmarkt, was ihre Chancen auf stabile und gut bezahlte Jobs verringert und sie einem höheren Risiko
+  von Armut und sozialer Ausgrenzung aussetzt. Darüber hinaus beeinträchtigt es die gesellschaftliche und
+  wirtschaftliche Entwicklung, da ein Mangel an qualifizierten Arbeitskräften die Innovationsfähigkeit und
+  Produktivität einer Nation einschränken kann. Der Wunsch, diese Situation zu ändern, spiegelt das Bestreben
+  wider, inklusive Bildungssysteme zu schaffen, die jedem Individuum die Möglichkeit bieten, sein volles
+  Potenzial zu entfalten, und damit zu einer gerechteren und prosperierenden Gesellschaft beitragen.
+  Die Förderung von Bildungszugängen und lebenslangem Lernen ist entscheidend, um die Fähigkeiten und
+  Kompetenzen aller Bürgerinnen und Bürger zu verbessern und somit die soziale und ökonomische Teilhabe zu erweitern.
+
+Inhalt:
+  - ID:        global_schulabschluss
+    Titel:     Menschen ohne Schulabschluss
+    Frage:     Wie viele menschen in Deutschland haben keinen Schulabschluss?
+    Ziel:      Alle Menschen in Deutschland haben einen Schulabschluss
+    Indikator: Anteil junger Menschen ohne Schulabschluss
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        global_berufsschulabschluss
+    Titel:     Menschen ohne Berufsschulabschluss
+    Frage:     Wie viele menschen in Deutschland haben keinen Berufsabschluss?
+    Ziel:      Alle Menschen in Deutschland haben einen Berufsabschluss
+    Indikator: Anteil junger Menschen ohne Berufsabschluss
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        global_analphabeten
+    Titel:     Funktionale Analphabeten
+    Frage:     Schaffen wir es, dass möglichst alle Menschen lesen können?
+    Ziel:      Menschen können lesen
+    Indikator: Anteil funktionaler Analphabeten unter 25
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        lernglobal_investitionen
+    Titel:     Bildungsinvestitionen des Staates
+    Frage:     Investiteren wir genug in Bildung?
+    Ziel:      1,5 Prozent des BIP für Bildung
+    Indikator: Anteil Bildungsinvestitionen in das Schulsystem durch den Staat in Form von Bund/Ländern an Gesamthaushalt
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+
+Aktivitaet:
+  - Label: Aktivität 1
+    URL:   https://www.google.de
+
+Datenbasis:
+  - Label: Studierendenstatistik Destatis
+    URL:   https://www.google.de
+  - Label: Personalstatistik der Hochschulen Destatis
+    URL:   https://www.google.de
+
+Link:
+  - Label: Externer_Link_1
+    URL:   https://www.google.de

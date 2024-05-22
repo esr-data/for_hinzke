@@ -1,0 +1,44 @@
+Titel: M-INTerdisziplinarität fördern 
+ID: mint_interdisziplinaritaet
+Untertitel: Findet MINT-Bildung auch außerhalb von MINT statt?
+Einfuehrungstext:
+  MINT-Kenntnisse sind auch für Studierende außerhalb der MINT-Fächer von großer Bedeutung, da sie
+  grundlegende Fähigkeiten und Denkweisen vermitteln, die in der modernen Arbeitswelt weitreichend
+  anwendbar sind. Das Verständnis von Grundlagen in Mathematik, Informatik, Naturwissenschaften und
+  Technik fördert analytisches Denken und Problemlösungskompetenzen, die in nahezu jedem Berufsfeld
+  wertvoll sind. Zudem ermöglicht ein grundlegendes MINT-Wissen den Studierenden, die technologischen
+  und wissenschaftlichen Entwicklungen, die unseren Alltag und die Gesellschaft zunehmend prägen,
+  besser zu verstehen und kritisch zu hinterfragen. Die Fähigkeit, mit MINT-Fachleuten zu kommunizieren
+  und interdisziplinär zu arbeiten, wird ebenfalls gestärkt, was in einer immer vernetzteren Welt essenziell ist.
+
+Inhalt:
+  - ID:        interdisziplinaritaet_einschaetzung
+    Titel:     Zufriedenheit mit der Lehre im Bereich MINT
+    Frage:     Sind Studierende mit der MINT Lehre zufrieden?
+    Ziel:      Gute Lehre im Bereich MINT
+    Indikator: Anteil allgemeine subjektive Zufriedenheit mit MINT-Lehre an Hochschulen "gut" oder "sehr gut" durch Studierende
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        interdisziplinaritaet_einschaetzung_angebote
+    Titel:     Vorkommen MINT in anderen Bereichen
+    Frage:     Kommen MINT-Themen in anderen Fachbereichen vor?
+    Ziel:      MINT-Grundkenntnisse werden für nahezu alle Studierenden vermittelt
+    Indikator: Anteil MINT-Themen in anderen Fachbereichen der Hochschulen (HEX-Analyse)
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+
+Aktivitaet:
+  - Label: Aktivität 1
+    URL:   https://www.google.de
+
+Datenbasis:
+  - Label: Studierendenstatistik Destatis
+    URL:   https://www.google.de
+  - Label: Personalstatistik der Hochschulen Destatis
+    URL:   https://www.google.de
+
+Link:
+  - Label: Externer_Link_1
+    URL:   https://www.google.de

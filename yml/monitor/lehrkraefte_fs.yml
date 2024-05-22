@@ -1,0 +1,55 @@
+Titel: Future Skills und MINT für Lehrkräfte
+ID: lehrkraefte_fs
+Untertitel: Lehrkräfte fit für die Zukunft?
+Einfuehrungstext:
+  Die Vermittlung von Future Skills an Lehramtsstudierende ist entscheidend, um zukünftige
+  Generationen auf die Herausforderungen und Möglichkeiten einer sich schnell wandelnden Welt
+  vorzubereiten. Diese Kompetenzen, die unter anderem digitale Fähigkeiten, kritisches Denken
+  und Problemlösungsfähigkeiten umfassen, sind unerlässlich für die Navigation in einer
+  zunehmend vernetzten und technologiegetriebenen Gesellschaft. Indem angehende Lehrkräfte diese
+  Fähigkeiten erlernen, werden sie nicht nur in der Lage sein, ihren Schülerinnen und Schülern
+  relevantes Wissen und zeitgemäße Lernmethoden zu vermitteln, sondern auch, sie zur aktiven
+  Teilnahme und zum lebenslangen Lernen in einer sich ständig verändernden Welt zu befähigen.
+  Darüber hinaus stärkt die Integration von Future Skills in die Lehrerausbildung die Resilienz
+  und Anpassungsfähigkeit von Lehrkräften selbst, indem sie besser auf neue pädagogische Herausforderungen
+  und die Integration neuer Technologien in den Unterricht vorbereitet werden.
+
+Inhalt:
+  - ID:        fs_digital_lehramt
+    Titel:     Medienkompetenz im Lehramt
+    Frage:     Schaffen wir es Lehramtsstudierende für die Vermittlung digitaler Welten zu qualifizieren?
+    Ziel:      Lehramtsstudierende lernen digitale Welten zu vermitteln
+    Indikator: Anteil Hochschulen mit verpflichtenden Angeboten zum Erwerb von Medienkompetenzen für alle Lehramt-Studierenden
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        fs_digital_lehrkraft
+    Titel:     Medienkompetenz in der Lehrkräftefortbildung
+    Frage:     Schaffen wir es Lehrkräfte für die Vermittlung digitaler Welten zu qualifizieren?
+    Ziel:      Lehramtsstudierende lernen digitale Welten zu vermitteln
+    Indikator: Anzahl Fortbidlungskurse zu Medienkompetenzen in Lehrkräftefortbildungs-Akademien
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        fs_mint
+    Titel:     MINT-Lehrkräfte
+    Frage:     Schaffen wir es den besonderen Mangel an MINT-Lehrkräften in den Griff zu bekommen?
+    Ziel:      MINT-Fächer sind keine Mangelfächer im Lehramt
+    Indikator: MINT-Studienanfänger Lehramt an allen Lehramtsanfängern
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+
+Aktivitaet:
+  - Label: Aktivität 1
+    URL:   https://www.google.de
+
+Datenbasis:
+  - Label: Studierendenstatistik Destatis
+    URL:   https://www.google.de
+  - Label: Personalstatistik der Hochschulen Destatis
+    URL:   https://www.google.de
+
+Link:
+  - Label: Externer_Link_1
+    URL:   https://www.google.de

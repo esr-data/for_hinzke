@@ -1,6 +1,6 @@
 Titel: Berufsorientierung fördern
 ID: bildung_berufsorientierung
-Untertitel: Platzhalter
+Untertitel: Wissen junge Menschen welchen Weg sie einschlagen können?
 Einfuehrungstext:
     Die Förderung der Berufsorientierung ist essentiell, um Jugendlichen bei der Erkennung
     ihrer Stärken und Interessen zu helfen, was für eine erfüllende Karriereentscheidung wichtig
@@ -12,89 +12,32 @@ Einfuehrungstext:
     wirtschaftliche Vorteile.
 
 Inhalt:
-  - ID:        ganztag_quantitativ
-    Titel:     Ausbau der Ganztagsangebote
-    Frage:     Schaffen wir quantitativ genügend Ganztagsangebote?
-    Ziel:      Schulen in Deutschland sind Ganztagsschulen
-    Indikator: Anteil der Ganztagsschulen in Deutschland
+  - ID:        berufsorientierung_subjektiv
+    Titel:     Subjektive Einschätzung Berufsorientierung
+    Frage:     Finden junge Menschen Unterstützung in der Berufsorientierung?
+    Ziel:      Junge Menschen fühlen sich ausreichend bei der Berufsorientierung unterstützt
+    Indikator: Anteil junger Menschen, die die Unterstützung bei ihrer beruflichen Orientierung als ausreichend einschätzen
     Variable:  studienanfanger_dual
     Auswahl:   Gliederung
     Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        ganztag_vielfalt
-    Titel:     Vielfalt der Ganztagsangebote
-    Frage:     Schaffen wir vielfältige Ganztagsangebote?
-    Ziel:      Ganztagsunterricht wird vielseitig gestaltet
-    Indikator: Vielfalt der Angebote im Rahmen der Ganztagsbetreuung
+  - ID:        berufsorieniterung_betriebskontakte
+    Titel:     Schulpraktika und Betriebskontakte
+    Frage:     Bekommen Schülerinnen und Schüler ausreichend Betriebskontakte?
+    Ziel:      Mehr Betriebskontakte für Schülerinnen und Schüler
+    Indikator: Entwicklung der durchschnittliche Anzahl der Tage in der Schullaufbahn mit Praktika und/oder Betriebskontakten gemäß Schulcurricular
     Variable:  studienanfanger_dual
     Auswahl:   keine
     Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        ganztag_kooperation
-    Titel:     Kooperationen zwischen Schule und Zivilgesellschaft im Ganztag
-    Frage:     Schaffen wir Kooperationen zwischen Schule und Zivilgesellschaft?
-    Ziel:      Zivilgesellschaftlicher Akteure sind in den Ganztag eingebunden
-    Indikator: Einbindung zivilgesellschaftlicher Akteure
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        ganztag_sozial
-    Titel:     Sozialer Ausgleich bei Ausbau der Ganztagsangebote
-    Frage:     Schaffen wir es Ganztagsschule sozial einzuführen?
-    Ziel:      Insbesondere in Schulen mit niedrigem Sozialindex sind zivilgesellschaftliche Akteure eingebunden
-    Indikator: Einbindung zivilgesellschaftlicher Akteure nach Sozialindex
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        ganztag_multiprofessionel
-    Titel:     Multiprofessionele Teams an Schulen
-    Frage:     Schaffen wir es multiprofessionelle Teams in den Schulen zu verankern?
-    Ziel:      Multiprofessionelle Teams an Schulen
-    Indikator: Anteil Schulpersonal außerhalb der Lehrkräfte an Schulpersonal
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        ganztag_digital
-    Titel:     IT-Infrastruktur an Schulen
-    Frage:     Schaffen wir die Voraussetzungen für digitale Bildungsangebote?
-    Ziel:      Schulen haben WLAN
-    Indikator: Anteil Schulen mit WLAN über 100 Mbit
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        ganztag_lage
-    Titel:     Die Lage an den Schulen aus Sicht der Schulleitungen
-    Frage:     Schaffen wir es die wahrgenomme Lage an den Schulen zu verbessern?
-    Ziel:      Die Lage an Schulen wird als gut eingeschätzt
-    Indikator: Anteil Schulleitungen die Lage an ihrer Schule insgesamt als gut bezeichnen
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
 
 Aktivitaet:
-  - Label: 'Studie: Vereine, Stiftungen und Co - die neuen Bildungspartner?'
-    URL:   https://www.stifterverband.org/download/file/fid/6014
-  - Label: 'Studie: Hochschul-Bildungs-Report'
-    URL:   https://www.hochschulbildungsreport.de/sites/hsbr/files/hochschul-bildungs-report_abschlussbericht_2022.pdf
   - Label: Das Programm von Bildung und Begabung
     URL:   https://www.bildung-und-begabung.de/
 
 Datenbasis:
-  - Label: KMK Schulen in Ganztagsform
+  - Label: Bertelsmann-Studie zu berufliche Orientierung im dritten Corona-Jahr
     URL:   https://www.kmk.org/dokumentation-statistik/statistik/schulstatistik/allgemeinbildende-schulen-in-ganztagsform.html
-  - Label: Studie zur Entwicklung von Ganztagsschulen (SteG)
-    URL:   https://steg.dipf.de/de
-  - Label: ZNL MINT-Angebote im schulischen Ganztag
-    URL:   https://wp.znl-ulm.de/
+  - Label: Eigene Recherche zu Schulcurricular in den 16 Bundeslädern
 
 Link:
-  - Label: Temenseite Ganztag der Bertelsmann-Stiftung
-    URL:   https://www.bertelsmann-stiftung.de/de/unsere-projekte/in-vielfalt-besser-lernen/projektthemen/ganztag
-  - Label: Sammlung des Forschungsstandes zum Ganztag vom DJI
-    URL:   https://www.dipf.de/de/forschung/pdf-forschung/steubis/gts-bilanz_broschuere
-  - Label: Themenseite Ganztag auf Bildungsserver
-    URL:   https://www.bildungsserver.de/ganztagsschule-1801-de.html#Studien_und_Untersuchungen_
-  - Label: BMBF-Portal zur Ganztagsschule
-    URL:   https://www.ganztagsschulen.org/de/forschung/einfuehrung/ganztagsschulforschung/ganztagsschulforschung-als-empirische-bildungsforschung_node.html
-  - Label: Bertelsmann 2
-    URL:   https://www.bertelsmann-stiftung.de//de/publikationen/publikation/did/die-landesseitige-ausstattung-gebundener-ganztagsschulen-mit-personellen-ressourcen/
-  - Label: Themenseite Ganztag der KMK
-    URL:   https://www.kmk.org/themen/allgemeinbildende-schulen/bildungswege-und-abschluesse/ganztagsschulen-in-deutschland.html
+  - Label: Bertelsmann-Studie zu beruflicher Orientierung
+    URL: https://www.bertelsmann-stiftung.de/de/publikationen/publikation/did/berufliche-orientierung-im-dritten-corona-jahr-all

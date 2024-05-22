@@ -1,0 +1,67 @@
+Titel: Teilhabe an MINT stärken
+ID: mint_teilhabe
+Untertitel: Wie steht es um die MINT Bildung an Schulen?
+Einfuehrungstext:
+  In der schnell fortschreitenden Welt sind MINT-Kenntnisse (Mathematik, Informatik, Naturwissenschaften und Technik) von unschätzbarem Wert
+  und bilden das Fundament für Innovationen und technologischen Fortschritt. Die Stärkung der Teilhabe an MINT-Bereichen für Schülerinnen
+  und Schüler ist daher von entscheidender Bedeutung, um zukünftige Generationen auf die Herausforderungen und beruflichen Möglichkeiten
+  des 21. Jahrhunderts vorzubereiten. Durch frühzeitige Förderung von MINT-Kompetenzen wird nicht nur das kritische Denken und
+  Problemlösungsfähigkeiten geschärft, sondern auch die Grundlage für lebenslanges Lernen und Anpassungsfähigkeit in einer sich ständig
+  verändernden Arbeitswelt gelegt. Zudem trägt eine breite MINT-Bildung dazu bei, Geschlechterstereotypen zu durchbrechen und eine
+  inklusivere, vielfältigere Zukunft in den Natur- und Ingenieurwissenschaften zu schaffen.
+
+Inhalt:
+  - ID:        teilhabe_stundentafeln
+    Titel:     MINT in den Stundentafeln
+    Frage:     Schaffen wir quantitativ genügend Angebote im Bereich MINT an Schulen?
+    Ziel:      Der Bereich MINT macht etwa 1/3 der Schulstundentafeln aus
+    Indikator: Durchschnittlicher Anteil MINT in Studentafeln
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        teilhabe_lehrkräfte
+    Titel:     Lehrbefähigungen MINT
+    Frage:     Haben wir genügend Lehrkräfte für den MINT Unterricht?
+    Ziel:      Es gibt ausreichend Lehrkräfte für den MINT Unterricht
+    Indikator: Anteil an Lehrkräften mit Lehrbefähigungen in MINT an allen Lehrkräften
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        teilhabe_oberstufe
+    Titel:     MINT Oberstufenbelegung
+    Frage:     Schaffen wir es mehr Schülerinnen und Schüler von MINT zu begeistern?
+    Ziel:      Viele Schülerinnen und Schüler belegen MINT-Fächer in den Oberstufen-Leistungskursen
+    Indikator: Anteil Schülerinnen und Schüler mit Oberstufenbelegungen MINT-Leistungskurs
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        teilhabe_oberstufen_frauen
+    Titel:     MINT Oberstufenbelegung Schülerinnen
+    Frage:     Belegen Schülerinnen in der Oberstufe ebenso oft MINT-Leistungskurse wie Schüler?
+    Ziel:      Schülerinnen belegen MINT-Leistungskurse im ähnlichen Umfang wie Schüler
+    Indikator: Anteil Schülerinnen mit Oberstufenbelegungen MINT-Leistungskurs
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        teilhabe_informatik
+    Titel:     Pflichtfach Informatik
+    Frage:     Schaffen wir es die informatischen Kompetenzen zu steigern?
+    Ziel:      Informatik ist Pflichtfach in den Schulcurricula in Deutschland
+    Indikator: Anteil Bundesländer mit Pflichtfach Informatik
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+
+Aktivitaet:
+  - Label: Aktivität 1
+    URL:   https://www.google.de
+
+Datenbasis:
+  - Label: Studierendenstatistik Destatis
+    URL:   https://www.google.de
+  - Label: Personalstatistik der Hochschulen Destatis
+    URL:   https://www.google.de
+
+Link:
+  - Label: Externer_Link_1
+    URL:   https://www.google.de

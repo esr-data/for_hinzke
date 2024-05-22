@@ -1,0 +1,52 @@
+Titel: Future Skills an Hochschulen etablieren
+ID: fs_verankern
+Untertitel: Future Skills in die Hochschul-Curriula!
+Einfuehrungstext:
+  Die curriculare Verankerung von Future Skills an Hochschulen ist von entscheidender Bedeutung, 
+  um Studierende adäquat auf die dynamischen und oft unvorhersehbaren Anforderungen der Arbeitswelt 
+  vorzubereiten. Skills wie kritisches Denken, Kreativität, digitale Kompetenz und interdisziplinäres 
+  Wissen sind in einer sich schnell wandelnden Gesellschaft und Wirtschaft unerlässlich. Durch die 
+  Integration dieser Kompetenzen in die Hochschulcurricula werden Studierende nicht nur für aktuelle, 
+  sondern auch für zukünftige Herausforderungen gerüstet, was ihre Employability und Anpassungsfähigkeit 
+  steigert. Zudem fördern Future Skills die Entwicklung von innovativen Lösungsansätzen für komplexe 
+  Probleme und tragen somit zu einer nachhaltigen gesellschaftlichen und wirtschaftlichen Entwicklung bei.
+
+Inhalt:
+  - ID:        verankern_tech_skills
+    Titel:     Tech-Future Skills in Hochschulveranstaltungen
+    Frage:     Schaffen wir es technologische Future Skills ausreichend in die Kursvielfalt an Hochschulen zu integrieren?
+    Ziel:      Tech-Future-Skills werden breit an Hochschulen gelehrt
+    Indikator: Anteil Tech-Skill-Kurse in Kursvielfalt der Hochschulen (HEX-Analyse)
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        verankern_fs_module
+    Titel:     Experimentierklauseln im Lehramt
+    Frage:     Sind Future Skills ausreichend in den Hochschulcurricula verankert?
+    Ziel:      Future Skills sind in den Studiengängen integriert
+    Indikator: Anteil Studiengänge, die mind. 20 % verpflichtende überfachliche Qualifikationen (Future Skills Module) aufweisen
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        verankern_fs_hochschulen
+    Titel:     Future Skill Hochschulen
+    Frage:     Verschreiben sich Hochschulen der Vermittlung von Zukunftskompetenzen?
+    Ziel:      Hochschulen sind Future-Skill Hochschulen
+    Indikator: Anzahl Future Skills-Hochschulen
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+
+Aktivitaet:
+  - Label: Aktivität 1
+    URL:   https://www.google.de
+
+Datenbasis:
+  - Label: Studierendenstatistik Destatis
+    URL:   https://www.google.de
+  - Label: Personalstatistik der Hochschulen Destatis
+    URL:   https://www.google.de
+
+Link:
+  - Label: Externer_Link_1
+    URL:   https://www.google.de

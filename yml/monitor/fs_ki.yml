@@ -1,0 +1,71 @@
+Titel: KI-Kompetenzen stärken
+ID: fs_ki
+Untertitel: KI-Bildung machen!
+Einfuehrungstext:
+  Die Vermittlung von KI-Kompetenzen an Hochschulen und im Lehramt ist von großer Bedeutung, 
+  da Künstliche Intelligenz (KI) eine immer zentralere Rolle in unserem Alltag, der Arbeitswelt 
+  und in zahlreichen wissenschaftlichen Disziplinen einnimmt. Durch das Erlernen von Grundlagen 
+  und Anwendungsmöglichkeiten der KI werden Studierende und angehende Lehrkräfte befähigt, die 
+  technologischen Entwicklungen kritisch zu reflektieren und aktiv mitzugestalten. Im Lehramt 
+  ermöglicht die Integration von KI-Kompetenzen zudem, Schülerinnen und Schüler frühzeitig auf die 
+  digitalisierte Zukunft vorzubereiten und ihnen wichtige Fähigkeiten für einen verantwortungsvollen 
+  Umgang mit Technologie zu vermitteln. Darüber hinaus fördert das Verständnis für KI interdisziplinäre 
+  Kompetenzen und unterstützt die Entwicklung innovativer Lehr- und Lernmethoden, die zur Bewältigung 
+  zukünftiger gesellschaftlicher Herausforderungen beitragen.
+
+Inhalt:
+  - ID:        ki_strategie
+    Titel:     KI-Strategien der Bundesländer
+    Frage:     Schaffen wir es, dass KI-Bildung ernst genommen wird?
+    Ziel:      Bundesländer haben eine Strategie zur KI-Bildung
+    Indikator: Anteil Bundesländer, die eigene Strategie für KI-Bildung etworfen haben haben
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        ki_studiengänge
+    Titel:     Studiengänge zu Data Science und KI
+    Frage:     Haben wir ein ausreichendes Studienangebot zu Data Science und KI?
+    Ziel:      Wir haben ein gutes Studienangebot zu Data Science und KI
+    Indikator: Anteil Studiengänge im Bereich KI/Data Science
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        ki_veranstaltungen
+    Titel:     Hochschulveranstaltungen zu KI 
+    Frage:     Schaffen wir es KI-Bildung ausreichend in die Kursvielfalt an Hochschulen zu integrieren?
+    Ziel:      KI-Kompetenzen werden an Hochschulen vermittelt
+    Indikator: Anteil KI-Kurse in Kursvielfalt der Hochschulen (HEX-Analysen)
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        ki_lehrkräfte
+    Titel:     KI in Lehrkräftefortbildung
+    Frage:     Werden Lehrkäfte ausreichend für die Vermittlung von KI-Kompetenzen fortgebildet?
+    Ziel:      Es gibt viele Lehrkräfte-Fortbildungen zu KI-Themen
+    Indikator: Anteil Kurse KI in Lehrkräftefortbildungsakademien
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        ki_einschaetzung
+    Titel:     Selbsteinschätzung KI-Kompetenz
+    Frage:     Fühlen sich Menschen kompetent im Umgang mit dem Themenbereich KI?
+    Ziel:      Menschen fühlen sich überwiegend kompetent im Umgang mit KI
+    Indikator: Anteil Menschen die sich kompetent im Umgang mit KI fühlen
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+
+
+Aktivitaet:
+  - Label: Aktivität 1
+    URL:   https://www.google.de
+
+Datenbasis:
+  - Label: Studierendenstatistik Destatis
+    URL:   https://www.google.de
+  - Label: Personalstatistik der Hochschulen Destatis
+    URL:   https://www.google.de
+
+Link:
+  - Label: Externer_Link_1
+    URL:   https://www.google.de

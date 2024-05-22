@@ -1,0 +1,60 @@
+Titel: Innovative Lernorte
+ID: lernorte
+Untertitel: In welchem Zustand sind unsere Lernorte?
+Einfuehrungstext:
+  Innovative Lernorte spielen eine entscheidende Rolle in der Bildung, da sie über den traditionellen 
+  Klassenzimmeransatz hinausgehen und das Lernen in reale und kontextbezogene Szenarien einbetten. Sie 
+  fördern die praktische Anwendung von Wissen, indem sie Lernenden ermöglichen, Theorien und Konzepte 
+  direkt in der Praxis zu erproben und zu erleben. Solche Umgebungen stimulieren die Neugier und 
+  Kreativität der Lernenden, indem sie außergewöhnliche und anregende Erfahrungen bieten, die das 
+  Engagement und die Motivation erhöhen. Darüber hinaus unterstützen innovative Lernorte die Entwicklung 
+  von Schlüsselkompetenzen wie kritisches Denken, Problemlösungsfähigkeiten und Anpassungsfähigkeit, die 
+  für den Erfolg in einer schnelllebigen und ständig verändernden Welt unerlässlich sind.
+
+Inhalt:
+  - ID:        lernort_schule
+    Titel:     Zustand der Schulen
+    Frage:     Schaffen wir es die Infrastruktur an Schulen zeitgemäß zu halten?
+    Ziel:      Zeitgemäße Schulen und Gebäude die in Stand gesetzt sind
+    Indikator: Summe Sanierungsbedarfe Schulinfrastruktur
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        lernort_schule_einschaetzung
+    Titel:     Zufriedenheit mit Schulinfrastruktur 
+    Frage:     Sind die Schulleitungen zufrieden mit der Schulinfrastruktur?
+    Ziel:      Schulleitungen sind zufrieden mit Schulinfrastruktur
+    Indikator: Durchschnittliche subjektive Zufriedenheit mit Infrastruktur und Rahmenbedingunen (ohne Personal) der Schulen
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        lernort_hochschule
+    Titel:     Zustand der Hochschulen
+    Frage:     Schaffen wir es die Infrastruktur an Hochschulen zeitgemäß zu halten?
+    Ziel:      Zeitgemäße Hochschulen und Gebäude die in Stand gesetzt sind
+    Indikator: Summe Sanierungsbedarfe Hochshculinfrastruktur
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        lernort_hochschule_einschaetzung
+    Titel:     Zufriedenheit mit Hochschulinfrastruktur 
+    Frage:     Sind die Hochschulleitungen zufrieden mit der Hochschulinfrastruktur?
+    Ziel:      Hochschulleitungen sind zufrieden mit Hochschulinfrastruktur
+    Indikator: Durchschnittliche subjektive Zufriedenheit mit Infrastruktur und Rahmenbedingunen (ohne Personal) der Hochschulen
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+
+Aktivitaet:
+  - Label: Aktivität 1
+    URL:   https://www.google.de
+
+Datenbasis:
+  - Label: Studierendenstatistik Destatis
+    URL:   https://www.google.de
+  - Label: Personalstatistik der Hochschulen Destatis
+    URL:   https://www.google.de
+
+Link:
+  - Label: Externer_Link_1
+    URL:   https://www.google.de

@@ -1,0 +1,59 @@
+Titel: Lehrkräfte ausbilden
+ID: lehrkraefte_flexibilisierung
+Untertitel: Ist das Lehramt flexibel genug?
+Einfuehrungstext:
+  Eine Flexibilisierung des Lehramtes durch Angebote wie den Ein-Fach-Bachelor
+  oder Lehramtsstudiengänge an Hochschulen für angewandte Wissenschaften (HAWs)
+  kann wesentlich zur Bekämpfung des Lehrkräftemangels beitragen. Durch solche
+  Maßnahmen wird der Zugang zum Lehrberuf verbreitert und für eine größere
+  Zielgruppe attraktiv gemacht, indem vielfältigere und praxisnähere
+  Ausbildungswege angeboten werden. Studierende erhalten die Möglichkeit, sich
+  auf spezifische Bildungsbereiche oder Schulformen zu konzentrieren, was zu
+  einer höheren Motivation und letztendlich zu einer besseren Vorbereitung auf
+  den Lehrberuf führen kann. Zudem erlauben es solche flexiblen
+  Ausbildungsstrukturen, schnell auf akuten Lehrermangel in bestimmten Fächern
+  oder Regionen zu reagieren, indem gezielt Studiengänge angeboten werden, die
+  auf diese Bedarfe abgestimmt sind. Schließlich können durch die
+  Flexibilisierung Barrieren abgebaut werden, die potenzielle Bewerberinnen und
+  Bewerber bisher von einer Lehrtätigkeit abgehalten haben, und so der Pool an
+  zukünftigen Lehrkräften signifikant vergrößert werden.
+
+Inhalt:
+  - ID:        flexibilisierung_haws
+    Titel:     Lehrkräfteausbildung an HAWs
+    Frage:     Schaffen wir flexiblere Zugänge fürs Lehramt?
+    Ziel:      Die Berufsschul-Lehrkräfteausbildung ist auch an HAWs möglich
+    Indikator: Anteil Bundesländer mit Möglichkeiten zur Lehrkräftebildung Berufsschulen an HAWs
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        flexibilisierung_einfach_bachelor
+    Titel:     Ein-Fach-Lehramt
+    Frage:     Schaffen wir es die Lehramtsausbildung zu flexibilisieren?
+    Ziel:      In Deutschland ist auch das Ein-Fach-Lehramt eine reguläre Option
+    Indikator: Anteil Bundesländer mit Ein-Fach-Lehrkraft als reguläre Option
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        flexibilisierung_trichter
+    Titel:     Lehrkräftetrichter
+    Frage:     Wie hoch ist der Anteil an Lehramtsstudierenden, die tatsächlich Lehrkraft werden?
+    Ziel:      Auf dem Weg vom Lehramt zur Lehrkraft verlieren wir wenige
+    Indikator: Prozentdifferenz Mittelwert jeweils in letzten 5 Jahren Studienbeginn Lehramt zu eingestellte Lehrkräfte
+    Variable:  studienanfanger_dual
+    Auswahl:   Sonerform
+    Darstellungen: Trichter
+
+Aktivitaet:
+  - Label: Aktivität 1
+    URL:   https://www.google.de
+
+Datenbasis:
+  - Label: Studierendenstatistik Destatis
+    URL:   https://www.google.de
+  - Label: Personalstatistik der Hochschulen Destatis
+    URL:   https://www.google.de
+
+Link:
+  - Label: Externer_Link_1
+    URL:   https://www.google.de

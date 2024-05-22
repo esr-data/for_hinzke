@@ -1,0 +1,63 @@
+Titel: Gute Studienbedingungen fürs Lehramt
+ID: lehrkraefte_bedingungen
+Untertitel: Kann man Lehramt gut und praxisnah studieren?
+Einfuehrungstext:
+  Gute Studienbedingungen und innovative Ansätze im Lehramtsstudium sind
+  essenziell, da sie die Grundlage für die Ausbildung kompetenter und motivierter
+  Lehrkräfte bilden. Sie fördern eine tiefgreifende Auseinandersetzung mit
+  Lehrinhalten und didaktischen Methoden, was angehenden Lehrerinnen und Lehrern
+  ermöglicht, auf die vielfältigen Bedürfnisse und Herausforderungen im Klassenzimmer
+  effektiv einzugehen. Innovative Lehransätze, wie projektbasiertes Lernen oder
+  der Einsatz digitaler Technologien, bereiten Studierende darauf vor,
+  Schülerinnen und Schüler für die Anforderungen des 21. Jahrhunderts zu rüsten.
+  Darüber hinaus tragen optimale Studienbedingungen zur persönlichen und
+  professionellen Entwicklung bei, indem sie eine unterstützende Lernumgebung
+  schaffen, die Kreativität, kritisches Denken und lebenslanges Lernen fördert.
+
+Inhalt:
+  - ID:        bedingungen_praxis
+    Titel:     Praxisanteil im Lehramt
+    Frage:     Schaffen wir es Lehramtsstudierende für die Vermittlung digitaler Welten zu qualifizieren?
+    Ziel:      Lehramtsstudierende haben in ihrem Studium große Praxisanteil
+    Indikator: Durchschnittlicher Anteil Praktika/Praxissemestern im Lehramt gemessen an LP
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        bedingungen_experimentierklauseln
+    Titel:     Experimentierklauseln im Lehramt
+    Frage:     Schaffen wir es, dass Forschungsergebnisse und neue Ideen einfach Eingang finden können in die Lehrkräfteausbildung?
+    Ziel:      Über Experimentierklauseln werden Forschungsergebnisse schnell in der Lehramtsausbildung erprobt
+    Indikator: Anteil Bundesländer mit integrierte Experimentierklauseln in Lehrkräftegesetze/-ordnungen
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        bedingungen_bildungsinländer
+    Titel:     Bildungsinländer Lehramt
+    Frage:     Schaffen wir es, dass mehr unterschiedliche Biografien/Erfahrungs-Empathie für Benachteiligung Eingang in die Lehrkräftezimmer zu bringen?
+    Ziel:      Vielfalt im Lehrkräftezimmer
+    Indikator: Bildungsinländer Lehramt an allen Lehramtsstudierenden
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+  - ID:        bedingungen_universitaetsschulen
+    Titel:     Universitätsschulen
+    Frage:     Schaffen wir es, qualitativ gute Referandszeiten zu ermöglichen?
+    Ziel:      Gute Referandariatsbedingungen
+    Indikator: Anteil der Bundesländer mit Screening/Qualitätsstandards für Universitätsschulen
+    Variable:  studienanfanger_dual
+    Auswahl:   Gliederung
+    Darstellungen: Zeitverlauf, Tabelle, Karte
+
+Aktivitaet:
+  - Label: Aktivität 1
+    URL:   https://www.google.de
+
+Datenbasis:
+  - Label: Studierendenstatistik Destatis
+    URL:   https://www.google.de
+  - Label: Personalstatistik der Hochschulen Destatis
+    URL:   https://www.google.de
+
+Link:
+  - Label: Externer_Link_1
+    URL:   https://www.google.de
