@@ -197,7 +197,3 @@ module_monitor_server <- function(id = "monitor", con) {
     }
   )
 }
-
-create_back_button <- function(){
-
-}
