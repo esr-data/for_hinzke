@@ -1248,4 +1248,11 @@ img.thumbnail-image.card-img {
   text-decoration: underline;
 }
 
+@media (max-width: 600px) {
+ .responsive-div {
+   flex: 1 1 100% !important;
+   margin: 10px 0px !important;
+ }
+}
+
 
