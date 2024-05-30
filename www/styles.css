@@ -531,8 +531,9 @@ p.rank-list-title {
 }
 
 #explorer-suche,
+#explorer-suche_semantisch,
 #explorer_handlung1-suche,
-#explorer_handlung2-suche {
+#explorer_handlung2-suche{
   width: 100%;
 }
 
