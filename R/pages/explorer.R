@@ -27,11 +27,13 @@ module_explorer_ui <- function(id = "explorer", label = "m_explorer") {
       div(
         id = "exp_auswahl",
         style = "display: flex; flex-direction: row; flex-wrap: wrap; max-width: 800px; margin: 0 auto;",
-        actionButton(ns("suche"),       label = "Suchen",      class = "link_button", icon = icon("magnifying-glass")),
-        actionButton(ns("indikatoren"), label = "Indikatoren", class = "link_button", icon = icon("chart-pie")),
-        actionButton(ns("vergleichen"), label = "Vergleichen", class = "link_button", icon = icon("chart-bar")),
-        actionButton(ns("datensatz"),   label = "Datensätze",  class = "link_button", icon = icon("database")),
-        actionButton(ns("karten"),      label = "Karten",      class = "link_button", icon = icon("earth-europe"))
+        actionButton(ns("suche"),            label = "Keyword Suche",            class = "link_button", icon = icon("magnifying-glass")),
+        actionButton(ns("suche_semantisch"), label = "semantische Suche (Beta)", class = "link_button", icon = icon("magnifying-glass")),
+       # actionButton(ns("indikatoren"),      label = "Indikatoren", class = "link_button", icon = icon("chart-pie")),
+        actionButton(ns("vergleichen"),      label = "Analysetool",              class = "link_button", icon = icon("chart-bar")),
+        actionButton(ns("suche_visuell"),    label = "visuelle Suche (Beta)",    class = "link_button", icon = icon("magnifying-glass")),
+        actionButton(ns("datensatz"),        label = "Datensätze",               class = "link_button", icon = icon("database")),
+        actionButton(ns("karten"),           label = "Karten",                   class = "link_button", icon = icon("earth-europe"))
       ),
       div(
         class = "network-panel",
