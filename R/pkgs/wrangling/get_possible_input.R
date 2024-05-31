@@ -135,7 +135,7 @@ get_possible_input <- function(
       } else {
         
         min_reichweite_in <-
-          possible_reichweite[stringr::str_count(possible_reichweite, "\\|") == result_number_of_filters - 1]
+          possible_reichweite[str_count(possible_reichweite, "\\|") == result_number_of_filters - 1]
         
         i <- ifelse(length(grep("Deutschland",  min_reichweite_in)) > 0,
                     grep("Deutschland",  min_reichweite_in),
@@ -171,7 +171,7 @@ get_possible_input <- function(
       possible_reichweite_temp <- possible_reichweite[help_df[, length(filter) + 1] == 1/length(filter)]
       
       reichweite_in <-
-        possible_reichweite_temp[stringr::str_count(possible_reichweite_temp, "\\|") == min(stringr::str_count(possible_reichweite_temp, "\\|"))]
+        possible_reichweite_temp[str_count(possible_reichweite_temp, "\\|") == min(str_count(possible_reichweite_temp, "\\|"))]
       
       #message(paste0("das ist reichweite_in:", paste(reichweite_in, collapse = ", ")))
       
@@ -202,7 +202,7 @@ get_possible_input <- function(
       possible_reichweite_temp <- possible_reichweite[help_df[, length(filter) + 1] == max_uebereinstimmung]
       
       reichweite_in <-
-        possible_reichweite_temp[stringr::str_count(possible_reichweite_temp, "\\|") == min(stringr::str_count(possible_reichweite_temp, "\\|"))]
+        possible_reichweite_temp[str_count(possible_reichweite_temp, "\\|") == min(str_count(possible_reichweite_temp, "\\|"))]
       
       if(!silent){
         message(paste0(

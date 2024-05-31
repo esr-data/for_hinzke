@@ -1,7 +1,8 @@
 
 box::use(
   . / get_data[query_magpie],
-  stringr[str_count]
+  stringr[str_count],
+  dplyr[rowwise, mutate, c_across]
 )
 
 #' Used as internal function
@@ -194,9 +195,9 @@ formulate_and_send_query_to_magpie <- function(
         )
       } else if(length(unique(filter_typ)) < length(filter_typ)) # Mischung
         filter_combis_df <- filter_combis_df |>
-          dplyr::rowwise() |>
-          dplyr::mutate(input = paste(dplyr::c_across(everything()), collapse = "%' AND reichweite_beschr_list LIKE '%")) |>
-          dplyr::mutate(input = paste0(input, "%') "))
+          rowwise() |>
+          mutate(input = paste(c_across(everything()), collapse = "%' AND reichweite_beschr_list LIKE '%")) |>
+          mutate(input = paste0(input, "%') "))
       
       reichweite_typ_query <- paste0(
         "AND typ_list = '", reichweite_typ_in, "'

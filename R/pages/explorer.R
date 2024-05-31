@@ -27,13 +27,12 @@ module_explorer_ui <- function(id = "explorer", label = "m_explorer") {
       div(
         id = "exp_auswahl",
         style = "display: flex; flex-direction: row; flex-wrap: wrap; max-width: 800px; margin: 0 auto;",
-        actionButton(ns("suche"),            label = "Keyword Suche",            class = "link_button", icon = icon("magnifying-glass")),
-        actionButton(ns("suche_semantisch"), label = "semantische Suche (Beta)", class = "link_button", icon = icon("magnifying-glass")),
-       # actionButton(ns("indikatoren"),      label = "Indikatoren", class = "link_button", icon = icon("chart-pie")),
-        actionButton(ns("vergleichen"),      label = "Analysetool",              class = "link_button", icon = icon("chart-bar")),
-        actionButton(ns("suche_visuell"),    label = "visuelle Suche (Beta)",    class = "link_button", icon = icon("magnifying-glass")),
-        actionButton(ns("datensatz"),        label = "Datensätze",               class = "link_button", icon = icon("database")),
-        actionButton(ns("karten"),           label = "Karten",                   class = "link_button", icon = icon("earth-europe"))
+        actionButton(ns("suche"),       label = "Suchen",      class = "link_button", icon = icon("magnifying-glass")),
+        # actionButton(ns("indikatoren"), label = "Indikatoren", class = "link_button", icon = icon("chart-pie")),
+        # actionButton(ns("vergleichen"), label = "Vergleichen", class = "link_button", icon = icon("chart-bar")),
+        actionButton(ns("analysetool"), label = "Analysetool", class = "link_button", icon = icon("chart-bar")),
+        actionButton(ns("datensatz"),   label = "Datensätze",  class = "link_button", icon = icon("database")),
+        actionButton(ns("karten"),      label = "Karten",      class = "link_button", icon = icon("earth-europe"))
       ),
       div(
         class = "network-panel",
@@ -54,8 +53,9 @@ module_explorer_server <- function(id = "explorer") {
       ns <- session$ns
 
       observeEvent(input$suche,       {change_explorer_page("suchen")})
-      observeEvent(input$indikatoren, {change_explorer_page("indikator")})
-      observeEvent(input$vergleichen, {change_explorer_page("vergleichen")})
+      # observeEvent(input$indikatoren, {change_explorer_page("indikator")})
+      # observeEvent(input$vergleichen, {change_explorer_page("vergleichen")})
+      observeEvent(input$analysetool, {change_explorer_page("analysetool")})
       observeEvent(input$datensatz,   {change_explorer_page("datensaetze")})
       observeEvent(input$karten,      {change_explorer_page("karten")})
 
@@ -139,12 +139,18 @@ draw_explorer_details <- function(type){
 #' @noRd
 
 report_explorer_subpages <- function(){
+  # explorer <-
+  #   data.frame(
+  #     url   = c("explorer",     "suchen",             "indikator",              "vergleichen",            "datensaetze",            "karten"),
+  #     id    = c("sbd_explorer", "sbd_explorer_suche", "sbd_explorer_indikator", "sbd_explorer_vergleich", "sbd_explorer_datensatz", "sbd_explorer_karten"),
+  #     label = c("Überblick",    "Suche",              "Indikator",              "Vergleichen",            "Datensätze",             "Karten")
+  #   )
   explorer <-
-    data.frame(
-      url   = c("explorer",     "suchen",             "indikator",              "vergleichen",            "datensaetze",            "karten"),
-      id    = c("sbd_explorer", "sbd_explorer_suche", "sbd_explorer_indikator", "sbd_explorer_vergleich", "sbd_explorer_datensatz", "sbd_explorer_karten"),
-      label = c("Überblick",    "Suche",              "Indikator",              "Vergleichen",            "Datensätze",             "Karten")
-    )
+      data.frame(
+        url   = c("explorer",     "suchen",             "analysetool",              "datensaetze",            "karten"),
+        id    = c("sbd_explorer", "sbd_explorer_suche", "sbd_explorer_analysetool", "sbd_explorer_datensatz", "sbd_explorer_karten"),
+        label = c("Überblick",    "Suche",              "Analysetool",              "Datensätze",             "Karten")
+      )
 }
 
 #' Missing description

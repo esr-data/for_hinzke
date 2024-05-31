@@ -533,7 +533,10 @@ p.rank-list-title {
 #explorer-suche,
 #explorer-suche_semantisch,
 #explorer_handlung1-suche,
-#explorer_handlung2-suche{
+#explorer_handlung2-suche,
+#explorer-analysetool,
+#explorer_handlung1_analysetool,
+#explorer_handlung2-analysetool{
   width: 100%;
 }
 

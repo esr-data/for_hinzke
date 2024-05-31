@@ -4,9 +4,9 @@ box::use(
   ../../R/utils/database[get_query, get_sql],
   ../../R/utils/routing[add_param_in_url],
   ../../R/utils/ui[draw_under_construction],
-  #../../R/utils/ .... für Svenjas/Marians Verbindungsfunktion,
+  ../../R/utils/charts[produce_plot],
   ../../R/pkgs/wrangling/get_data[get_data],
-  #../..R/pkgs/svvis/ ...., für SVVis Package Einbindung
+  
   shiny[
     NS, moduleServer, observeEvent,
     uiOutput, renderUI,
@@ -14,7 +14,10 @@ box::use(
     HTML, tagList, div, h2,
     reactiveVal, reactiveValues,
     actionButton, reactive, 
-    eventReactive, observe
+    eventReactive, observe,
+    htmlOutput, plotOutput, renderPlot,
+    tabPanel, tabsetPanel,
+    renderCachedPlot
   ],
   shinyWidgets[pickerInput, updatePickerInput],
   shiny.router[get_page, get_query_param, change_page],
@@ -23,15 +26,15 @@ box::use(
   sortable[bucket_list, add_rank_list]
 )
 
-#' UI Funktion Vergleichen
+#' UI Funktion Analysetool
 #' @export
 
-module_vergleichen_ui <- function(id = "vergleichen", label = "m_vergleichen", type = "all") {
+module_analysetool_ui <- function(id = "analysetool", label = "m_analysetool", type = "all") {
   ns <- NS(id)
   fluidPage(
     div(
       class = "panel-content",
-      h2("Explorer - Vergleichen von Variablen"),
+      h2("Explorer - Analysieren von Variablen"),
       fluidRow(
         style = "padding: 10px; display: flex; margin: 0;",
         div(
@@ -40,8 +43,8 @@ module_vergleichen_ui <- function(id = "vergleichen", label = "m_vergleichen", t
           div(
             style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
             # 1. Schritt - erste Variablenwahl
-             pickerInput(
-              inputId = ns("select_vars_vergleichen"),
+            pickerInput(
+              inputId = ns("select_vars_analysetool"),
               label = "Liste der Variablen",
               choices = c(""),
               options  = list(
@@ -56,7 +59,7 @@ module_vergleichen_ui <- function(id = "vergleichen", label = "m_vergleichen", t
             ),
             # dazugehörige Tag-Auswahl
             pickerInput(
-              inputId = ns("select_tag_vergleichen"),
+              inputId = ns("select_tag_analysetool"),
               label = "Themenbereiche",
               choices = c(""),
               options  = list(
@@ -71,7 +74,7 @@ module_vergleichen_ui <- function(id = "vergleichen", label = "m_vergleichen", t
           ),
           
           # 2. Schritt - Auswahl weiterer, passender Variablen - als Option ergänzbar
-         
+          
           div(
             style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
             actionButton(ns("new_var_btn"), "Vergleichsvariable hinzufügen")
@@ -80,45 +83,37 @@ module_vergleichen_ui <- function(id = "vergleichen", label = "m_vergleichen", t
             style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
             uiOutput(ns("variable_vergleichen"))
           ),
-
+          
           # 3. Schritt Wahl der Reichweiten/Filter
           uiOutput(ns("variable")),
           div(
             style = "display: flex; flex-wrap: wrap;",
-            div(uiOutput(ns("select_reichweite_vergleichen")), style = "max-width: 650px; width: 80%;"),
-            div(uiOutput(ns("filter_reichweite_vergleichen"),  style = "max-width: 250px; width: 100%"))
+            div(uiOutput(ns("select_reichweite_analysetool")), style = "max-width: 650px; width: 80%;"),
+            div(uiOutput(ns("filter_reichweite_analysetool"),  style = "max-width: 250px; width: 100%"))
           ),
           
           #4. Schritt Daten laden Button
           div(
             style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
             actionButton(ns("show_results"), "Ergebnisse anzeigen", class = "btn-primary")
-          ),
-          
-         #5. Tabs mit Ergebnissen
-         # div(
-         #   style = "display: flex; flex-wrap: wrap;",
-         #   uiOutput(ns("ergebnis_tabs"))
-         # )
-         
+          )
         )
       ),
       
-      # 4a Schritt - Wahl Tabelle oder Plot
+      # 5. Ergebnisse in Tabs
+ 
+        uiOutput(ns("result_tabs"))
       
-      # 4. Schritt Output der Tabelle (mit "Download" oder ähnlichem)
-      #div(uiOutput(ns(table)))
-      withSpinner(reactableOutput(ns("table")))
-      
+
     )
   )
   
 }
 
-#' Server Funktion Vergleichen
+#' Server Funktion analysetool
 #' @export
 
-module_vergleichen_server <- function(id = "vergleichen", type = "all"){
+module_analysetool_server <- function(id = "analysetool", type = "all"){
   moduleServer(
     id,
     function(input, output, session) {
@@ -138,12 +133,12 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
           variable2 = c(),
           aenderung = c()
         )
-     
+      
       input_var <- reactiveVal(data.frame())
       input_var2 <- reactiveVal(data.frame())
       input_tag <- reactiveVal(data.frame())
-   
-  
+      
+      
       filter_param <- vergleichen_translate_filter_param()
       
       # URL-Parameter werden zwischengespeichert, um den Verlauf/eine Aktualisierung besser nachzuvollziehen
@@ -154,7 +149,7 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
             paste0(
               "parameter <- reactiveValues(",
               paste(
-                paste(c("ve_gp", "ve_tg", "hf", "ve_vr", "ve_vr2", filter_param$param), "= ''"),
+                paste(c("at_gp", "at_tg", "hf", "at_vr", "at_vr2", filter_param$param), "= ''"),
                 collapse = ","
               ),
               ")"
@@ -173,13 +168,13 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
       })
       
       observe({
-        selected_var <- input$select_vars_vergleichen
+        selected_var <- input$select_vars_analysetool
         
         if (length(selected_var) > 0) {
           
-          input_var2(indikator_get_variables()) # Diese Funktion muss definiert werden
+          input_var2(indikator_get_variables()) 
         } else {
-          input_var2(data.frame()) # Leeren von input_var2 wenn keine Auswahl getroffen ist
+          input_var2(data.frame())
         }
       })
       
@@ -188,7 +183,7 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
           pickerInput(
             inputId = ns("variable_vergleichen"),
             label = "Liste möglicher Vergleichsvariablen",
-            choices = sort(input_var2()$beschr),
+            choices = sort(input_var2()$beschr[input_var2()$relevant]),
             options  = list(
               `actions-box`        = FALSE,
               `none-selected-text` = "nichts ausgewählt",
@@ -215,7 +210,7 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
         }else{
           vars <- daten$variable
         }
-       
+        
         auswahl <- daten$auswahl
         
         if("Zeit" %in% auswahl){
@@ -232,7 +227,7 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
         filter_typ <- daten$filter$type
         
         if("Zeit" %in% filter_typ){
-        
+          
           if(all(grepl("Zeit", filter_typ))) {
             zeit <- c(filter[1], filter[length(filter)])
             filter <- NULL
@@ -243,7 +238,7 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
         }
         
         
-       get_data(
+        get_data(
           variable = vars,
           group = unique(auswahl),#unique(daten$auswahl),
           filter = unique(filter),
@@ -252,13 +247,62 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
         
       }, ignoreNULL = FALSE)
       
-      # output
+      # Ergebnis-Output-Serverfunktionen
+      
+      observeEvent(input$show_results, {
+  
+        plot_list <- produce_plot(results(), 
+                                  chart_options_rules_dir = "~/test_datenportal_2/data/chart_options_rules.xlsx")
+        
+        print(plot_list)
+        output$result_tabs <- renderUI({
+          result_tabs <- list(
+            tabPanel("Ergebnistabelle", 
+                     withSpinner(reactableOutput(ns("table"))))
+          )
+          
+          for(i in seq_along(plot_list)) {
+            result_tabs <- append(result_tabs, list(tabPanel(paste("Grafik", i),
+                                               plotOutput(ns(paste("plot", i, sep = ""))))))
+          }
+          
+          do.call(tabsetPanel, result_tabs)
+          
+        })
+        
+        for(i in seq_along(plot_list)) {
+          
+          local({
+            my_i <- i
+            output[[paste("plot", my_i, sep = "")]] <- renderPlot({
+              # print(plot_list[[my_i]])
+              plot_list[[my_i]]
+            })
+          })
+        }
+        
+      })
+      
       # rendering tabelle, wenn Knopf gedrückt wird
       output$table <- renderReactable({
-         vergleichen_draw_reactable(results())
-        })
+        vergleichen_draw_reactable(results())
+      })
       
-    
+      # output$plot <- renderPlot({ #renderUI({
+      #   plot_list <- produce_plot(results(), 
+      #                             chart_options_rules_dir = "~/test_datenportal_2/data/chart_options_rules.xlsx")
+      #   
+      #   plot1 <- plot_list[[1]]
+      #   plot1
+      #   # grid <- plot_grid(plot_list[[1]], plot_list[[2]],
+      #   #           ncol = 1)
+      #   # 
+      #   # grid
+      #   # 
+      # })
+      
+      
+      
       # Das zentrale Event bezieht sich auf die URL-Parameter; auf dieser Basis werden alle Anpassungen vorgenommen
       observeEvent(
         get_query_param(), {
@@ -266,16 +310,16 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
           
           
           if (!gesperrt()){
-            if (get_page() == "vergleichen"){
-          
+            if (get_page() == "analysetool"){
+              
               if (is.null(get_query_param())){
-                change_page("vergleichen?hf=0") #kein Handlungsfeld-Filter - Grundlink der Seite
+                change_page("analysetool?hf=0") #kein Handlungsfeld-Filter - Grundlink der Seite
               } else {
                 gesperrt(TRUE)
                 daten$aenderung <- FALSE
-     
+                
                 # PARAMETER HF - Update des Handlungsfeldes / der Themen Auswahl __________________
-             
+                
                 param_hf <-
                   get_query_param("hf") |>
                   indikator_recode_param_int()
@@ -290,57 +334,57 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
                     input_var(indikator_get_variables()) #TODO
                     input_var2(indikator_get_variables())
                     input_tag(get_sql("indikator_get_tag_by_variable", TRUE))
-                    updatePickerInput(session, "select_tag_vergleichen",      choices = sort(input_tag()$beschr))
-                    updatePickerInput(session, "select_vars_vergleichen", choices = sort(input_var()$beschr[input_var()$relevant]))
+                    updatePickerInput(session, "select_tag_analysetool",      choices = sort(input_tag()$beschr))
+                    updatePickerInput(session, "select_vars_analysetool", choices = sort(input_var()$beschr[input_var()$relevant]))
                     updatePickerInput(session, "variable_vergleichen", choices = sort(input_var2()$beschr[input_var2()$relevant]))
-                
+                    
                     daten$aenderung <- TRUE
                   }
                   
                 }
                 
-                # PARAMETER VE_TG - Update der Tags __________________________________________________
-            
-                param_ve_tg <-
-                  get_query_param("ve_tg") |>
+                # PARAMETER AT_TG - Update der Tags __________________________________________________
+                
+                param_at_tg <-
+                  get_query_param("at_tg") |>
                   indikator_recode_param_int(vec = TRUE)
                 
                 # Nur Änderungen vornehmen, wenn sich etwas geändert hat
-                if (!(all(param_ve_tg %in% parameter$ve_tg) &
-                      all(parameter$ve_tg %in% param_ve_tg))){
+                if (!(all(param_at_tg %in% parameter$at_tg) &
+                      all(parameter$at_tg %in% param_at_tg))){
                   
-                  parameter$ve_tg <- param_ve_tg
-                  selected_tags   <- input_tag()$beschr[input_tag()$id %in% param_ve_tg]
+                  parameter$at_tg <- param_at_tg
+                  selected_tags   <- input_tag()$beschr[input_tag()$id %in% param_at_tg]
                   
                   # Picker updaten, wenn ich die ausgewählten Items unterscheiden:
                   # Das ist der Fall, wenn die Paramter-Eingabe über die URL und nicht den Picker erfolgt
-                  if (!(all(selected_tags %in% input$select_tag_vergleichen) &
-                        all(input$select_tag_vergleichen %in% selected_tags))){
-                    updatePickerInput(session, "select_tag_vergleichen", selected = input_tag()$beschr[input_tag()$id %in% param_ve_tg])
+                  if (!(all(selected_tags %in% input$select_tag_analysetool) &
+                        all(input$select_tag_analysetool %in% selected_tags))){
+                    updatePickerInput(session, "select_tag_analysetool", selected = input_tag()$beschr[input_tag()$id %in% param_at_tg])
                   }
                   
                   # Aktualisierung der Variablen aus Basis der Tags
                   input_var(indikator_get_variables_by_tags(input_var(), selected_tags))
                   updatePickerInput(
                     session = session,
-                    inputId = "select_vars_vergleichen",
-                    selected = input$select_vars_vergleichen,
+                    inputId = "select_vars_analysetool",
+                    selected = input$select_vars_analysetool,
                     choices = sort(input_var()$beschr[input_var()$relevant])
                   )
                   
                   daten$aenderung <- TRUE
                 }
                 
-                # PARAMETER VE_VR - Update der Variablen _____________________________________________
-     
-                param_ve_vr <-
-                  get_query_param("ve_vr") |>
+                # PARAMETER AT_VR - Update der Variablen _____________________________________________
+                
+                param_at_vr <-
+                  get_query_param("at_vr") |>
                   indikator_recode_param_int()
                 
-                if (param_ve_vr != parameter$ve_vr){
-                  parameter$ve_vr <- param_ve_vr
+                if (param_at_vr != parameter$at_vr){
+                  parameter$at_vr <- param_at_vr
                   
-                  if (param_ve_vr == ""){
+                  if (param_at_vr == ""){
                     
                     daten$filter  <- data.frame()
                     daten$gruppen <- c()
@@ -349,18 +393,18 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
                     daten$variable <- c()
                     daten$variable2 <- c()
                     
-                    updatePickerInput(session, "select_vars_vergleichen", selected = NULL)
+                    updatePickerInput(session, "select_vars_analysetool", selected = NULL)
                     output$variable_vergleichen <- renderUI({HTML("")})
-                    output$filter_reichweite_vergleichen <- renderUI({HTML("")})
-                    output$select_reichweite_vergleichen <- renderUI({HTML("")})
+                    output$filter_reichweite_analysetool <- renderUI({HTML("")})
+                    output$select_reichweite_analysetool <- renderUI({HTML("")})
                     
                     
                   } else {
-            
-                    variable <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_ve_vr))
+                    
+                    variable <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_at_vr))
                     
                     if (nrow(variable) == 1){
-                    
+                      
                       tabelle <- vergleiche_load_reichweiten_by_multiple_variables(variable$id)
                       
                       daten$filter  <- data.frame()
@@ -370,12 +414,12 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
                       daten$variable <- variable$beschr
                       daten$variable2 <- c()
                       
-                      output$filter_reichweite_vergleichen <- renderUI({HTML("")})
-                      output$select_reichweite_vergleichen <- renderUI({indikator_draw_eimer(daten$gruppen, ns = ns)})
-                      updatePickerInput(session, "select_vars_vergleichen", selected = variable$beschr)
-      
+                      output$filter_reichweite_analysetool <- renderUI({HTML("")})
+                      output$select_reichweite_analysetool <- renderUI({indikator_draw_eimer(daten$gruppen, ns = ns)})
+                      updatePickerInput(session, "select_vars_analysetool", selected = variable$beschr)
+                      
                       # Vorschlagen der Vergleichsvariablen, wenn erste gewählt wurde
-                      # selected_tags   <- input_tag()$beschr[input_tag()$id %in% parameter$ve_tg] # falls Tags soll das hier auch passen
+                      # selected_tags   <- input_tag()$beschr[input_tag()$id %in% parameter$at_tg] # falls Tags soll das hier auch passen
                       # input_var2(indikator_get_variables_by_tags(input_var2(), selected_tags))
                       # 
                       # 
@@ -411,55 +455,55 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
                 # WEITERE VARIABLEN - Update weitere Variablen _______________________________________
                 
                 # Reset von Vergleichsvariable, falls Var1 wieder verändert wurde
-                selected_tags   <- input_tag()$beschr[input_tag()$id %in% parameter$ve_tg] # falls Tags soll das hier auch passen
+                selected_tags   <- input_tag()$beschr[input_tag()$id %in% parameter$at_tg] # falls Tags soll das hier auch passen
                 input_var2(indikator_get_variables_by_tags(input_var2(), selected_tags))
-            
-                # von Tag Auswahl übergeben und miteinbeziehen in Datenoutput
-                param_ve_vr2 <-
-                  get_query_param("ve_vr2") |>
-                  indikator_recode_param_int()
-                  
-                  if (param_ve_vr2 != parameter$ve_vr2){
-                    parameter$ve_vr2 <- param_ve_vr2
-                    
-                    if (param_ve_vr2 == ""){
-                      
-                      daten$variable2 <- c()
-              
-                      updatePickerInput(session, "variable_vergleichen", selected = NULL)
-                      
-                      
-                    } else {
                 
-                      variable <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_ve_vr))
-                      variable2 <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_ve_vr2))
-                      tabelle <- vergleiche_load_reichweiten_by_multiple_variables(variable$id, variable2$id)
-                      
-                      daten$gruppen <- sort(tabelle$gruppe)
-                      daten$variable2 <- variable2$beschr
-                      
-                      
-                      updatePickerInput(session, "variable_vergleichen", selected = variable2$beschr)
-                      
-                      
-                    }
+                # von Tag Auswahl übergeben und miteinbeziehen in Datenoutput
+                param_at_vr2 <-
+                  get_query_param("at_vr2") |>
+                  indikator_recode_param_int()
+                
+                if (param_at_vr2 != parameter$at_vr2){
+                  parameter$at_vr2 <- param_at_vr2
+                  
+                  if (param_at_vr2 == ""){
                     
-                    daten$aenderung <- TRUE
+                    daten$variable2 <- c()
+                    
+                    updatePickerInput(session, "variable_vergleichen", selected = NULL)
+                    
+                    
+                  } else {
+                    
+                    variable <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_at_vr))
+                    variable2 <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_at_vr2))
+                    tabelle <- vergleiche_load_reichweiten_by_multiple_variables(variable$id, variable2$id)
+                    
+                    daten$gruppen <- sort(tabelle$gruppe)
+                    daten$variable2 <- variable2$beschr
+                    
+                    
+                    updatePickerInput(session, "variable_vergleichen", selected = variable2$beschr)
+                    
+                    
                   }
                   
-
-                # PARAMETER VE_GP - Update der Gruppenauswahl / Eimer ________________________________
-               
-                param_ve_gp <-
-                  get_query_param("ve_gp") |>
+                  daten$aenderung <- TRUE
+                }
+                
+                
+                # PARAMETER AT_GP - Update der Gruppenauswahl / Eimer ________________________________
+                
+                param_at_gp <-
+                  get_query_param("at_gp") |>
                   indikator_recode_param_int(vec = TRUE)
                 
-                if (!(all(param_ve_gp %in% parameter$ve_gp) &
-                      all(parameter$ve_gp %in% param_ve_gp))){
+                if (!(all(param_at_gp %in% parameter$at_gp) &
+                      all(parameter$at_gp %in% param_at_gp))){
                   
-                  parameter$ve_gp <- param_ve_gp
+                  parameter$at_gp <- param_at_gp
                   daten_gruppe <- 1:length(daten$gruppen)
-                  daten_gruppe <- daten_gruppe[daten_gruppe %in% param_ve_gp]
+                  daten_gruppe <- daten_gruppe[daten_gruppe %in% param_at_gp]
                   
                   if (length(daten_gruppe) > 0){
                     daten$auswahl <- daten$gruppen[daten_gruppe]
@@ -471,23 +515,23 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
                     
                     # Änderung, die nicht im UI-Element persistiert ist?
                     eimer_aenderung <- FALSE
-                    if (length(input$eimer_unterscheiden_vergleichen) != length(daten$auswahl)){
+                    if (length(input$eimer_unterscheiden_analysetool) != length(daten$auswahl)){
                       eimer_aenderung <- TRUE
                     } else if (length(daten$auswahl) > 0){
-                      if (!(all(daten$auswahl %in% input$eimer_unterscheiden_vergleichen) &
-                            all(input$eimer_unterscheiden_vergleichen %in% daten$auswahl))){
+                      if (!(all(daten$auswahl %in% input$eimer_unterscheiden_analysetool) &
+                            all(input$eimer_unterscheiden_analysetool %in% daten$auswahl))){
                         eimer_aenderung <- TRUE
                       }
                     }
                     if (eimer_aenderung){
-                      output$select_reichweite_vergleichen <-
+                      output$select_reichweite_analysetool <-
                         renderUI({
                           indikator_draw_eimer(daten$gruppen, daten$auswahl, ns)
                         })
                     }
                     
                     # Filter aktualisieren
-                    output$filter_reichweite_vergleichen <-
+                    output$filter_reichweite_analysetool <-
                       renderUI({
                         indikator_draw_filter(daten$werte, daten$auswahl, ns)
                       })
@@ -496,12 +540,12 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
                   daten$aenderung <- TRUE
                   
                 }
-       
+                
                 # PARAMETER der Filter _______________________________________________________________
-              
+                
                 for (filter_id in filter_param$param){
-                  # ve_re15
-                  # filter_id <- "ve_re15"
+                  # at_re15
+                  # filter_id <- "at_re15"
                   param_filter <-
                     get_query_param(filter_id) |>
                     indikator_recode_param_int(vec = TRUE)
@@ -561,12 +605,12 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
                   rm(test)
                 }
                 
-                  
+                
               }
               
             }
             
-           
+            
             
           }
           gesperrt(FALSE)
@@ -576,9 +620,9 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
       
       
       observeEvent(
-        input$select_tag_vergleichen, {
+        input$select_tag_analysetool, {
           if (!gesperrt() & !is.null(get_query_param("hf"))){
-            input_select_tag <- input$select_tag_vergleichen
+            input_select_tag <- input$select_tag_analysetool
             vergleichen_tags   <- input_tag()
             new_value        <- ""
             current_url      <- session$clientData$url_hash
@@ -596,10 +640,10 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
             new_url <-
               add_param_in_url(
                 current_url  = current_url,
-                current_page = "vergleichen",
-                parameter    = "ve_tg",
+                current_page = "analysetool",
+                parameter    = "at_tg",
                 value        = new_value,
-                old_value    = get_query_param("ve_tg")
+                old_value    = get_query_param("at_tg")
               )
             
             if (new_url != current_url){
@@ -613,10 +657,10 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
       
       observeEvent(
         
-        input$select_vars_vergleichen, {
+        input$select_vars_analysetool, {
           
           if (!gesperrt() & !is.null(get_query_param("hf"))){
-            input_select_var   <- input$select_vars_vergleichen
+            input_select_var   <- input$select_vars_analysetool
             new_value          <- ""
             current_url        <- session$clientData$url_hash
             vergleichen_variable <- input_var()
@@ -628,10 +672,10 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
             new_url <-
               add_param_in_url(
                 current_url  = current_url,
-                current_page = "vergleichen",
-                parameter    = "ve_vr",
+                current_page = "analysetool",
+                parameter    = "at_vr",
                 value        = new_value,
-                old_value    = get_query_param("ve_vr")
+                old_value    = get_query_param("at_vr")
               )
             
             if (new_url != current_url){
@@ -643,8 +687,8 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
         ignoreNULL = FALSE
       )
       
-       observeEvent(
-
+      observeEvent(
+        
         input$variable_vergleichen, {
           
           if (!gesperrt() & !is.null(get_query_param("hf"))){
@@ -652,39 +696,39 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
             new_value          <- ""
             current_url        <- session$clientData$url_hash
             vergleichen_variable2 <- input_var2()
-
+            
             if (!is.null(input_select_var) & nrow(vergleichen_variable2) > 0){
               new_value <- (vergleichen_variable2$id[vergleichen_variable2$beschr %in% input_select_var])[1]
             }
-
+            
             new_url <-
               add_param_in_url(
                 current_url  = current_url,
-                current_page = "vergleichen",
-                parameter    = "ve_vr2",
+                current_page = "analysetool",
+                parameter    = "at_vr2",
                 value        = new_value,
-                old_value    = get_query_param("ve_vr2")
+                old_value    = get_query_param("at_vr2")
               )
-
+            
             if (new_url != current_url){
-             #  print(paste("var2", 1)) # BENCH-PRINT
+              #  print(paste("var2", 1)) # BENCH-PRINT
               change_page(new_url)
             }
           }
         },
         ignoreNULL = FALSE
       )
-
+      
       observeEvent(
-       
-        input$eimer_unterscheiden_vergleichen, {
+        
+        input$eimer_unterscheiden_analysetool, {
           
           if (!gesperrt() & !is.null(get_query_param("hf"))){
             
             if (length(daten$gruppen) > 0){
               
               current_url <- session$clientData$url_hash
-              new_value   <- (1:length(daten$gruppen))[daten$gruppen %in% input$eimer_unterscheiden_vergleichen]
+              new_value   <- (1:length(daten$gruppen))[daten$gruppen %in% input$eimer_unterscheiden_analysetool]
               if (length(new_value) == 0){
                 new_value <- ""
               } else {
@@ -694,10 +738,10 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
               new_url <-
                 add_param_in_url(
                   current_url  = current_url,
-                  current_page = "vergleichen",
-                  parameter    = "ve_gp",
+                  current_page = "analysetool",
+                  parameter    = "at_gp",
                   value        = new_value,
-                  old_value    = get_query_param("ve_gp")
+                  old_value    = get_query_param("at_gp")
                 )
               
               if (new_url != current_url){
@@ -710,7 +754,7 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
       )
       
       
-
+      
       for (i in write_explorer_filter_observer(filter_param$bez)){
         eval(parse(text = i))
       }
@@ -720,14 +764,14 @@ module_vergleichen_server <- function(id = "vergleichen", type = "all"){
     
   )
   
-
+  
 }
 
 #' Missing description
 #' @noRd
 
 vergleichen_translate_filter_param <- function(con){
-
+  
   gsub_name <- function(x){gsub("[^a-z]", "", tolower(x))}
   
   # output <-
@@ -754,9 +798,9 @@ vergleichen_translate_filter_param <- function(con){
           "Zeit"
         )
     )
-
+  
   output$bez <- gsub_name(output$beschr)
-  output$param <- paste0("ve_", paste0(substr(output$bez, 1, 1), substr(output$bez, nchar(output$bez), nchar(output$bez)), nchar(output$bez)))
+  output$param <- paste0("at_", paste0(substr(output$bez, 1, 1), substr(output$bez, nchar(output$bez), nchar(output$bez)), nchar(output$bez)))
   stopifnot("Parameter der Filter im Explorer sind nicht einzigartig" = all(!duplicated(output$param)))
   return(output)
 }
@@ -786,7 +830,7 @@ indikator_get_variables <- function(con){
 #' @noRd
 
 indikator_get_variables_by_tags <- function(variable, selected_tags){
-
+# browser() 
   if (length(selected_tags) == 0){
     variable$relevant <- TRUE
     return(variable)
@@ -808,8 +852,16 @@ indikator_get_variables_by_tags <- function(variable, selected_tags){
   return(variable)
 }
 
-# vergleichen_get_compatible_variables(variable, variable2){
+# get_compatible_variables(variable, variable2){
 #   
+#   if (length(variable) == 0){
+#     variable2$relevant <- TRUE
+#     return(variable2)
+#   }
+#   
+#   #liste an den vars ziehen, die mit var1 schnittmenge rw_typen haben
+#   #alle vars, die da dabei sind bekommen relevant
+#   #retunren
 # 
 # }
 
@@ -817,7 +869,7 @@ indikator_get_variables_by_tags <- function(variable, selected_tags){
 #' @noRd
 
 indikator_draw_eimer <- function(reichweiten = list(), selected = NULL, ns){
-
+  
   if (is.null(reichweiten)){
     return(HTML(""))
   }
@@ -837,12 +889,12 @@ indikator_draw_eimer <- function(reichweiten = list(), selected = NULL, ns){
     add_rank_list(
       text      = "Ignoriert",
       labels    = reichweiten,
-      input_id  = ns("eimer_ignorieren_vergleichen")
+      input_id  = ns("eimer_ignorieren_analysetool")
     ),
     add_rank_list(
       text      = "Unterscheiden",
       labels    = selected,
-      input_id  = ns("eimer_unterscheiden_vergleichen")
+      input_id  = ns("eimer_unterscheiden_analysetool")
     )
   )
 }
@@ -851,7 +903,7 @@ indikator_draw_eimer <- function(reichweiten = list(), selected = NULL, ns){
 #' @noRd
 
 vergleichen_draw_reactable <- function(daten){
-
+  
   if (is.null(daten))  return(reactable(data.frame(keine = "daten")))
   if (nrow(daten) < 1) return(reactable(data.frame(keine = "daten")))
   
@@ -862,7 +914,7 @@ vergleichen_draw_reactable <- function(daten){
     filterable   = TRUE,
     highlight    = TRUE,
     defaultColDef = colDef(minWidth = 200, align = "center"),
- 
+    
   )
 }
 
@@ -870,7 +922,7 @@ vergleichen_draw_reactable <- function(daten){
 #' @noRd
 
 write_explorer_filter_observer <- function(filter_param_bez){
-
+  
   gsub_name <- function(x){gsub("[^a-z]", "", tolower(x))}
   
   write_code <- function(x){
@@ -885,7 +937,7 @@ write_explorer_filter_observer <- function(filter_param_bez){
         new_url <-
           add_param_in_url(
             current_url  = current_url,
-            current_page = 'vergleichen',
+            current_page = 'analysetool',
             parameter    = param_attr$param[1],
             value        = paste(auspraegungen, collapse = ','),
             old_value    = get_query_param(param_attr$param[1])
@@ -952,7 +1004,7 @@ indikator_draw_filter <- function(werte, unterscheiden = NULL, ns){
 
 
 vergleiche_load_table_by_variable <- function(variable){
-
+  
   daten <-
     get_query(
       sprintf(
@@ -1007,7 +1059,7 @@ vergleiche_load_table_by_variable <- function(variable){
 }
 
 vergleiche_load_reichweiten_by_multiple_variables <- function(variable, variable2 = NULL){
- 
+  
   # Neu Reichweiten-Typen als Schnittmenge aus Variablen
   reichweite_typ_query <- 
     "with
@@ -1042,7 +1094,7 @@ vergleiche_load_reichweiten_by_multiple_variables <- function(variable, variable
     reichweite_typ <- c(reichweite_typ1$beschr, "Zeit")
   }
   
- 
+  
   daten <-
     get_query(
       sprintf(
@@ -1090,9 +1142,9 @@ vergleiche_load_reichweiten_by_multiple_variables <- function(variable, variable
   for (i in unique(reichweite$gruppe)){
     daten[,i] <- ifelse(is.na(daten[,i]), "Insgesamt", daten[,i])
   }
-
+  
   names(daten) <- gsub("zeit_start", "Zeit", names(daten))
   daten$Zeit <- format(as.Date(daten$Zeit), "%Y")
-    
+  
   return(list(daten = daten, gruppe = reichweite_typ))
 }
