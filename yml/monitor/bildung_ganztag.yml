@@ -37,14 +37,14 @@ Inhalt:
     Variable:  studienanfanger_dual
     Auswahl:   Gliederung
     Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        ganztag_sozial
-    Titel:     Sozialer Ausgleich bei Ausbau der Ganztagsangebote
-    Frage:     Schaffen wir es Ganztagsschule sozial einzuführen?
-    Ziel:      Insbesondere in Schulen mit niedrigem Sozialindex sind zivilgesellschaftliche Akteure eingebunden
-    Indikator: Einbindung zivilgesellschaftlicher Akteure nach Sozialindex
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
+  # - ID:        ganztag_sozial
+  #   Titel:     Sozialer Ausgleich bei Ausbau der Ganztagsangebote
+  #   Frage:     Schaffen wir es Ganztagsschule sozial einzuführen?
+  #   Ziel:      Insbesondere in Schulen mit niedrigem Sozialindex sind zivilgesellschaftliche Akteure eingebunden
+  #   Indikator: Einbindung zivilgesellschaftlicher Akteure nach Sozialindex
+  #   Variable:  studienanfanger_dual
+  #   Auswahl:   Gliederung
+  #   Darstellungen: Zeitverlauf, Tabelle, Karte
   - ID:        ganztag_multiprofessionel
     Titel:     Multiprofessionele Teams an Schulen
     Frage:     Schaffen wir es multiprofessionelle Teams in den Schulen zu verankern?
@@ -53,14 +53,14 @@ Inhalt:
     Variable:  studienanfanger_dual
     Auswahl:   Gliederung
     Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        ganztag_digital
-    Titel:     IT-Infrastruktur an Schulen
-    Frage:     Schaffen wir die Voraussetzungen für digitale Bildungsangebote?
-    Ziel:      Schulen haben WLAN
-    Indikator: Anteil Schulen mit WLAN über 100 Mbit
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
+  # - ID:        ganztag_digital
+  #   Titel:     IT-Infrastruktur an Schulen
+  #   Frage:     Schaffen wir die Voraussetzungen für digitale Bildungsangebote?
+  #   Ziel:      Schulen haben WLAN
+  #   Indikator: Anteil Schulen mit WLAN über 100 Mbit
+  #   Variable:  studienanfanger_dual
+  #   Auswahl:   Gliederung
+  #   Darstellungen: Zeitverlauf, Tabelle, Karte
   - ID:        ganztag_lage
     Titel:     Die Lage an den Schulen aus Sicht der Schulleitungen
     Frage:     Schaffen wir es die wahrgenomme Lage an den Schulen zu verbessern?
