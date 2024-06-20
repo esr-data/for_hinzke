@@ -1,0 +1,318 @@
+Auflistung der Ordnerpfade fÅr Volume Windows
+Volumeseriennummer : C2F4-36FC
+C:.
+|   .gitignore
+|   .Rhistory
+|   app.R
+|   Datenportal_New.Rproj
+|   README.md
+|   verzeichnisstruktur.txt
+|   
++---data
+|   |   .gitkeep
+|   |   chart_options_rules.xlsx
+|   |   germany_choropleth_federal_states.rds
+|   |   magpie.db
+|   |   magpie.sqlite
+|   |   middle_points_of_ger_federal_states.rds
+|   |   search_cache.csv
+|   |   search_cache.sqlite
+|   |   
+|   \---Noch_in_Magpie_einzuspielen
+|           ganztag_qualitaet.xlsx
+|           
++---docker
+|   +---docker-compose
+|   |       .env
+|   |       docker-compose.yml
+|   |       
+|   \---image
+|           Dockerfile
+|           
++---downloads
+|       .gitkeep
+|       FlyerFDZ.pdf
+|       
++---js
+|       click_collapsible_header.js
+|       monitor_svg_click.js
+|       
++---md
+|       datenschutz.md
+|       explorer_standard.md
+|       forschungsdatenzentrum-wissenschaftsstatistik.md
+|       impressum.md
+|       information_monitor.md
+|       information_studien.md
+|       monitor_hinweis_datenportal_projektstand.md
+|       storybeschreibung.md
+|       svData.md
+|       willkommen.md
+|       
++---R
+|   +---build
+|   |       server.R
+|   |       ui.R
+|   |       
+|   +---pages
+|   |       analysetool.R
+|   |       datensaetze.R
+|   |       datenschutz.R
+|   |       explorer.R
+|   |       fdz.R
+|   |       handlung_1.R
+|   |       handlung_2.R
+|   |       home.R
+|   |       impressum.R
+|   |       indikator.R
+|   |       karten.R
+|   |       monitor.R
+|   |       monitor_inhalt.R
+|   |       reader.R
+|   |       stories.R
+|   |       stories_inhalt.R
+|   |       studies.R
+|   |       suchen.R
+|   |       suchen_ergebnis.R
+|   |       team.R
+|   |       vergleichen.R
+|   |       
+|   +---pkgs
+|   |   |   .gitkeep
+|   |   |   
+|   |   +---search
+|   |   |       search.R
+|   |   |       
+|   |   +---svNum
+|   |   |       numeric.R
+|   |   |       
+|   |   +---svVis
+|   |   |       create_bar.R
+|   |   |       create_bar_grouped.R
+|   |   |       create_base_theme_elements.R
+|   |   |       create_choropleth_map_germany.R
+|   |   |       create_lineplot.R
+|   |   |       give_color_set_list.R
+|   |   |       give_theme_and_color_set.R
+|   |   |       give_theme_params.R
+|   |   |       make_comma_format_on_axis.R
+|   |   |       make_num_pretty_ger.R
+|   |   |       manage_custome_theme.R
+|   |   |       transform_title_letter_case_by_theme.R
+|   |   |       
+|   |   \---wrangling
+|   |           formulate_and_send_query_to_magpie.R
+|   |           get_compatible_input.R
+|   |           get_data.R
+|   |           get_possible_input.R
+|   |           reshape_data.R
+|   |           
+|   +---prepare
+|   |       create_database.R
+|   |       data_monitor_zwischenloesung.R
+|   |       draw_teaser.R
+|   |       import_img.R
+|   |       install_necessary_packages.R
+|   |       prepare_functions.R
+|   |       setup_quarto.R
+|   |       vis_test.R
+|   |       
+|   \---utils
+|           charts.R
+|           database.R
+|           earthworm.R
+|           js.R
+|           log.R
+|           md.R
+|           monitor.R
+|           network.R
+|           routing.R
+|           stories.R
+|           string.R
+|           team.R
+|           tutorial.R
+|           ui.R
+|           
++---rsconnect
+|   \---shinyapps.io
+|       \---stifterverband
+|               abcdefghijklmnopqrstuvwxyz123.dcf
+|               
++---SQL
+|       datensatz_drittmittel.sql
+|       datensatz_drittmittel_aggregiert.sql
+|       datensatz_drittmittel_hochschule.sql
+|       daten_link.sql
+|       indikator_get_tag_by_variable.sql
+|       
++---tests
+|       .gitkeep
+|       
++---work_in_progress
+|       animation.R
+|       Beispiel_Nested_Modules.R
+|       
++---www
+|   |   .gitkeep
+|   |   monitor_styles.css
+|   |   styles.css
+|   |   WebKit_bounding.css
+|   |   
+|   +---img
+|   |   |   .gitkeep
+|   |   |   4er.svg
+|   |   |   4er_Ganztag.svg
+|   |   |   education.png
+|   |   |   FlyerFDZ.jpg
+|   |   |   fue_logo_pos.svg
+|   |   |   innovation.png
+|   |   |   primus.xcf
+|   |   |   studie_hochschulbarometer.png
+|   |   |   sv_data.svg
+|   |   |   Test_Monitor.svg
+|   |   |   
+|   |   \---projects
+|   |           Installationsanleitung.PNG
+|   |           studie_drittmittel.jpg
+|   |           studie_drittmittel_alt.svg
+|   |           studie_engagement.jpg
+|   |           studie_engagement_alt.svg
+|   |           studie_fue.jpg
+|   |           studie_fue_alt.svg
+|   |           studie_gruendungsradar.png
+|   |           studie_gruendungsradar_alt.PNG
+|   |           studie_hbr.svg
+|   |           studie_hbr_alt.PNG
+|   |           studie_hochschulbarometer.png
+|   |           studie_hochschulbarometer_alt.PNG
+|   |           studie_laenderchecks.jpg
+|   |           studie_laenderchecks_alt.PNG
+|   |           studie_primus.jpg
+|   |           studie_primus_alt.svg
+|   |           studie_private.jpg
+|   |           studie_private_alt.PNG
+|   |           studie_professur.svg
+|   |           studie_professur_alt.svg
+|   |           studie_ziviz_survey.jpg
+|   |           studie_ziviz_survey_alt.PNG
+|   |           
+|   +---stories
+|   |   |   index.html
+|   |   |   listings.json
+|   |   |   search.json
+|   |   |   
+|   |   +---logos
+|   |   |       profile1.jpg
+|   |   |       sv_log_weiss.png
+|   |   |       
+|   |   +---posts
+|   |   |   +---hf1_arbeiter_doktor
+|   |   |   |       abb1.png
+|   |   |   |       abb2.png
+|   |   |   |       arbeiter_doktor.html
+|   |   |   |       preview.png
+|   |   |   |       
+|   |   |   +---hf1_lktrichter
+|   |   |   |       lehrkraeftetrichter.jpg
+|   |   |   |       lehrkrafttrichter.html
+|   |   |   |       preview.png
+|   |   |   |       
+|   |   |   \---hf2_gruendung
+|   |   |           andrea_frank.jpg
+|   |   |           preview.png
+|   |   |           systemwechsel.html
+|   |   |           
+|   |   \---site_libs
+|   |       +---bootstrap
+|   |       |       bootstrap-icons.css
+|   |       |       bootstrap-icons.woff
+|   |       |       bootstrap.min.css
+|   |       |       bootstrap.min.js
+|   |       |       
+|   |       +---clipboard
+|   |       |       clipboard.min.js
+|   |       |       
+|   |       +---quarto-html
+|   |       |       anchor.min.js
+|   |       |       popper.min.js
+|   |       |       quarto-syntax-highlighting.css
+|   |       |       quarto.js
+|   |       |       tippy.css
+|   |       |       tippy.umd.min.js
+|   |       |       
+|   |       +---quarto-listing
+|   |       |       list.min.js
+|   |       |       quarto-listing.js
+|   |       |       
+|   |       +---quarto-nav
+|   |       |       headroom.min.js
+|   |       |       quarto-nav.js
+|   |       |       
+|   |       \---quarto-search
+|   |               autocomplete.umd.js
+|   |               fuse.min.js
+|   |               quarto-search.js
+|   |               
+|   \---webfonts
+|           .gitkeep
+|           321225_0_0.eot
+|           321225_0_0.ttf
+|           321225_0_0.woff
+|           321225_0_0.woff2
+|           321225_1_0.eot
+|           321225_1_0.ttf
+|           321225_1_0.woff
+|           321225_1_0.woff2
+|           321225_2_0.eot
+|           321225_2_0.ttf
+|           321225_2_0.woff
+|           321225_2_0.woff2
+|           321225_3_0.eot
+|           321225_3_0.ttf
+|           321225_3_0.woff
+|           321225_3_0.woff2
+|           321225_4_0.eot
+|           321225_4_0.ttf
+|           321225_4_0.woff
+|           321225_4_0.woff2
+|           321225_5_0.eot
+|           321225_5_0.ttf
+|           321225_5_0.woff
+|           321225_5_0.woff2
+|           321225_6_0.eot
+|           321225_6_0.ttf
+|           321225_6_0.woff
+|           321225_6_0.woff2
+|           321225_7_0.eot
+|           321225_7_0.ttf
+|           321225_7_0.woff
+|           321225_7_0.woff2
+|           321225_8_0.eot
+|           321225_8_0.ttf
+|           321225_8_0.woff
+|           321225_8_0.woff2
+|           
++---yml
+|   +---explorer
+|   |       datensatz.yml
+|   |       
+|   \---monitor
+|           bildung_berufsorientierung.yml
+|           bildung_bildungsgerechtigkeit.yml
+|           bildung_ganztag.yml
+|           fs_ki.yml
+|           fs_verankern.yml
+|           global.yml
+|           lehrkraefte_bedingungen.yml
+|           lehrkraefte_flexibilisierung.yml
+|           lehrkraefte_fs.yml
+|           lehrnorte.yml
+|           mint_minterdisziplinaritaet.yml
+|           mint_minternational.yml
+|           mint_teilhabe.yml
+|           
+\---_experiment
+        .gitkeep
+        link_arrow.js
+        modify_links.js
+        
