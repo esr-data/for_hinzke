@@ -1,19 +1,51 @@
-
 box::use(
   ../../R/utils/routing[get_hf_param, add_param_in_url, recode_parameter],
   ../../R/utils/database[get_query, load_table_by_variable],
   ../../R/utils/js[get_js],
   ../../R/utils/monitor[get_content_monitor],
+  ../../R/pkgs/svVis/create_bar_grouped[create_bar_grouped_interactive],
+  ../../R/pkgs/svVis/create_bar[create_bar],
+  ../../R/pkgs/svVis/create_flextable[create_flextable],
+  ../../R/prepare/data_monitor_zwischenloesung[
+    give_df_ganztag_vielfalt_primar,
+    give_df_ganztag_vielfalt_sek_I,
+    give_df_ganztag_vielfalt_gym,
+    give_df_ganztag_kooperation,
+    give_df_ganztag_multiprofessionell,
+    give_df_ganztag_lage_arbeitsmotivation_schulleitungen,
+    give_df_ganztag_lage_weiterempfehlung_schulleiterberuf,
+    give_df_gerechtigkeit_trichter_gymnasiumswahrscheinlichkeit
+  ],
+  ggplot2[
+    theme,
+    element_text
+  ],
   tibble[
     tibble
   ],
   reactable[
     renderReactable,
     reactable,
-    reactableOutput
+    reactableOutput,
+    colDef
+  ],
+  officer[
+    fp_border
+  ],
+  flextable[
+    htmltools_value,
+    flextable,
+    color,
+    bg,
+    border_outer,
+    border_inner_h,
+    border_inner_v,
+    autofit,
+    align,
+    merge_v
   ],
   shiny[
-    textOutput,
+    reactive,
     span,
     actionButton,
     br,
@@ -39,22 +71,27 @@ box::use(
     renderUI,
     req, #
     selectInput, #
+    selectizeInput,
     sidebarLayout,
     sidebarPanel,
     tagList,
     tags,
-    uiOutput
+    uiOutput,
+    icon,
+    plotOutput,
+    renderPlot
   ],
   shiny.router[get_query_param, get_page, change_page],
   shinyWidgets[
     pickerInput,       updatePickerInput,
-    radioGroupButtons, updateRadioGroupButtons
+    radioGroupButtons, updateRadioGroupButtons,
   ],
   plotly[
-    plotlyOutput, renderPlotly
+    plotlyOutput, renderPlotly, plotly
   ],
+  magrittr[`%>%`],
   shinycssloaders[withSpinner],
-  dplyr[rename],
+  dplyr[rename, filter],
   purrr[map2],
   DT[datatable, JS, renderDataTable, dataTableOutput, renderDT],
   shinyjs[
@@ -271,6 +308,9 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                  output$content_table <- renderReactable({
                    reactable(
                      tibble(section = unlist(current$content[["Inhalt"]][["Titel"]])),
+                     columns = list(
+                       section = colDef(name = "")
+                     ),
                      details = function(index) {
                        fluidPage(
                          div(
@@ -290,44 +330,235 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                    )
                  })
 
-                 # ganztag -----------------------------------------------------
+                 # bildung ----
+                 #### ganztag -----------------------------------------------------
 
-                 output$Tabelle_ganztag_vielfalt <- renderDT({
-                   datatable(
-                     spark_data,
-                     escape = FALSE,
-                     rownames = FALSE,
-                     options = list(
-                       fnDrawCallback = htmlwidgets::JS('function(){HTMLWidgets.staticRender();}'),
-                       width = "100%",
-                       dom = 'Bft',
-                       buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
-                       pageLength = 100,
-                       initComplete = JS(
-                         "function(settings, json) {",
-                         "$(this.api().table().header()).css({'background-color': '#195365', 'color': '#fff'});",
-                         "this.api().columns().every(function () {",
-                         "var column = this;",
-                         "var input = $('<input type=\"text\" placeholder=\"Filter...\"/>')",
-                         ".appendTo($(column.header()).empty())",
-                         ".on('keyup change', function () {",
-                         "  if (column.search() !== this.value) {",
-                         "    column.search(this.value).draw();",
-                         "  }",
-                         "});",
-                         "});",
-                         "}"
-                       ),
-                       language = list(
-                         url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/German.json',
-                         search = "Suche:"
-                       )
+                 #1 quantitativ
+
+                 # output$Grafik_ganztag_quantitativ <- renderPlotly({
+                 #
+                 # })
+
+                 output$Grafik_ganztag_quantitativ <- renderUI({
+                   fluidRow(
+                     br(),
+                     br(),
+                     icon(
+                       style = "margin-left: 50px; color: var(--red); font-size: 50px;",
+                       "screwdriver-wrench"
+                     ),
+                     p(
+                       style = "margin-left: 50px; color: var(--red);",
+                       tags$b("Hier wird noch gebaut:"),
+                       "Interne Notiz - der Indikator wird gerade noch in das SV DataWarehouse eingespielt und wird bald ergänzt. Zu sehen sein wird ein interaktives Liniendiagramm, welches mit den linken Filtern bedienbar ist."
                      )
-                   ) %>% spk_add_deps()
+                    )
                  })
 
+                 output$Anmerkungen_bildung_ganztag_quantitativ <- renderUI({
+                   p(class = "anmerkungen",
+                     "Definitionen und methodische Ergänzungen zur Statistikreihe finden sich ",
+                     tags$a(href = "https://www.kmk.org/dokumentation-statistik/statistik/schulstatistik/allgemeinbildende-schulen-in-ganztagsform.html", "hier", target = "_blank"),
+                     "."
+                   )
+                 })
 
+                 #2 vielfalt
+
+                 output$Tabelle_ganztag_vielfalt <- renderUI({
+                   req(input$Auswahl_ganztag_vielfalt_schulform)
+                   if (input$Auswahl_ganztag_vielfalt_schulform == "primar"){
+                     create_flextable(give_df_ganztag_vielfalt_primar()) %>%
+                       htmltools_value()
+                   } else if(input$Auswahl_ganztag_vielfalt_schulform == "Sek I (ohne Gymnasium)") {
+                     create_flextable(give_df_ganztag_vielfalt_sek_I()) %>%
+                       htmltools_value()
+                   } else {
+                     create_flextable(give_df_ganztag_vielfalt_gym()) %>%
+                       htmltools_value()
+                   }
+
+                 })
+
+                 output$Anmerkungen_bildung_ganztag_vielfalt <- renderUI({
+                   p(class = "anmerkungen",
+                     "Definitionen und methodische Ergänzungen zur Statistikreihe finden sich ",
+                     tags$a(href = "https://www.dipf.de/de/forschung/pdf-forschung/llib/bericht-ganztagsschulen-2017-2018", "hier", target = "_blank"),
+                     ". Die Daten sind von 2017/2018 und damit veraltet. Der Stifterverband plant eine Schulleitungsbefragung zur Datenaktualisierung. Damit soll dann auch ein klarer Indikator
+                     \"Median Anzahl Angebotsbereiche je Schule\" ausweisbar sein."
+                   )
+                 })
+
+                 #3 kooperation
+
+                 df_ganztag_kooperation <- reactive({
+                   req(input$Auswahl_ganztag_kooperation_schulform)
+
+                   df <- give_df_ganztag_kooperation()
+
+                   if (input$Auswahl_ganztag_kooperation_schulform == "insgesamt") {
+                     df <- df %>% filter(Schulform == "insgesamt")
+                   } else if (input$Auswahl_ganztag_kooperation_schulform == "Grundschule") {
+                     df <- df %>% filter(Schulform == "Grundschule")
+                   } else if (input$Auswahl_ganztag_kooperation_schulform == "Haupt-/ Real-/ Gesamtschule") {
+                     df <- df %>% filter(Schulform == "Haupt-/ Real-/ Gesamtschule")
+                   } else if (input$Auswahl_ganztag_kooperation_schulform == "Gymnasium") {
+                     df <- df %>% filter(Schulform == "Gymnasium")
+                   } else {
+                     df <- df %>% filter(Schulform == "Förder-/ Sonderschule")
+                   }
+
+                   df
+                 })
+
+                 output$Grafik_ganztag_kooperation <- renderPlotly({
+                   create_bar(
+                     df_ganztag_kooperation(),
+                     x_var = Auspraegung,
+                     y_var = value,
+                     plot_type = "plotly", #TODO: Updaten auf neue Fassung von svVis
+                     ylabel_text = "Prozent",
+                     plot_title = "Kooperation mit außerschulischen Partnern zur Gestaltung unterrichtsbezogener Angebote",
+                     plot_subtitle = "Die Schule kooperiert mit außerschulischen Lernorten/Bildungspartnern zur Gestaltung unterrichtsbezogener Angebote; Angaben in Prozent.",
+                     custom_caption = "Quelle: Telekom Stiftung 2023."
+                   )
+                 })
+
+                 output$Anmerkungen_bildung_ganztag_kooperation <- renderUI({
+                   p(class = "anmerkungen",
+                     "Methodische Ergänzungen zur Statistik finden sich ",
+                     tags$a(href = "https://www.telekom-stiftung.de/sites/default/files/files/umfrage_multiprofessionalitaet_ergebnisbericht.pdf", "hier", target = "_blank"),
+                     "."
+                   )
+                 })
+
+                 #4 multiprofessionell
+
+                 output$Tabelle_ganztag_multiprofessionell <- renderUI({
+                   flextable(give_df_ganztag_multiprofessionell()) %>%
+                     bg(bg = "#195365", part = "header") %>%
+                     color(color = "white", part = "header") %>%
+                     border_outer(part = "all", border = fp_border(color = "black")) %>%
+                     border_inner_h(part = "all", border = fp_border(color = "black")) %>%
+                     border_inner_v(part = "all", border = fp_border(color = "black")) %>%
+                     merge_v(j = "Bereich") %>%
+                     autofit() %>%
+                     align(align = "center", part = "head") %>%
+                     align(j = 2:ncol(give_df_ganztag_multiprofessionell()), align = "center", part = "body") %>%
+                     htmltools_value()
+                  })
+
+                 output$Anmerkungen_bildung_ganztag_multiprofessionell <- renderUI({
+                   p(class = "anmerkungen",
+                     "Methodische Ergänzungen sowie weitere Statistiken zur Bewertung der Lage an Schulen finden sich ",
+                     tags$a(href = "https://www.telekom-stiftung.de/sites/default/files/files/umfrage_multiprofessionalitaet_ergebnisbericht.pdf", "hier", target = "_blank"),
+                     "."
+                   )
+                 })
+
+                 #5 lage
+
+                 output$Grafik_ganztag_lage <- renderPlotly({
+                   req(input$Auswahl_ganztag_lage_frage)
+                   if (input$Auswahl_ganztag_lage_frage == "Arbeitsmotivation der Schulleitungen") {
+                       create_bar_grouped_interactive(
+                         df = give_df_ganztag_lage_arbeitsmotivation_schulleitungen(), #TODO Daten in Magpie aufbereiten
+                         x_var = Jahr,
+                         y_var = Prozent,
+                         group_var = Kategorie,
+                         flipped = TRUE,
+                         plot_title = "Arbeitsmotivation der Schulleiterinnen und Schulleiter",
+                         plot_subtitle = "Es üben ihren Beruf derzeit alles in allem ... aus; Angaben in Prozent; N = 1.310.",
+                         custom_caption = "Quelle: VBE 2023."
+                       )
+                   } else {
+                      create_bar_grouped_interactive(
+                        df = give_df_ganztag_lage_weiterempfehlung_schulleiterberuf(), #TODO Daten in Magpie aufbereiten
+                        x_var = Jahr,
+                        y_var = Prozent,
+                        group_var = Kategorie,
+                        flipped = TRUE,
+                        plot_title = "Weiterempfehlungsbereitschaft des Schulleitungsberuf",
+                        plot_subtitle = "Es würden den Beruf der Schulleiterin bzw. des Schulleiters weiterempfehlen; Angaben in Prozent; N = 1.310.",
+                        custom_caption = "Quelle: VBE 2023."
+                      )
+                   }
+                 })
+
+                 output$Anmerkungen_bildung_ganztag_lage <- renderUI({
+                   p(class = "anmerkungen",
+                     "Methodische Ergänzungen sowie weitere Statistiken zur Bewertung der Lage an Schulen finden sich ",
+                     tags$a(href = "https://deutscher-schulleitungskongress.de/wp-content/uploads/2023/11/2023-11-21_VOe-Nov_Bericht_Deutschland.pdf", "hier", target = "_blank"),
+                     "."
+                   )
+                 })
+
+                 #### bildungsgerechtigkeit ----
+
+                 #1 trichter
+
+                 output$Grafik_bildungsgerechtigkeit_gymnasium_bundeslaender <- renderPlot({
+                   create_bar(
+                     df = give_df_gerechtigkeit_trichter_gymnasiumswahrscheinlichkeit(),
+                     x_var = Land,
+                     y_var = Chancenverhaeltnis,
+                     plot_title = "Ungleiche Chancen nach Bundesländern",
+                     plot_subtitle = "Wahrscheinlichkeit, mit der Kinder aus benachteiligten Verhältnissen ein Gymnasium\nbesuchen gegenüber Kindern aus günstigen Verhältnissen, in Prozent",
+                     custom_caption = "Quelle: Ifo Institut" ,
+                     flipped = TRUE
+                  ) +
+                  theme(text = element_text(size = 20))
+                 })
+
+                 output$Anmerkungen_bildungsgerichtigkeit_trichter <- renderUI({
+                   p(class = "anmerkungen",
+                     "Methodische Ergänzungen sowie weitere Statistiken zur Bewertung der Lage an Schulen finden sich ",
+                     tags$a(href = "https://deutscher-schulleitungskongress.de/wp-content/uploads/2023/11/2023-11-21_VOe-Nov_Bericht_Deutschland.pdf", "hier", target = "_blank"),
+                     "."
+                   )
+                 })
+
+                 #### berufsorientierung ----
+
+                 #1 subjektiv
+
+                 output$UI_berufsorientierung_subjektiv <- renderUI({
+                   fluidRow(
+                     br(),
+                     br(),
+                     icon(
+                       style = "margin-left: 50px; color: var(--red); font-size: 50px;",
+                       "screwdriver-wrench"
+                     ),
+                     p(
+                       style = "margin-left: 50px; color: var(--red);",
+                       tags$b("Hier wird noch gebaut:"),
+                       "Interne Notiz - Nach letzter Diskussion mit Mathias soll der ganze Zweig Berufsorientierung rausgenommen werden. Die Indikatoren entfallen demnach - gerade der Indikator zu den Praktika ist sehr schwer zu erheben."
+                     )
+                   )
+                 })
+
+                 #2 praktika
+
+                 output$UI_berufsorientierung_praktika <- renderUI({
+                   fluidRow(
+                     br(),
+                     br(),
+                     icon(
+                       style = "margin-left: 50px; color: var(--red); font-size: 50px;",
+                       "screwdriver-wrench"
+                     ),
+                     p(
+                       style = "margin-left: 50px; color: var(--red);",
+                       tags$b("Hier wird noch gebaut:"),
+                       "Interne Notiz - Nach letzter Diskussion mit Mathias soll der ganze Zweig Berufsorientierung rausgenommen werden. Die Indikatoren entfallen demnach - gerade der Indikator zu den Praktika ist sehr schwer zu erheben."
+                     )
+                   )
+                 })
+
+               #---
                }
+
   )
 }
 
@@ -420,7 +651,7 @@ draw_main_content <- function(content){
       class = "important-values-graph",
       img(
         src = "img/4er_Ganztag.svg",
-        alt = "Wichtige Kennzahlen zum Ausbau der Ganztagsschule in Duetschland"
+        alt = "Wichtige Kennzahlen zum Ausbau der Ganztagsschule in Deutschland"
       )
     ),
     br()
@@ -479,124 +710,218 @@ create_link_with_svg <- function(link_id, link_text) {
 
 draw_table_row_content <- function(indikator_ID, ns) {
 
-  # bildung
+  # bildung ----
 
-  # ganztag
+  #### ganztag ----
+  if (startsWith(indikator_ID, "ganztag")) {
 
-  if(indikator_ID == "ganztag_quantitativ") {
-    fluidPage(
-      p(
-        "Aktueller Stand: Derzeit erfüllen ", tags$b("73,2 Prozent aller allgemeinbildeneden Schulen in
-        Primar- und Sekundarbereich I"), " die ", span("KMK Definition für Ganztag", id = "tooltip_KMK_Def_Ganztag"),". Dabei gibt es jedoch
-        nach Schulträgerschaft, Schulform, Ganztagsform und Bundesländern große
-        Unterschiede. ", tags$i("Nutzen Sie die Filter, um die Sie interessierenden Zahlen zu erhalten")
-      ),
-      fluidRow(
-        column(
-          width = 3,
-          selectInput(ns("Auswahl_ganztag_quantitativ_land"), "Land", choices = c("a", "b")),
-          selectInput(ns("Auswahl_ganztag_quantitativ_schulform"), "Schulform", choices = c("a", "b")),
-          selectInput(ns("Auswahl_ganztag_quantitativ_trägerschaft"), "Trägerschaft", choices = c("a", "b")),
-          selectInput(ns("Auswahl_ganztag_quantitativ_ganztagsform"), "Ganztagsform", choices = c("a", "b"))
+    if(indikator_ID == "ganztag_quantitativ") {
+      fluidPage(
+        p(
+          "Aktueller Stand: Derzeit erfüllen ", tags$b("73,2 Prozent aller allgemeinbildeneden Schulen in
+          Primar- und Sekundarbereich I"), " die ", span("KMK Definition für Ganztag", id = "tooltip_KMK_Def_Ganztag"),". Dabei gibt es jedoch
+          nach Schulträgerschaft, Schulform, Ganztagsform und Bundesländern große
+          Unterschiede. ", tags$i("Nutzen Sie die Filter, um die Sie interessierenden Zahlen zu erhalten")
         ),
-        column(
-          width = 9,
-          plotlyOutput(ns("Grafik_ganztag_quantitativ"))
-        )
-      ),
-      p(
-        "Unter Berücksichtigung der steigenden Zahl an Schülerinnen und Schülern
-        gemäß KMK-Prognose, der derzeitigen Ausbaugeschwindigkeit sowie des
-        bestehenden und prognostiziertem Lehrkräftemangel ist das Projekt Ausbau Ganztagsschule sowie
-        die tatsächliche Erfüllung des Rechtsanspruchs Ganztagsschule im Primarbereich ab 2026 aktuell nicht wie gewünscht zu realisieren.
-        Über ein Drittel der Grundschuleitungen gehen davon aus, dass eine Ganztagsbetreuung von der jeweiligen Kommune bis 2026/2027 nciht sichergestellt werden kann.
-        Der Ganztagsschulausbau muss als gesamtgesellschaftliche Aufgabe begriffen und die Koperation von Schulen
-        und zivilgesellschaftlichen Akteuren an dieser Stelle weiter vorangebracht werden."
-      ),
-      p("Anmerkungen:"),
-      textOutput(ns("Anmerkungen_bildung_ganztag_quantitativ"))
-    )
-  } else if (indikator_ID == "ganztag_vielfalt"){
-    fluidPage(
-      p("Das Bildungsangebot in den Ganztagsschulen sollte möglichst vielfältig sein und sollt eim Idealfall die folgenden Angebotsbereiche umfassen:"),
-      tags$ul(
-        tags$li("lernunterstützende Angebote,"),
-        tags$li("MINT-Angebote,"),
-        tags$li("sprachliche und geisteswissenschaftliche Angebote,"),
-        tags$li("musisch-kulturelle, lebenspraktische und berufsorientierende Angebote sowie"),
-        tags$li("Angebote zu Freizeit, Bewegung, Gesundheit und sozialem Lernen. Die nachfolgende Tabelle zeigt nach Schularten wie viel")
-      ),
-      fluidRow(
-        column(
-          width = 3,
-          radioButtons(ns("Auswahl_ganztag_vielfalt_absolut_prozent"), "Schulform", choices = c("a", "b"))
+        br(),
+        fluidRow(
+          column(
+            width = 3,
+            selectInput(ns("Auswahl_ganztag_quantitativ_land"), "Land", choices = c("a", "b")),
+            selectInput(ns("Auswahl_ganztag_quantitativ_schulform"), "Schulform", choices = c("a", "b")),
+            selectInput(ns("Auswahl_ganztag_quantitativ_trägerschaft"), "Trägerschaft", choices = c("a", "b")),
+            selectInput(ns("Auswahl_ganztag_quantitativ_ganztagsform"), "Ganztagsform", choices = c("a", "b"))
+          ),
+          column(
+            width = 9,
+            # plotlyOutput(ns("Grafik_ganztag_quantitativ"))
+            uiOutput(ns("Grafik_ganztag_quantitativ"))
+          )
         ),
-        column(
-          width = 9,
-          dataTableOutput(ns("Tabelle_ganztag_vielfalt"))
-        )
-      ),
-      p("Anmerkungen"),
-      textOutput(ns("Anmerkungen_bildung_ganztag_vielfalt"))
-    )
-  } else if (indikator_ID == "ganztag_kooperation"){
-    fluidPage(
-      p("Zur Gestaltung unterrichtsbezogener Angebote kooperieren gemäß Schulleitungsbefragung ",
-        tags$b("2023"), " der Telekom Stiftung ", tags$b("86 Prozent"), " der allgemeinbildenden öffentlichen Schulen
-        mit außerschulischen Lernorten und/oder Bildungspartnern. Schulen kooperieren vor allem mit
-        Sportvereinen, Bibliotheken, Musikschulen sowie Einrichtungen der Kinder- und Jugendarbeit."),
-      p("Die Kooperation findet dabei im allgemeinen (70 Prozent) auf Basis eines gemeinsam formulierten
-        Pädagogischen Konzept statt."),
-      fluidRow(
-        column(
-          width = 12,
-          plotlyOutput(ns("Grafik_ganztag_kooperation"))
+        br(),
+        p(
+          "Unter Berücksichtigung der steigenden Zahl an Schülerinnen und Schülern
+          gemäß KMK-Prognose, der derzeitigen Ausbaugeschwindigkeit sowie des
+          bestehenden und prognostiziertem Lehrkräftemangel ist das Projekt Ausbau Ganztagsschule sowie
+          die tatsächliche Erfüllung des Rechtsanspruchs Ganztagsschule im Primarbereich ab 2026 aktuell nicht wie gewünscht zu realisieren.
+          Über ein Drittel der Grundschuleitungen gehen davon aus, dass eine Ganztagsbetreuung von der jeweiligen Kommune bis 2026/2027 nicht sichergestellt werden kann (",
+          tags$a(
+            href = "https://deutscher-schulleitungskongress.de/wp-content/uploads/2023/11/2023-11-21_VOe-Nov_Bericht_Deutschland.pdf",
+            "VBE 2023, S. 26",
+            target = "_blank"
+          ),
+          "). Der Ganztagsschulausbau muss als gesamtgesellschaftliche Aufgabe begriffen und die Koperation von Schulen
+          und zivilgesellschaftlichen Akteuren an dieser Stelle weiter vorangebracht werden."
         ),
-        p("Anmerkungen"),
-        textOutput(ns("Anmerkungen_bildung_ganztag_kooperation"))
+        p(class = "anmerkungen", "Anmerkungen:"),
+        uiOutput(ns("Anmerkungen_bildung_ganztag_quantitativ"))
       )
-    )
-  } else if (indikator_ID == "ganztag_multiprofessionel") {
-    fluidPage(
-      p("Bei der Umsetzung von Ganztag können und sollten multiprofessionelle Teams an Schulen eingesetzt werden.
-        Oftmals arbeiten an Schulen - neben Gebäudemanagement und Sekretariat - jedoch ausschließlich Lehrkräfte.
-        Unterstützungsstrukturen etwa durch IT-, und Verwaltungsfachkräfte und/oder Sozial-, Medien-, Kulturpädagoginnen
-        und -pädagogen sowie Projektmanagement etc. fehlen. Konkrete Zahlen liefert zu diesem Befund eine Schulleitungsbefragung
-        zu Multiprofessionalität an allgemeinbildenden Schulen, dargestellt in der folgenden Tabelle:"
-      ),
-      fluidRow(
-        column(
-          width = 12,
-          dataTableOutput(ns("Tabelle_ganztag_multiprofessionel"))
-        )
-      ),
-      p("Anmerkungen"),
-      textOutput(ns("Anmerkungen_bildung_ganztag_multiprofessionel"))
-    )
-  } else if (indikator_ID == "ganztag_lage") {
-    fluidPage(
-      p(
-        "Wie bewerten die Schulleitungen ganz allgemein die Lage an den Schulen? Flapsig: Wie ist die Stimmung?
-        Dieser Frage nährt sich die Schulleitungsbefragung des Verband Bildung und Erziehung (VBE)
-        mit den Fragen danach, inwieweit die Schulleitungen mit die an sie gestellten Aufgaben zu ihrer eigenen
-        Zufriedenheit erfüllen können und ob sie eine Weiterempfehlung für den Beruf abgeben."
-      ),
-      fluidRow(
-        column(
-          width = 3,
-          radioButtons(ns("Auswahl_ganztag_lage_frage"), "Auswahl:", choices = c("a", "b"))
+    } else if (indikator_ID == "ganztag_vielfalt"){
+      fluidPage(
+        p("Das Bildungsangebot in den Ganztagsschulen sollte möglichst vielfältig sein und sollte im Idealfall die folgenden Angebotsbereiche umfassen:"),
+        tags$ul(
+          tags$li("- lernunterstützende Angebote,"),
+          tags$li("- MINT-Angebote,"),
+          tags$li("- sprachliche und geisteswissenschaftliche Angebote,"),
+          tags$li("- musisch-kulturelle, lebenspraktische und berufsorientierende Angebote sowie"),
+          tags$li("- Angebote zu Freizeit, Bewegung, Gesundheit und sozialem Lernen.")
         ),
-        column(
-          width = 9,
-          plotlyOutput(ns("Grafik_ganztag_lage"))
+        br(),
+        p(
+          "Die nachfolgende Tabelle zeigt den Anteil der Schulen mit entsprechendem Angebot im Ganztag in Prozent. Die Daten stammen aus der ",
+          tags$a("Studie zur Entwicklung von Ganztagsschulen (StEG)", href = "https://www.dipf.de/de/forschung/pdf-forschung/llib/bericht-ganztagsschulen-2017-2018", target = "_blank"),
+          "."
+        ),
+        br(),
+        fluidRow(
+          column(
+            width = 3,
+            radioButtons(ns("Auswahl_ganztag_vielfalt_schulform"), "Schulform", choices = c("primar", "Sek I (ohne Gymnasium)", "Gymnasium"))
+          ),
+          column(
+            width = 9,
+            uiOutput(ns("Tabelle_ganztag_vielfalt"))
+          )
+        ),
+        p("Anmerkungen:", class = "anmerkungen"),
+        uiOutput(ns("Anmerkungen_bildung_ganztag_vielfalt"))
+      )
+    } else if (indikator_ID == "ganztag_kooperation"){
+      fluidPage(
+        p("Zur Gestaltung unterrichtsbezogener Angebote kooperieren gemäß Schulleitungsbefragung aus dem Jahr 2023
+          der Telekom Stiftung ", tags$b("86 Prozent"), " der allgemeinbildenden öffentlichen Schulen
+          mit außerschulischen Lernorten und/oder Bildungspartnern. Schulen kooperieren vor allem mit
+          Sportvereinen, Bibliotheken, Musikschulen sowie Einrichtungen der Kinder- und Jugendarbeit."),
+        p("Die Kooperation findet dabei im allgemeinen (70 Prozent) auf Basis eines gemeinsam formulierten
+          Pädagogischen Konzept statt."),
+        br(),
+        fluidRow(
+          column(
+            width = 2,
+            radioButtons(
+              ns("Auswahl_ganztag_kooperation_schulform"),
+              "Schulform",
+              choices = c(
+                "insgesamt",
+                "Grundschule",
+                "Haupt-/ Real-/ Gesamtschule",
+                "Gymnasium",
+                "Förder-/ Sonderschule"
+              ),
+              selected = "insgesamt"
+            )
+          ),
+          column(
+            width = 10,
+            plotlyOutput(ns("Grafik_ganztag_kooperation"))
+          ),
+          p("Anmerkungen:", class = "anmerkungen"),
+          uiOutput(ns("Anmerkungen_bildung_ganztag_kooperation"))
+        )
+      )
+    } else if (indikator_ID == "ganztag_multiprofessionell") {
+      fluidPage(
+        p(
+          "Bei der Umsetzung von Ganztag können und sollten multiprofessionelle Teams an Schulen eingesetzt werden. ",
+          tags$b("Oftmals arbeiten an Schulen - neben Gebäudemanagement und Sekretariat - jedoch ausschließlich Lehrkräfte."),
+          " Unterstützungsstrukturen etwa durch IT-, und Verwaltungsfachkräfte und/oder Sozial-, Medien-, Kulturpädagoginnen
+          und -pädagogen sowie Projektmanagement etc. fehlen.",
+        ),
+        br(),
+        p(" Konkrete Zahlen liefert zu diesem Befund eine Schulleitungsbefragung
+          zu Multiprofessionalität an allgemeinbildenden Schulen von der Telekom Stiftung, dargestellt in der folgenden Tabelle - Angaben in Prozent:"),
+        br(),
+        fluidRow(
+          column(
+            width = 12,
+            uiOutput(ns("Tabelle_ganztag_multiprofessionell"))
+          )
+        ),
+        p("Anmerkungen:", class = "anmerkungen"),
+        uiOutput(ns("Anmerkungen_bildung_ganztag_multiprofessionell"))
+      )
+    } else {
+      fluidPage(
+        p(
+          "Wie bewerten die Schulleitungen ganz allgemein die Lage an den Schulen? Flapsig: Wie ist die Stimmung?
+          Dieser Frage nährt sich die jährliche Schulleitungsbefragung des Verband Bildung und Erziehung (VBE)
+          u. a. mit den Fragen danach, inwieweit die Schulleitungen gerne Ihren Berauf ausüben und ob sie eine Weiterempfehlung für den Beruf abgeben."
+        ),
+        fluidRow(
+          column(
+            width = 3,
+            radioButtons(ns("Auswahl_ganztag_lage_frage"), "Auswahl:", choices = c("Arbeitsmotivation der Schulleitungen", "Weiterempfehlung Beruf Schulleitung"))
+          ),
+          column(
+            width = 9,
+            plotlyOutput(ns("Grafik_ganztag_lage"))
+          )
+        ),
+        p(
+          "Die Ergebnisse: 83 Prozent der Schulleitungen üben ihren Job (sehr) gerne aus - vor der Covid 19-Pandemie waren es noch 96 Prozent.
+          Auch die positive Weiterempfehlung des Berufs ist nicht mehr wie vor der Pandemie gegeben, zuletzt haben knapp die Hälfte der Schulleitungen eine Wahrscheinliche oder klare Weiterempfehlung für Ihren Beruf ausgesprochen."
+        ),
+        p("Anmerkungen:", class = "anmerkungen"),
+        uiOutput(ns("Anmerkungen_bildung_ganztag_lage"))
+      )
+    }
+
+  #### bildungsgerechtigkeit ----
+  } else if (indikator_ID == "bildungsgerechtigkeit_trichter") {
+    fluidPage(
+      p(
+        "Der Bildungstrichter des Stifterverbandes ist ein analytisches Instrument, das die
+        Bildungschancen von jungen Menschen mit Akademikereltern und ohne Akademikereltern in
+        Deutschland von der Schule bis zum Doktorgrad abbildet. Das Instrument baut auf den Arbeiten
+        des ", tags$a("DZHWs", href = "https://www.dzhw.eu/pdf/pub_brief/dzhw_brief_03_2018.pdf", target = "_blank"),
+        " auf und zeigt deutlich wie ungerecht Bildungschancen in Deutschland verteilt sind. ", tags$b("Beginnen von 100 Grundschulkindern aus einem Akademikerhaushalt 79 ein Studium.
+        Sind es bei Grundschulkindern ohne akademischen Hintergrund gerade einmal 27."), " Diese ungleichheit zieht sich durch die Bildungsstufen bis zur Promotion.
+        In den letzten Jahren wurde leicht geringere Differenzen beobachtet - der weite Weg zu mehr Chancengleichheit bleibt jedoch."
+      ),
+      br(),
+      div(
+        style = "display: flex; justify-content: center; align-items: center;",
+        tags$img(
+          src = "img/Bildungstrichter.png",
+            height = "550px",
+            width = "723px",
+            alt = "Der Bildungstrichter des Stifterverbaandes zeigt auf, wie über die verschiedenen Bildungsstufen hinweg Nichtakademikerkinder schlechtere Bildungschancen haben als Akademikerkinder."
         )
       ),
+      br(),
       p(
-        "Die Ergebnisse: Schulleitungen geben über die Zeit immer seltener an, dass Sie die Aufgaben zu Ihrer eigenen Zufriedenheit immer oder häufig erfüllen können - zuletzt sagten dies nur noch 57 Prozent.
-        Auch die positive Weiterempfehlung des Berufs geht weiter zurück, zuletzt auf XX Prozent (Wahrscheinliche Empfehlung/auf jeden Fall)"
+        "Hinsichtlich des Übergangs Grundschule zum Gymnasium liefert zudem eine ",
+        tags$a("ifo-Studie", href = "https://www.ifo.de/DocDL/sd-2024-05-ungleiche-bildungschancen-woessmann-etal-.pdf", targe = "_blank"),
+        " Auswertungen - auch auf Bundeslandsebene. Aufgrund methodischer Unterschiede lassen sich die Daten ", tags$b("nicht"), "direkt bei dem Bildungstrichter einsortieren,
+        bieten aber nochmals eine weitere Perspektive. Die Grafik zeigt die Wahrscheinlichkeit, mit der Kinder aus benachteiligten Verhältnissen ein Gymnasium besuchen gegenüber Kindern aus günstigen Verhältnissen:"
       ),
-      p("Anmerkungen"),
-      textOutput(ns("Anmerkungen_bildung_ganztag_lage"))
+      br(),
+      plotOutput(ns("Grafik_bildungsgerechtigkeit_gymnasium_bundeslaender"), height = "1000px", width = "800px"),
+      p("Anmerkungen:", class = "anmerkungen"),
+      uiOutput(ns("Anmerkungen_bildungsgerichtigkeit_trichter"))
     )
+
+  #### berufsorientierung ----
+  } else if (startsWith(indikator_ID, "berufsorientierung")) {
+    if (indikator_ID == "berufsorientierung_subjektiv") {
+      fluidPage(
+        uiOutput(ns("UI_berufsorientierung_subjektiv"))
+      )
+    } else {
+      fluidPage(
+        uiOutput(ns("UI_berufsorientierung_praktika"))
+      )
+    }
+
+  # MINT ----
+
+  #### Minternational
+
+  } else if (startsWith(indikator_ID, "minternational")){
+    if (indikator_ID == "minternational_studierende") {
+      fluidPage(
+        p("")
+      )
+    }
   }
 }

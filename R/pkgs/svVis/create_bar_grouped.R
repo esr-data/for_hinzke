@@ -3,10 +3,11 @@ box::use(
   . / transform_title_letter_case_by_theme[transform_title_letter_case_by_theme],
   . / make_num_pretty_ger[make_num_pretty_ger],
   . / make_comma_format_on_axis[make_comma_format_on_axis],
-  
+
   magrittr[`%>%`],
   ggplot2[geom_col, geom_text, ggplot, labs, coord_flip, aes, scale_y_continuous,
           element_text, theme, element_blank, element_line, scale_fill_manual],
+  plotly[plot_ly, config, layout],
   stringr[str_c, str_remove],
   forcats[fct_reorder, fct_inorder],
   stringi[stri_wrap],
@@ -133,12 +134,12 @@ create_bar_grouped_interactive <- function(
   df$hovertext <- paste0("Gruppe: ", df[[x_var_name]], "<br>",
                          "Kategorie: ", df[[group_var_name]], "<br>",
                          "Wert: ", make_num_pretty_ger(round(df[[y_var_name]], 1))
-                  )
+  )
 
   if (!flipped) {
     plot <- df %>%
       plot_ly(
-        x = ~fct_reorder(.data[[x_var_name]], -.data[[y_var_name]]),
+        x = ~ .data[[x_var_name]],
         y = ~ .data[[y_var_name]],
         color = ~ .data[[group_var_name]],
         colors = selected_theme[["color"]],
@@ -151,7 +152,7 @@ create_bar_grouped_interactive <- function(
     plot <- df %>%
       plot_ly(
         x = ~.data[[y_var_name]],
-        y = ~ fct_reorder(.data[[x_var_name]], .data[[y_var_name]]),
+        y = ~ .data[[x_var_name]],
         color = ~ .data[[group_var_name]],
         colors = selected_theme[["color"]],
         type = 'bar', orientation = 'v',
@@ -234,8 +235,8 @@ create_bar_grouped_interactive <- function(
             size = 11,
             color = selected_theme[["theme_info"]][["bold_color"]],
             family = selected_theme[["theme_info"]][["text_family"]]
-            )
-          ),
+          )
+        ),
         list(
           text = ifelse(
             is.na(custom_caption),

@@ -4,7 +4,7 @@ box::use(
   . / transform_title_letter_case_by_theme[transform_title_letter_case_by_theme],
   . / make_num_pretty_ger[make_num_pretty_ger],
   . / make_comma_format_on_axis[make_comma_format_on_axis],
-  
+
   magrittr[`%>%`],
   ggplot2[geom_col, geom_text, ggplot, labs, coord_flip, aes, scale_y_continuous,
           element_text, theme, element_blank, element_line, scale_fill_manual],
@@ -18,24 +18,34 @@ box::use(
 )
 
 create_bar <- function(df, x_var, y_var,
-                           plot_title = "", plot_subtitle = "", source = "", custom_caption = NA_character_,
-                           theme_and_color_set = "sv0_allmain", custom_theme_and_color_set = NULL,
-                           xlabel_text = "", ylabel_text = "",
-                           flipped = FALSE,
-                           print_data_labels = TRUE,
-                           remove_y_axis_text = FALSE, remove_x_axis_text = FALSE,
-                           interactive = FALSE) {
+                       plot_title = "", plot_subtitle = "", source = "", custom_caption = NA_character_,
+                       theme_and_color_set = "sv0_allmain", custom_theme_and_color_set = NULL,
+                       xlabel_text = "", ylabel_text = "",
+                       flipped = FALSE, sorted = TRUE,
+                       print_data_labels = TRUE,
+                       remove_y_axis_text = FALSE, remove_x_axis_text = FALSE,
+                       plot_type = "static") {
 
-  # browser()
-
-  if (interactive) {
+  if (plot_type == "plotly") {
     return(
-      create_bar_interactive(
+      create_bar_interactive_plotly(
         df, {{ x_var }}, {{ y_var }},
         plot_title, plot_subtitle, source, custom_caption,
         theme_and_color_set, custom_theme_and_color_set,
         xlabel_text, ylabel_text,
-        flipped,
+        flipped, sorted,
+        print_data_labels,
+        remove_y_axis_text, remove_x_axis_text
+      )
+    )
+  } else if (plot_type == "highcharter") {
+    return(
+      create_bar_interactive_highcharter(
+        df, {{ x_var }}, {{ y_var }},
+        plot_title, plot_subtitle, source, custom_caption,
+        theme_and_color_set, custom_theme_and_color_set,
+        xlabel_text, ylabel_text,
+        flipped, sorted,
         print_data_labels,
         remove_y_axis_text, remove_x_axis_text
       )
@@ -47,7 +57,7 @@ create_bar <- function(df, x_var, y_var,
         plot_title, plot_subtitle, source, custom_caption,
         theme_and_color_set, custom_theme_and_color_set,
         xlabel_text, ylabel_text,
-        flipped,
+        flipped, sorted,
         print_data_labels,
         remove_y_axis_text, remove_x_axis_text
       )
@@ -63,24 +73,35 @@ create_bar_static <- function(
     plot_title = "", plot_subtitle = "", source = "", custom_caption = NA_character_,
     theme_and_color_set = "sv0_allmain", custom_theme_and_color_set = NULL,
     xlabel_text = "", ylabel_text = "",
-    flipped = FALSE,
+    flipped = FALSE, sorted = TRUE,
     print_data_labels = TRUE,
     remove_y_axis_text = FALSE, remove_x_axis_text = FALSE){
 
   # browser()
 
+  x_var_enquoded <- enquo(x_var)
+  x_var_name <- str_remove(deparse(substitute(x_var_enquoded)), "~")
+  x_var_type <- class(df[[x_var_name]])[1]
+  if (x_var_type %in% c("integer", "numeric", "double")) df[[x_var_name]] <- factor(df[[x_var_name]])
+
   y_var_enquoded <- enquo(y_var)
   y_var_name <- str_remove(deparse(substitute(y_var_enquoded)), "~")
 
+  if(sorted & flipped) {
+    df[[x_var_name]] <- reorder(df[[x_var_name]], df[[y_var_name]])
+  } else if (sorted & !flipped) {
+    df[[x_var_name]] <- reorder(df[[x_var_name]], - df[[y_var_name]])
+  }
+
   selected_theme <- manage_custome_theme(theme_and_color_set, custom_theme_and_color_set)
 
-  p <- ggplot(df, aes(x = if(flipped) reorder( {{ x_var }} , {{ y_var }} ) else reorder( {{ x_var }} , -{{ y_var }} ), y = {{ y_var }} )) +
+  p <- ggplot(df, aes(x = {{ x_var }}, y = {{ y_var }} )) +
     geom_col(fill = selected_theme[["theme_info"]][["bold_color"]], col = "white") +
     labs(
       x = xlabel_text,
       y = ylabel_text,
       title = transform_title_letter_case_by_theme(plot_title, selected_theme),
-      subtitle = str_c(stri_wrap(plot_subtitle, width = 160), collapse = "\n"),
+      subtitle = str_c(stri_wrap(plot_subtitle, width = 100), collapse = "\n"),
       caption = ifelse(
         is.na(custom_caption),
         str_c(stri_wrap(str_c("Quelle: ", source), width = 160), collapse = "\n"),
@@ -126,12 +147,12 @@ create_bar_static <- function(
 #' Used as internal function.
 #' @noRd
 
-create_bar_interactive <- function(
+create_bar_interactive_plotly  <- function(
     df, x_var, y_var,
     plot_title = "", plot_subtitle = "", source = "", custom_caption = NA_character_,
     theme_and_color_set = "sv0_allmain", custom_theme_and_color_set = NULL,
     xlabel_text = "", ylabel_text = "",
-    flipped = FALSE,
+    flipped = FALSE, sorted = TRUE,
     print_data_labels = TRUE,
     remove_y_axis_text = FALSE, remove_x_axis_text = FALSE) {
 
@@ -144,18 +165,27 @@ create_bar_interactive <- function(
   x_var_name <- str_remove(deparse(substitute(x_var_enquoded)), "~")
   y_var_name <- str_remove(deparse(substitute(y_var_enquoded)), "~")
 
+  x_var_type <- class(df[[x_var_name]])[1]
+  if (x_var_type %in% c("integer", "numeric", "double")) df[[x_var_name]] <- factor(df[[x_var_name]])
+
   df$y_data_label <- ifelse(
     df[[y_var_name]] > 0 & abs(df[[y_var_name]]) > .05 * max(df[[y_var_name]]) | df[[y_var_name]] < 0 & abs(df[[y_var_name]]) < .05 * max(df[[y_var_name]]),
     df[[y_var_name]] - .035 * max(df[[y_var_name]]),
     df[[y_var_name]] + .035 * max(df[[y_var_name]])
   )
 
-  if (!flipped) {
+  if (!flipped & sorted) {
     plot <- df %>%
-      plot_ly(x = ~fct_reorder(.data[[x_var_name]], -.data[[y_var_name]]), y = ~ .data[[y_var_name]], type = 'bar', orientation = 'v')
+      plot_ly(x = ~ fct_reorder(.data[[x_var_name]], -.data[[y_var_name]]), y = ~ .data[[y_var_name]], type = 'bar', orientation = 'v')
+  } else if (flipped & sorted) {
+    plot <- df %>%
+      plot_ly(x = ~ .data[[y_var_name]], y = ~ fct_reorder(.data[[x_var_name]], .data[[y_var_name]]), type = 'bar', orientation = 'h')
+  } else if (!flipped & !sorted) {
+    plot <- df %>%
+      plot_ly(x = ~ .data[[x_var_name]], y = ~ .data[[y_var_name]], type = 'bar', orientation = 'v')
   } else {
     plot <- df %>%
-      plot_ly(x = ~.data[[y_var_name]], y = ~ fct_reorder(.data[[x_var_name]], .data[[y_var_name]]), type = 'bar', orientation = 'v')
+      plot_ly(x = ~ .data[[y_var_name]], y = ~ .data[[x_var_name]], type = 'bar', orientation = 'h')
   }
 
   # if (print_data_labels) {  # try to integrate print_data_labels, but failed for this package version
@@ -275,4 +305,60 @@ create_bar_interactive <- function(
     )
 
   return(plot)
+}
+
+create_bar_interactive_highcharter <- function(
+    df, x_var, y_var,
+    plot_title = "", plot_subtitle = "", source = "", custom_caption = NA_character_,
+    theme_and_color_set = "sv0_allmain", custom_theme_and_color_set = NULL,
+    xlabel_text = "", ylabel_text = "",
+    flipped = FALSE, sorted = TRUE,
+    print_data_labels = TRUE,
+    remove_y_axis_text = FALSE, remove_x_axis_text = FALSE) {
+
+  x_var <- ensym(x_var)
+  y_var <- ensym(y_var)
+
+  remove_y_axis_text <- remove_y_axis_text
+  remove_x_axis_text <- remove_x_axis_text
+
+
+  selected_theme <- manage_custome_theme(theme_and_color_set, custom_theme_and_color_set)
+
+  selected_theme_hc <- hc_theme(
+    chart = list(
+      backgroundColor = "#ffffff",
+      style = list(
+        fontFamily = selected_theme$theme$text$family
+      )
+    )
+  )
+
+  hc <- hchart(df, type = ifelse(flipped, "bar", "column"), hcaes(x = !!x_var, y = !!y_var))
+
+  hc <- hc %>%
+    hc_plotOptions(
+      series = list(
+        dataLabels = list(
+          enabled = print_data_labels,  # De-/Aktivieren der Datenbeschriftungen
+          format = '{point.y}'
+        )
+      )
+    ) %>%  # Formatierung der Beschriftungen, '{point.y}' zeigt den Y-Wert an
+    hc_tooltip(
+      headerFormat = '<span style="font-size: 10px">{point.key}: <b>{point.y}</b></span><br/>',
+      pointFormat = '',  # Entfernt die standardmäßige Y-Wert-Anzeige
+      footerFormat = '',
+      shared = FALSE,
+      useHTML = TRUE
+    ) %>%
+    hc_title(text = plot_title, align = "center") %>%
+    hc_subtitle(text = plot_subtitle, align = "center") %>%
+    hc_credits(enabled = TRUE, text = if (is.na(custom_caption)) paste0("Quelle: ", source, ".") else custom_caption) %>%
+    hc_colors(colors = selected_theme$color) %>%
+    hc_xAxis(title = list(text = xlabel_text), labels = list(enabled = !remove_x_axis_text)) %>%
+    hc_yAxis(title = list(text = ylabel_text), labels = list(enabled = !remove_y_axis_text)) %>%
+    hc_add_theme(selected_theme_hc)
+
+  return(hc)
 }

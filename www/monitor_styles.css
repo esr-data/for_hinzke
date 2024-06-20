@@ -317,3 +317,11 @@ ul li {
 .invisible_element {
   display: none;
 }
+
+/* monitor text--------------- -----------------------------------------------*/
+
+.anmerkungen {
+  font-style: italic;
+  font-size: 0.8em;
+  margin-bottom: 0px;
+}
