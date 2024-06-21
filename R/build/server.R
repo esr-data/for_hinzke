@@ -40,7 +40,8 @@ box::use(
     updateSearchInput,
     updateRadioGroupButtons
   ],
-  utils[URLencode]
+  utils[URLencode],
+  urltools[url_parse]
 )
 
 # Global Variables
@@ -68,11 +69,38 @@ server <- function(input, output, session) {
 
   current <-
     reactiveValues(
-      page    = "start",
-      sidebar = "start"
+      page           = "start",
+      zuruck_page    = c("#!/", "#!/"),
+      zuruck_trigger = 0,
+      sidebar        = "start"
     )
 
   # URL Events -------------------------------------------------------------------------------------
+
+  observeEvent(
+    session$clientData$url_hash, {
+
+      url <- session$clientData$url_hash
+
+      if (nchar(url) < 1 | url %in% "#!/"){
+        url_path <- "#!/"
+      } else {
+        url_path <- url_parse(url)$path
+      }
+
+      if (
+        url_parse(current$zuruck_page[1])$path %in%
+        url_path
+      ){
+        current$zuruck_page[1] <- url
+      } else {
+        current$zuruck_page[2] <- current$zuruck_page[1]
+        current$zuruck_page[1] <- url
+      }
+
+    }
+  )
+
 
   observeEvent(
     get_query_param(), {
@@ -153,6 +181,12 @@ server <- function(input, output, session) {
   )
 
   # Button-Events ----------------------------------------------------------------------------------
+
+  observeEvent(
+    input$geh_zurueck, {
+      change_page(current$zuruck_page[2])
+    }
+  )
 
   observeEvent(input$button_minimize, {
     sidebar$minimized <- !sidebar$minimized

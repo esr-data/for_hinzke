@@ -1,9 +1,21 @@
 
 box::use(
-  shiny[div, icon, p, restoreInput, HTML, getCurrentTheme],
+  shiny[div, icon, p, restoreInput, HTML, getCurrentTheme, actionButton],
   htmltools[tags, validateCssUnit, singleton],
   shinyWidgets
 )
+
+#' Missing description
+#' @export
+
+draw_zurueck_button <- function(){
+  actionButton(
+    "zuruck",
+    label = "zurück",
+    class = c("zuruck_button", "button_klein"),
+    onclick = "goBackPage()"
+  )
+}
 
 #' Missing description
 #' @export

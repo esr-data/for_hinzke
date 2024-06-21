@@ -22,6 +22,7 @@ box::use(
   ../../R/pages/karten[module_karten_ui],
   ../../R/pages/monitor_inhalt[module_monitor_inhalt_ui],
   ../../R/utils/ui[draw_search],
+  ../../R/utils/js[get_js],
   shiny[
     NS, moduleServer, observeEvent,
     fluidPage, tagList, tags, HTML,
@@ -47,6 +48,7 @@ draw_ui <- function(){
 
     # HEAD AND STYLE
     tags$head(
+      get_js("go_back_page"),
       tags$link(rel = "apple-touch-icon-precomposed", sizes = "180x180", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/apple-touch-icon.png"),
       tags$link(rel = "icon",                         sizes = "192x192", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/touch-icon-192x192.png"),
       tags$link(rel = "shortcut icon",                                   href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/favicon.ico"),

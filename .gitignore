@@ -76,6 +76,8 @@ rsconnect/
 *.csv
 *.db
 *.db.wal
+*.xlsx
+*.rds
 
 www/webfonts/*
 !www/webfonts/.gitkeep
@@ -83,3 +85,4 @@ work_in_progress/*.R
 downloads/*
 !downloads/.gitkeep
 _experiment/
+www/stories_alt
