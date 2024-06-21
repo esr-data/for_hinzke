@@ -28,6 +28,7 @@
   --font-size: 18px;
   --font-size-small: 15px;
   --font-family: "BrandonTextWeb-Regular", sans-serif;
+  --font-family-bold: "BrandonTextWeb-Bold", sans-serif;
 }
 
 /*TODO wofür wird das gebraucht - einsortieren*/
@@ -73,6 +74,10 @@
 
 .div_hide {
   display: none!important;
+}
+
+.small-font {
+  font-size: var(--font-size-small);
 }
 
 /* Font --------------------------------------------------------------------- */
@@ -136,7 +141,7 @@ header.sticky {
 }
 
 .sidebar_minimized {
-  transform: translateX(-225px);
+  transform: translateX(-200%);
   margin-right: -226px!important;
 }
 
@@ -359,6 +364,93 @@ button.active:has(input[value="forschung"]){
   display: flex;
   align-items: center;
   justify-content: space-around;
+}
+
+/* Zurück-Buttons ----------------------------------------------------------- */
+
+.button_klein,
+.button_klein:active,
+.button_klein:focus {
+    border-radius: 0;
+    border-color: var(--grey);
+    transition: all .1s ease;
+    font-size: var(--font-size-small);
+    background-color: white;
+}
+
+.button_klein:hover {
+    border-color: var(--blue);
+    background-color: var(--blue);
+    font-weight: 600;
+    color: white;
+}
+
+.button_klein:active:hover,
+.button_klein:active:focus {
+    border-color: var(--primary);
+    background-color: var(--primary);
+    font-weight: 600;
+    color: white;
+}
+
+.zuruck_button {
+  min-width: 75px;
+}
+
+.button_icon,
+.button_icon:active,
+.button_icon:focus {
+    border-radius: 0;
+    border-color: transparent;
+    transition: all .1s ease;
+    background-color: transparent;
+    font-weight: 600;
+    box-shadow: none;
+}
+
+.button_icon i {
+  color: var(--blue);
+  font-size: calc(var(--font-size) + 8px);
+}
+
+.button_icon:hover,
+.button_icon:active:hover,
+.button_icon:active:focus {
+    border-color: transparent;
+    background-color: transparent;
+    color: transparent;
+    box-shadow: none;
+}
+
+.button_icon:hover i,
+.button_icon:active:hover i,
+.button_icon:active:focus i {
+  color: var(--red);
+}
+
+.button_icon:active:hover i,
+.button_icon:active:focus i {
+  color: var(--primary);
+}
+
+/* Input-Switch ------------------------------------------------------------- */
+
+.bootstrap-switch,
+.bootstrap-switch.bootstrap-switch-off,
+.bootstrap-switch-handle-on.bootstrap-switch-default,
+.bootstrap-switch-handle-on.bootstrap-switch-primary,
+.bootstrap-switch-handle-off.bootstrap-switch-default {
+  border-radius: 0px;
+}
+
+.bootstrap-switch-handle-on.bootstrap-switch-primary {
+  background: var(--blue)!important;
+}
+
+.bootstrap-switch.bootstrap-switch-focused {
+  /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(25, 83, 101, 0.6);*/
+  box-shadow: none;
+  border-color: var(--blue);
 }
 
 /* Tutorial ----------------------------------------------------------------- */
@@ -1258,4 +1350,22 @@ img.thumbnail-image.card-img {
  }
 }
 
+.menu-box .shiny-input-container {
+    width: 100%;
+}
 
+
+.reactable-details {
+    background-color: var(--color-background);
+    padding: 12px;
+    margin: 12px;
+}
+
+.reactable-details h3 {
+  font-size: var(--font-size);
+  margin-top: 0px;
+}
+
+.reactable-details p {
+  font-size: var(--font-size-small);
+}

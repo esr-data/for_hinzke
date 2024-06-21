@@ -452,32 +452,3 @@ recode_treffer_id_in_link <- function(treffer_id){
     treffer_id
   )
 }
-
-
-
-
-#
-# showSpinner <- function(id, expr) {
-#   session <- shiny::getDefaultReactiveDomain()
-#
-#   idns <- session$ns(id)
-#   session$sendCustomMessage("shinycssloaders.show_spinner",  list(id = idns))
-#
-#   if (missing(expr)) {
-#     value <- invisible(NULL)
-#   } else {
-#     value <- expr
-#     on.exit(hideSpinner(id))
-#   }
-#
-#   value
-# }
-#
-# hideSpinner <- function(id) {
-#   session <- shiny::getDefaultReactiveDomain()
-#
-#   idns <- session$ns(id)
-#   session$sendCustomMessage("shinycssloaders.hide_spinner", list(id = idns))
-#
-#   invisible(NULL)
-# }

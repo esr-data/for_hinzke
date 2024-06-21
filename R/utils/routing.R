@@ -48,6 +48,8 @@ get_hf_param <- function(url = NULL){
 
 add_param_in_url <- function(current_url, current_page, parameter, value, old_value){
 
+  warning("Nicht mehr add_param_in_url nutzen - veraltete Funktion")
+
   current_page <- paste0("#!/", current_page)
   new_url <- current_url
 

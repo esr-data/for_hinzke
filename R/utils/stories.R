@@ -41,7 +41,8 @@ get_stories <- function(){
   output$size <- "1200px"
   output$size[output$folder == "hf2_gruendung"] <- "2700px"
   output$size[output$folder == "hf1_arbeiter_doktor"] <- "6000px"
-  output$size[output$folder == "hf1_lktrichter"] <- "1900px"
+  output$size[output$folder == "hf1_informatikmonitor"] <- "7900px"
+  output$size[output$folder == "hf1_lktrichter"] <- "3100px"
   return(output)
 }
 
