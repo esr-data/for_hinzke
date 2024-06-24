@@ -73,6 +73,8 @@ rsconnect/
 
 # Do not save data
 *.sqlite
+*.xlsx
+*.rda
 *.csv
 *.db
 *.db.wal
