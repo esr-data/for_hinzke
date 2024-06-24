@@ -46,8 +46,11 @@ draw_ui <- function(){
     useShinyjs(),
     use_cicerone(),
 
+
     # HEAD AND STYLE
     tags$head(
+      get_js("overwrite_proxy_default"),
+      tags$link(rel = "stylesheet", href = "default.css"),
       get_js("go_back_page"),
       tags$link(rel = "apple-touch-icon-precomposed", sizes = "180x180", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/apple-touch-icon.png"),
       tags$link(rel = "icon",                         sizes = "192x192", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/touch-icon-192x192.png"),
@@ -62,7 +65,7 @@ draw_ui <- function(){
     # BODY
     draw_header(),
     fluidPage(
-      style = "padding:0; background-color: #F2F2F2; display: flex;",
+      style = "padding: 0; background-color: #F2F2F2; display: flex;",
       id    = "main-body",
       draw_sidebar(),
       div(
