@@ -2,7 +2,7 @@
 box::use(
   . / manage_custome_theme[manage_custome_theme],
   . / transform_title_letter_case_by_theme[transform_title_letter_case_by_theme],
-  
+
   magrittr[`%>%`],
   sf[st_as_sf, st_simplify],
   dplyr[left_join, filter, mutate],
@@ -17,8 +17,8 @@ box::use(
 )
 
 
-germany_choropleth_federal_states <- readRDS("~/test_datenportal_2/data/germany_choropleth_federal_states.rds")
-middle_points_of_ger_federal_states <- readRDS("~/test_datenportal_2/data/middle_points_of_ger_federal_states.rds")
+germany_choropleth_federal_states <- readRDS("data/germany_choropleth_federal_states.rds")
+middle_points_of_ger_federal_states <- readRDS("data/middle_points_of_ger_federal_states.rds")
 
 
 create_choropleth_map_germany <- function(df, var,

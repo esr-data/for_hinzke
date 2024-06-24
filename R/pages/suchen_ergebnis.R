@@ -1,7 +1,7 @@
 #' Necessary Packages/Functions
 
 box::use(
-  ../../R/utils/ui[draw_under_construction, draw_zurueck_button, draw_under_construction],
+  ../../R/utils/ui[draw_under_construction, draw_zurueck_button],
   ../../R/utils/database[get_query],
   ../../R/utils/string[preprocess_str],
   ../../R/utils/routing[add_param_in_url],
