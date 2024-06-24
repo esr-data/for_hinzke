@@ -492,8 +492,7 @@ produce_plot <-
             y_var = y_var,
             xlabel_text = params$x_var,
             ylabel_text = params$y_var,
-            plot_title = params$plot_title,
-            interactive = FALSE
+            plot_title = params$plot_title
           )
 
       } else if (results$result_fct[i] == "create_bar_grouped"){
@@ -506,8 +505,7 @@ produce_plot <-
             group_var = group_var,
             xlabel_text = params$x_var,
             ylabel_text = params$y_var,
-            plot_title = params$plot_title,
-            interactive = FALSE
+            plot_title = params$plot_title
           )
 
       } else if (results$result_fct[i] == "create_choropleth_map_germany"){
