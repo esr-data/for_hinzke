@@ -21,7 +21,7 @@ g <-
     breaks = c(0:4),
     labels = function(x) format(x, big.mark = ".", decimal.mark = ",", scientific = FALSE, trim = TRUE)
   ) +
-  svVis:::get_theme() +
+  get_theme() +
   theme(
     legend.position = "none",
     axis.text.y = element_text(hjust = 1, size = 20, family = "Calibri"),
@@ -116,7 +116,7 @@ g <-
     breaks = c(0:3 * 4),
     labels = function(x) format(x, big.mark = ".", decimal.mark = ",", scientific = FALSE, trim = TRUE)
   ) +
-  svVis:::get_theme() +
+  get_theme() +
     theme(
       legend.position = "none",
       axis.text.y = element_text(hjust = 1, size = 18, family = "Calibri"),
@@ -163,7 +163,7 @@ g <-
     limits = c(-30,520)#,
     # breaks = c(0:3 * 4)
   ) +
-  svVis:::get_theme() +
+  get_theme() +
   theme(
     legend.position = "none",
     axis.text.y = element_blank(),# element_text(hjust = 1, size = 14, family = "Calibri"),
@@ -201,7 +201,7 @@ df <-
     Prozent = c(22.9, 19.7 , 17.2)
   )
 
-g <- svVis::create_bar(df, factor(Jahr), Prozent)
+g <- create_bar(df, factor(Jahr), Prozent)
 
 g <-
   ggdraw() +
@@ -234,7 +234,7 @@ df <-
     Prozent = c(95, 5)
   )
 
-g <- svVis::create_donut(
+g <- create_donut(
   df,
   Prozent,
   kat_var_if_num = Antwort,
