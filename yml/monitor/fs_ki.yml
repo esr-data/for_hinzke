@@ -56,10 +56,13 @@ Inhalt:
     Darstellungen: Zeitverlauf, Tabelle, Karte
 
 
-Aktivitaet:
-  - Label: Aktivität 1
-    URL:   https://www.google.de
-
+Aktivitaeten:
+  - Label: KI-Campus
+    URL:   https://ki-campus.org/
+  - Label: AIComp - Future Skills für eine von KI Beeinflusste Lebens- und Arbeitswelt
+    URL:   https://next-education.org/downloads/2024-03-19-AIComp-Part_2_-_Kompetenzmodell-final-web.pdf
+  - Label: Künstliche Intelligenz in der Bildung -  Diskussionspapier
+    URL:   https://zenodo.org/records/7702620
 Datenbasis:
   - Label: Studierendenstatistik Destatis
     URL:   https://www.google.de
@@ -67,5 +70,7 @@ Datenbasis:
     URL:   https://www.google.de
 
 Link:
-  - Label: Externer_Link_1
-    URL:   https://www.google.de
+  - Label: BMBF-Aktionsplan "Künstliche Intelligenz"
+    URL:   https://www.bmbf.de/bmbf/de/forschung/digitale-wirtschaft-und-gesellschaft/kuenstliche-intelligenz/ki-aktionsplan.html
+  - Label: KI Konkret. Künstliche Intelligenz -- einfach erklärt
+    URL:   https://www.ki-konkret.de/

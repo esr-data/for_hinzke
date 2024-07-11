@@ -30,8 +30,16 @@ Inhalt:
     Darstellungen: Zeitverlauf, Tabelle, Karte
 
 Aktivitaet:
-  - Label: Aktivität 1
-    URL:   https://www.google.de
+  - Label: Smart Qualifiziert
+    URL:   https://www.stifterverband.org/smart-qualifiziert#
+  - Label: MINTvernetzt
+    URL:   https://www.stifterverband.org/mintvernetzt
+  - Label: MINTchallenge plus
+    URL:   https://www.stifterverband.org/mintchallenge-plus
+  - Label: Tech-Spezialisten gesucht
+    URL:   https://www.stifterverband.org/medien/tech-spezialisten-gesucht
+  - Label: MINT Campus
+    URL:   https://mintcampus.org/
 
 Datenbasis:
   - Label: Studierendenstatistik Destatis
@@ -40,5 +48,5 @@ Datenbasis:
     URL:   https://www.google.de
 
 Link:
-  - Label: Externer_Link_1
-    URL:   https://www.google.de
+  - Label: Nationales MINT Forum
+    URL:   https://www.nationalesmintforum.de/

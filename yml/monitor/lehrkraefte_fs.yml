@@ -41,9 +41,17 @@ Inhalt:
     Darstellungen: Zeitverlauf, Tabelle, Karte
 
 Aktivitaet:
-  - Label: Aktivität 1
-    URL:   https://www.google.de
-
+  - Label: Zukunftswerkstatt Lehrkräftebildung neu denken
+    URL:   https://www.stifterverband.org/zukunftswerkstatt-lehrkraeftebildung-neu-denken
+  - Label: Masterplan: Lehrkräftebildung neu gestalten
+    URL:   https://www.stifterverband.org/masterplan-lehrkraeftebildung
+  - Label: KI-Campus: Digitale Lernangebote zu "KI in der Schule"
+    URL:   https://ki-campus.org/index.php/themen/schule
+  - Label: Berufsschul-Digi-Teams
+    URL:   https://www.stifterverband.org/berufsschul-digi-teams
+  - Label: Schule im Wandel - Welche Lehrkräfte braucht das Land?
+    URL:   https://www.stifterverband.org/medien/schule-im-wandel
+    
 Datenbasis:
   - Label: Studierendenstatistik Destatis
     URL:   https://www.google.de
@@ -51,5 +59,6 @@ Datenbasis:
     URL:   https://www.google.de
 
 Link:
-  - Label: Externer_Link_1
-    URL:   https://www.google.de
+  - Label: BMBF: Qualitätsoffensive Lehrerbildung
+    URL:   https://www.qualitaetsoffensive-lehrerbildung.de/lehrerbildung/de/home/home_node.html
+

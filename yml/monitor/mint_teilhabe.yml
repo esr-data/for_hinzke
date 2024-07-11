@@ -53,9 +53,15 @@ Inhalt:
     Darstellungen: Zeitverlauf, Tabelle, Karte
 
 Aktivitaet:
-  - Label: Aktivität 1
-    URL:   https://www.google.de
-
+  - Label: Informatik für alle!
+    URL:   https://www.stifterverband.org/medien/informatik-fuer-alle
+  - Label: Informatikunterricht - Lückenhaft und unterbesetzt
+    URL:   https://www.stifterverband.org/medien/informatikunterricht
+  - Label: Informatikunterricht - Deutschland abgehängt in Europa
+    URL:   https://www.stifterverband.org/medien/informatikunterricht-europa
+  - Label: MINT-Campus
+    URL:   https://mintcampus.org/
+    
 Datenbasis:
   - Label: Studierendenstatistik Destatis
     URL:   https://www.google.de
@@ -63,5 +69,5 @@ Datenbasis:
     URL:   https://www.google.de
 
 Link:
-  - Label: Externer_Link_1
-    URL:   https://www.google.de
+  - Label: Kultusministerkonferenz - Mathematik, Informatik, Naturwissenschaften, Technik
+    URL:   https://www.kmk.org/themen/allgemeinbildende-schulen/unterrichtsfaecher/mathematik-informatik-naturwissenschaften-technik-mint.html

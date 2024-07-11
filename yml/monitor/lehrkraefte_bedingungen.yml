@@ -49,8 +49,11 @@ Inhalt:
     Darstellungen: Zeitverlauf, Tabelle, Karte
 
 Aktivitaet:
-  - Label: Aktivität 1
-    URL:   https://www.google.de
+  - Label: Lehrkräftebildung für die Schule der Vielfalt
+    URL:   https://www.stifterverband.org/medien/lehrkraeftebildung-fuer-die-schule-der-vielfalt
+  - Label: Zukunftswerkstatt Lehrkräftebildung neu denken
+    URL:   https://www.stifterverband.org/zukunftswerkstatt-lehrkraeftebildung-neu-denken
+
 
 Datenbasis:
   - Label: Studierendenstatistik Destatis
@@ -59,5 +62,7 @@ Datenbasis:
     URL:   https://www.google.de
 
 Link:
-  - Label: Externer_Link_1
-    URL:   https://www.google.de
+  - Label: BMBF: Qualitätsoffensive Lehrerbildung
+    URL:   https://www.qualitaetsoffensive-lehrerbildung.de/lehrerbildung/de/home/home_node.html
+  - Label: Kultusministerkonferenz: Lehrkräftebildung in den Ländern
+    URL:   https://www.kmk.org/themen/allgemeinbildende-schulen/lehrkraefte/lehrkraeftebildung.html
