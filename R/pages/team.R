@@ -3,7 +3,6 @@
 box::use(
   ../../R/utils/team[create_team_member],
   ../../R/utils/earthworm[read_markdown],
-  ../../R/utils/earthworm[read_markdown_cache],
   ../../R/utils/ui[draw_under_construction],
   shiny[
     NS, moduleServer,
@@ -129,7 +128,7 @@ module_team_server <- function(id = "team") {
     function(input, output, session) {
       ns <- session$ns
 
-      output$team_beschreibung <- renderUI({read_markdown("svData")})
+      output$team_beschreibung <- renderUI({read_markdown("sv-data")})
 
     }
   )

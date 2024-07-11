@@ -1,52 +1,79 @@
 
 box::use(
-  shiny,
+  ../../R/utils/log[write_log],
+  shiny[markdown, HTML],
   httr[timeout, GET]
 )
 
-read_markdown <- function(slug){
-  if (is.null(slug))     return(shiny::HTML(""))
-  if (length(slug) != 1) return(shiny::HTML(""))
-  if (is.na(slug))       return(shiny::HTML(""))
-  text <-
+EARTHWORM_URL <- "http://srv-data02:3000/artikel/%s/markdown"
+
+#' @export
+read_markdown <- function(slug, use_cache_first = FALSE, to_cache = TRUE){
+
+  if (is.null(slug))     return(HTML(""))
+  if (length(slug) != 1) return(HTML(""))
+  if (is.na(slug))       return(HTML(""))
+
+  md_text <- NULL
+  datei   <- sprintf("md/ew_%s.md", slug)
+
+  if (use_cache_first){
+    if (file.exists(datei)){
+      md_text <- suppressWarnings(try(readLines(datei), silent = TRUE))
+    }
+  }
+
+  if (is.null(md_text)){
+    md_text <- curl_earthworm(slug)
+  }
+
+  if (is.null(md_text) & !use_cache_first){
+
+    md_text <- suppressWarnings(try(readLines(datei), silent = TRUE))
+
+    if (class(md_text) %in% "try-error"){
+      write_log(
+        sprintf("Warnung: Markdown konnte nicht vom lokalen Verzeichnis geladen werden (slug = '%s')!", slug)
+      )
+      return(HTML(""))
+    }
+
+  } else {
+
+    if (to_cache){
+      writeLines(md_text, datei)
+
+      if (file.exists(datei)){
+        write_log("Markdown vom Earthworm gespeichert (slug = '%s')")
+      } else {
+        write_log("Markdown vom Earthworm konnte nicht gespeichert (slug = '%s')")
+      }
+    }
+
+  }
+
+  return(markdown(md_text))
+}
+
+#'@noRd
+curl_earthworm <- function(slug, timeout = .5){
+
+  url <- sprintf(EARTHWORM_URL, slug)
+  md_text <-
     suppressWarnings(
       try(
-        as.character(
-          GET(
-            sprintf(
-              "http://172.16.0.17:3000/artikel/%s/markdown",
-              slug
-            ),
-            timeout(.5)
-          )
-        ),
+        as.character(GET(url, timeout(timeout))),
         silent = TRUE
       )
     )
-  if (class(text) == "try-error"){
-    text <- try(readLines(sprintf("md/%s.md", slug)), silent = TRUE)
-    if (class(text) == "try-error"){
-      warning(
-        sprintf("Warnung: Markdown nicht gefunden (%s)!", slug)
-      )
-      return(shiny::HTML(""))
-    }
-    warning(
-      sprintf("Warnung: Lokales Markdown verwendet, weil Earthworm-Server nicht erreicht wurde (slug = '%s')!", slug)
+
+  if (class(md_text) %in% "try-error"){
+    write_log(
+      sprintf("Warnung: Markdown konnte nicht vom Earthworm geladen werden (slug = '%s')!", slug),
+      warn = TRUE
     )
+    return(NULL)
   }
-  return(shiny::markdown(text))
-}
 
-
-markdown_cache <-
-  list(
-    willkommen        = read_markdown("willkommen"),
-    storybeschreibung = read_markdown("storybeschreibung"),
-    fdz               = read_markdown("forschungsdatenzentrum-wissenschaftsstatistik"),
-    svData            = read_markdown("svData")
-  )
-
-read_markdown_cache <- function(slug){
-  markdown_cache[[slug]]
+  return(md_text)
 }
