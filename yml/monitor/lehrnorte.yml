@@ -46,8 +46,20 @@ Inhalt:
     Darstellungen: Zeitverlauf, Tabelle, Karte
 
 Aktivitaet:
-  - Label: Aktivität 1
-    URL:   https://www.google.de
+  - Label: Hochschulforum Digitalisierung
+    URL:   https://hochschulforumdigitalisierung.de/
+  - Label: Future Scouts
+    URL:   https://www.stifterverband.org/future-scouts
+  - Label: DigitalChangeMaker Accelerator
+    URL:   https://www.stifterverband.org/digitalchangemaker-accelerator
+  - Label: Lernarchitekturen
+    URL:   https://www.stifterverband.org/lernarchitekturen
+  - Label: Zehn Leitlinien für zukunftsorientierte Lernräume
+    URL:   https://www.stifterverband.org/medien/zehn-leitlinien-fuer-zukunftsorientierte-lernraeume
+  - Label: Erfolgsfaktoren für vernetzte Innovationsorte an Hochschulen
+    URL:   https://www.stifterverband.org/medien/erfolgsfaktoren-fuer-vernetzte-innovationsorte-an-hochschulen
+  - Label: Monitor Digitalisierung 360°
+    URL:   https://hochschulforumdigitalisierung.de/monitor-digitalisierung/
 
 Datenbasis:
   - Label: Studierendenstatistik Destatis
@@ -56,5 +68,7 @@ Datenbasis:
     URL:   https://www.google.de
 
 Link:
-  - Label: Externer_Link_1
-    URL:   https://www.google.de
+  - Label: BMBF - DigitalPakt Schule
+    URL:   https://www.digitalpaktschule.de/index.html
+  - Label: Nationale Bildungsplattform
+    URL:   https://digitalstrategie-deutschland.de/Nationale-Bildungsplattform/

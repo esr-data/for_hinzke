@@ -38,9 +38,20 @@ Inhalt:
     Darstellungen: Zeitverlauf, Tabelle, Karte
 
 Aktivitaet:
-  - Label: Aktivität 1
-    URL:   https://www.google.de
-
+  - Label: Übersicht
+    URL:   https://future-skills.net/
+  - Label: Future Skills Journey
+    URL:   https://www.stifterverband.org/future-skills-journey
+  - Label: Data Literacy Education
+    URL:   https://www.stifterverband.org/data-literacy-education  
+  - Label: Entrepreneurial Skills
+    URL:   https://www.stifterverband.org/entrepreneurial-skills
+  - Label: Quantum Skills
+    URL:   https://www.stifterverband.org/quantum-skills  
+  - Label: Transformative Skills für Nachhaltigkeit
+    URL:   https://www.stifterverband.org/transformative-skills-fuer-nachhaltigkeit
+    
+    
 Datenbasis:
   - Label: Studierendenstatistik Destatis
     URL:   https://www.google.de
@@ -48,5 +59,9 @@ Datenbasis:
     URL:   https://www.google.de
 
 Link:
-  - Label: Externer_Link_1
-    URL:   https://www.google.de
+  - Label: Future Skills bei der Bertelsmann Stiftung
+    URL:   https://www.bertelsmann-stiftung.de/de/unsere-projekte/beschaeftigung-im-wandel/future-skills
+  - Label: OECD Future of Education
+    URL:   https://www.oecd.org/education/2030-project/
+  - Label: Europäische Kommission: Welche Kompetenzen sind in Zukunft gefragt?
+    URL:   https://commission.europa.eu/education/skills-and-qualifications/what-skills-will-employers-be-looking_de

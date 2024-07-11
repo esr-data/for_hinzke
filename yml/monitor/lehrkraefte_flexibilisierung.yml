@@ -45,8 +45,13 @@ Inhalt:
     Darstellungen: Trichter
 
 Aktivitaet:
-  - Label: Aktivität 1
-    URL:   https://www.google.de
+  - Label: Monitor Lehrerbildung
+    URL:   https://www.monitor-lehrerbildung.de/
+  - Label: Masterplan Lehrkräftebildung neu gestalten
+    URL:   https://www.stifterverband.org/masterplan-lehrkraeftebildung
+  - Label: Zukunftswerkstatt Lehrkräftebildung neu denken
+    URL:   https://www.stifterverband.org/zukunftswerkstatt-lehrkraeftebildung-neu-denken
+
 
 Datenbasis:
   - Label: Studierendenstatistik Destatis
@@ -55,5 +60,5 @@ Datenbasis:
     URL:   https://www.google.de
 
 Link:
-  - Label: Externer_Link_1
-    URL:   https://www.google.de
+  - Label: BMBF - Qualitätsoffensive Lehrerbildung
+    URL:   https://www.bmbf.de/bmbf/de/forschung/das-wissenschaftssystem/qualitaetsoffensive-lehrerbildung/qualitaetsoffensive-lehrerbildung_node.html
