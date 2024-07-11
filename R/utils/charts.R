@@ -3,15 +3,19 @@ box::use(
   ../../R/pkgs/svVis/create_bar_grouped[create_bar_grouped],
   ../../R/pkgs/svVis/create_lineplot[create_lineplot],
   ../../R/pkgs/svVis/create_choropleth_map_germany[create_choropleth_map_germany],
-
+  ../../R/utils/database[get_query],
+  
   stringi[stri_split],
   readxl[read_excel]
 )
 
-get_chart_options <-
-  function(df, chart_options_rules_dir = "data/chart_options_rules.xlsx"){ #browser()
 
-    chart_options_rules <- read_excel(chart_options_rules_dir)
+
+get_chart_options <-
+  function(df, chart_options_rules_dir = "chart_options_rules"){ #browser()
+
+    #chart_options_rules <- read_excel(chart_options_rules_dir)
+    chart_options_rules <- get_query(paste0("SELECT * FROM ", chart_options_rules_dir))
 
     stopifnot("Dataframe has only one row. Change data selection to include some sort of variation to receive chart options." = nrow(df) != 1)
 
@@ -464,7 +468,7 @@ produce_plot <-
               xlabel_text = params$x_var,
               ylabel_text = params$y_var,
               plot_title = params$plot_title,
-              interactive = FALSE
+              plot_type = "plotly"
             )
 
         } else {
@@ -478,7 +482,7 @@ produce_plot <-
               xlabel_text = params$x_var,
               ylabel_text = params$y_var,
               plot_title = params$plot_title,
-              interactive = FALSE
+              plot_type = "plotly"
             )
 
         }
@@ -492,7 +496,8 @@ produce_plot <-
             y_var = y_var,
             xlabel_text = params$x_var,
             ylabel_text = params$y_var,
-            plot_title = params$plot_title
+            plot_title = params$plot_title,
+            plot_type = "plotly"
           )
 
       } else if (results$result_fct[i] == "create_bar_grouped"){
@@ -505,7 +510,8 @@ produce_plot <-
             group_var = group_var,
             xlabel_text = params$x_var,
             ylabel_text = params$y_var,
-            plot_title = params$plot_title
+            plot_title = params$plot_title,
+            interactive = TRUE
           )
 
       } else if (results$result_fct[i] == "create_choropleth_map_germany"){
@@ -514,7 +520,8 @@ produce_plot <-
           create_choropleth_map_germany(
             df = params$df,
             var = var,
-            plot_title = params$plot_title
+            plot_title = params$plot_title,
+            interactive = TRUE
 
           )
 

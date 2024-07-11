@@ -25,7 +25,8 @@ box::use(
   shiny.router[get_page, get_query_param, change_page],
   shinycssloaders[withSpinner],
   reactable[reactable, reactableOutput, renderReactable, colDef],
-  sortable[bucket_list, add_rank_list]
+  sortable[bucket_list, add_rank_list],
+  plotly[plotlyOutput, renderPlotly]
 )
 
 #' UI Funktion Analysetool
@@ -197,7 +198,7 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
       
       # Ergebnisaufruf über Button
       results <- eventReactive(input$show_results, {
- 
+        
         # output Tabelle mit Aufruf von get_data() der wrangling Fkt
         
         if(!is.null(daten$variable2)){
@@ -252,17 +253,18 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
           )
           
            if(nrow(results()) > 1){
-            
+           
             plot_list <- produce_plot(results(), 
-                                      chart_options_rules_dir = "data/chart_options_rules.xlsx")
+                                      chart_options_rules_dir = "chart_options_rules")
             
             
             for(i in seq_along(plot_list)) {
               result_tabs <- append(result_tabs, list(tabPanel(paste("Grafik", i),
                                                                div(
                                                                  class = "content-box",
-                                                                 style = "width: 100%;",
-                                                                 plotOutput(ns(paste("plot", i, sep = "")),height = 500, width = 800))))
+                                                                 style = "width: 100%; height: 600px;",
+                                                                 
+                                                                 plotlyOutput(ns(paste("plot", i, sep = "")), height = "100%"))))
                                                       )
             }
             
@@ -270,7 +272,7 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
               
               local({
                 my_i <- i
-                output[[paste("plot", my_i, sep = "")]] <- renderPlot({
+                output[[paste("plot", my_i, sep = "")]] <- renderPlotly({
                   # print(plot_list[[my_i]])
                   plot_list[[my_i]]
                 })
