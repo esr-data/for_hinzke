@@ -231,3 +231,6 @@ give_df_gerechtigkeit_trichter_gymnasiumswahrscheinlichkeit <- function() {
     )
   )
 }
+
+
+
