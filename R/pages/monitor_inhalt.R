@@ -79,27 +79,43 @@ box::use(
     uiOutput,
     icon,
     plotOutput,
-    renderPlot
+    renderPlot,
+    tabsetPanel,
+    tabPanel,
+    htmlOutput
   ],
   shiny.router[get_query_param, get_page, change_page],
   shinyWidgets[
     pickerInput,       updatePickerInput,
     radioGroupButtons, updateRadioGroupButtons,
+    sliderTextInput
   ],
   plotly[
     plotlyOutput, renderPlotly, plotly
   ],
   magrittr[`%>%`],
   shinycssloaders[withSpinner],
-  dplyr[rename, filter],
+  dplyr[rename, filter, select, tbl, collect, case_when, across, mutate,
+        arrange],
   purrr[map2],
   DT[datatable, JS, renderDataTable, dataTableOutput, renderDT],
   shinyjs[
     removeCssClass,
     addCssClass
-  ]
+  ],
+  highcharter[renderHighchart, hchart, hcaes, hc_tooltip, hc_size, 
+              hc_yAxis, hc_xAxis, hc_plotOptions, hc_colors, hc_title, 
+              hc_chart, hc_legend,  highchartOutput],
+  tidyr[pivot_longer, pivot_wider],
+  stringr[str_ends, str_detect],
+  forcats[fct_rev],
+  stats[na.omit],
+  DBI[dbConnect],
+  duckdb[duckdb]
 )
 #TODO irrelevanten Verknüpfungen aussortieren!
+
+con <- dbConnect(duckdb(), "data/magpie.db", read_only = TRUE)
 
 # Global Variables
 
@@ -555,8 +571,601 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                      )
                    )
                  })
-
-               #---
+                 
+               #### minternational ----
+                 
+                 #1 übersicht
+                 
+                 r <- reactiveValues()
+                 
+                 observeEvent(input$region_minternational_übersicht, {
+                   r$states_studium_studienzahl_ausl <- input$region_minternational_übersicht
+                 })
+                 
+                 observeEvent(input$date_studium_studienzahl_ausl, {
+                   r$date_studium_studienzahl_ausl <- input$date_studium_studienzahl_ausl
+                 })
+                 
+                 observeEvent(input$status_ausl, {
+                   r$status_ausl <- input$status_ausl
+                 })
+                 
+                 observeEvent(input$abs_zahlen_studium_studienzahl_ausl, {
+                   r$abs_zahlen_studium_studienzahl_ausl <- input$abs_zahlen_studium_studienzahl_ausl
+                 })
+                 
+                 observeEvent(input$ebene_ausl, {
+                   r$ebene_ausl <- input$ebene_ausl
+                 })
+                 
+                output$plot_minternational_uebersicht <- renderHighchart({
+                
+                  # bl_select <- r$region_minternational_übersicht
+                  # year_select <- r$date_studium_studienzahl_ausl
+                  absolut_selector <- r$abs_zahlen_studium_studienzahl_ausl
+                  status_select <- r$status_ausl
+                  betr_ebene <- r$ebene_ausl
+                  
+                  bl_select <- "Deutschland"
+                  year_select <- "2022"
+                  # absolut_selector <- "Anzahl"
+                  # status_select <- "Studierende"
+                  # betr_ebene <- "Fachbereiche"
+                
+                  df <- tbl(con, from = "studierende_detailliert") %>%
+                    filter(indikator %in% c("internationale Studienanfänger:innen (1. Hochschulsemester)",
+                                                   "internationale Studierende",
+                                                   "Studienanfänger:innen (1. Hochschulsemester)",
+                                                   "Studierende"),
+                                  geschlecht == "Gesamt",
+                                 # region == input$region_minternational_übersicht,
+                                  region == bl_select,
+                                  jahr == year_select )%>%
+                    select(-mint_select,- fachbereich)%>%
+                    collect() %>%
+                    pivot_wider(names_from=indikator, values_from = wert)%>%
+                    mutate("deutsche Studierende" =`Studierende` - `internationale Studierende`,
+                                  "deutsche Studienanfänger:innen (1. Hochschulsemester)"=`Studienanfänger:innen (1. Hochschulsemester)`-
+                                    `internationale Studienanfänger:innen (1. Hochschulsemester)`)%>%
+                    mutate("deutsche Studierende_p" =`deutsche Studierende`/`Studierende`,
+                                  "internationale Studierende_p"= `internationale Studierende`/`Studierende`,
+                                  "deutsche Studienanfänger:innen (1. Hochschulsemester)_p" =`deutsche Studienanfänger:innen (1. Hochschulsemester)`/`Studienanfänger:innen (1. Hochschulsemester)`,
+                                  "internationale Studienanfänger:innen (1. Hochschulsemester)_p"=`internationale Studienanfänger:innen (1. Hochschulsemester)`/`Studienanfänger:innen (1. Hochschulsemester)`)%>%
+                    select(-c(Studierende, `Studienanfänger:innen (1. Hochschulsemester)` ))%>%
+                    pivot_longer(c(7:ncol(.)), names_to="indikator", values_to="wert")%>%
+                    mutate(selector=case_when(str_ends(.$indikator, "_p")~"Relativ",
+                                                            T~"Asolut"))%>%
+                    mutate(selector=case_when(str_ends(.$indikator, "_p") ~ "In Prozent",
+                                                            T ~ "Anzahl"))%>%
+                    mutate(ausl_detect=case_when(str_detect(.$indikator, "international")~"International",
+                                                               T~ "Deutsch"))%>%
+                    filter(!fach %in% c("Weitere ingenieurwissenschaftliche Fächer",
+                                               "Weitere naturwissenschaftliche und mathematische Fächer",
+                                               "Außerhalb der Studienbereichsgliederung/Sonstige Fächer"))
+                  
+                  
+                  df$indikator <- gsub("_p", "", df$indikator)
+                  
+                  df$indikator <- gsub("deutsche ", "", df$indikator)
+                  
+                  df$indikator <- gsub("internationale ", "", df$indikator)
+                  
+                  #df$fach <- gsub("Nicht_MINT", "Nicht MINT", df$fach)
+                  
+                  
+                  df$ausl_detect  <- factor(df$ausl_detect, levels=c("Deutsch", "International"))
+                  
+                  df <- df %>%
+                    filter(indikator == status_select)
+                  
+                  df_fachbereich <- df %>%
+                    filter(fach %in% c("Geisteswissenschaften",
+                                              "Mathematik, Naturwissenschaften",
+                                              "Rechts-, Wirtschafts- und Sozialwissenschaften",
+                                              "Humanmedizin/Gesundheitswissenschaften",
+                                              "Agrar-, Forst- und Ernährungswissenschaften, Veterinärmedizin",
+                                              "Sport",
+                                              "Kunst, Kunstwissenschaft",
+                                              "Alle Fächer",
+                                              "Alle MINT-Fächer",
+                                              "Alle Nicht MINT-Fächer",
+                                              "Ingenieurwissenschaften (inkl. Informatik)"))
+                  
+                  
+                  df_faecher <- df %>%
+                    filter(!fach %in% c("Geisteswissenschaften",
+                                               "Rechts-, Wirtschafts- und Sozialwissenschaften",
+                                               "Humanmedizin/Gesundheitswissenschaften",
+                                               "Agrar-, Forst- und Ernährungswissenschaften, Veterinärmedizin",
+                                               "Sport",
+                                               "Kunst, Kunstwissenschaft",
+                                               "Ingenieurwissenschaften ohne Informatik",
+                                               "Alle Nicht MINT-Fächer",
+                                               "Alle MINT-Fächer",
+                                               "Alle Fächer",
+                                               "Mathematik, Naturwissenschaften",
+                                               "Ingenieurwissenschaften (inkl. Informatik)"))
+                  df_faecher$fach <- as.factor(df_faecher$fach)
+                  
+                  #Faktor für Höhe des Grafens berechnen
+                  ebene <- c("Fachbereiche", "MINT-Fächer")
+                  höhe <- c(8, 11)
+                  plt.add <- data.frame(ebene, höhe)
+                  
+                  # NA aus fach entfernen für BULAs mit weniger Studienfachgruppen
+                  df_fachbereich <-na.omit(df_fachbereich)
+                  df_fachbereich <- df_fachbereich %>%
+                    arrange(wert)
+                  df_faecher <- na.omit(df_faecher)
+                  df_faecher <- df_faecher %>%
+                    arrange(wert)
+                  
+                  
+                  # Vorbereitung Überschrift
+                  help <- "Studierender"
+                  help <- ifelse(grepl("anfänger", status_select), "Studienanfänger:innen", help)
+                  
+                  help2 <- "Studierenden"
+                  help2 <- ifelse(grepl("anfänger", status_select), "Studienanfänger:innen", help2)
+                  
+                  
+                  if(betr_ebene=="Fachbereiche"){
+                    
+                    if(absolut_selector=="In Prozent"){
+                      
+                      df_fachbereich <- df_fachbereich %>%
+                        filter(selector == "In Prozent")%>%
+                        mutate(wert = round(wert*100, 1))
+                      
+                      df_fachbereich$display_rel <- prettyNum(df_fachbereich$wert, big.mark = ".", decimal.mark = ",")
+    
+                      
+                      out <- hchart(df_fachbereich, 'bar', hcaes(y = wert, x = fach, group = ausl_detect))%>%
+                        hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anteil: {point.display_rel} %")%>%
+                        hc_size(height = 60*plt.add$höhe[plt.add$ebene == betr_ebene])%>%
+                        hc_yAxis(title = list(text = ""), labels = list(format = "{value}%")) %>%
+                        hc_xAxis(title = list(text = ""), categories = c("Alle Fächer",
+                                                                                      "Alle MINT-Fächer",
+                                                                                      "Alle Nicht MINT-Fächer",
+                                                                                      "",
+                                                                                      "Ingenieurwissenschaften (inkl. Informatik)",
+                                                                                      "Kunst, Kunstwissenschaft",
+                                                                                      "Mathematik, Naturwissenschaften",
+                                                                                      "Geisteswissenschaften",
+                                                                                      "Rechts-, Wirtschafts- und Sozialwissenschaften",
+                                                                                      "Agrar-, Forst- und Ernährungswissenschaften, Veterinärmedizin",
+                                                                                      "Humanmedizin/Gesundheitswissenschaften",
+                                                                                      "Sport")) %>%
+                        hc_plotOptions(bar = list(stacking = "percent")) %>%
+                        hc_colors(c("#ADA58B", "#195365")) %>%
+                        hc_title(text = paste0("Anteil internationaler ", help, " an allen ", help2, " in ", bl_select,  " (",year_select, ")" ),
+                                              margin = 45,
+                                              align = "center",
+                                              style = list(color = "black", useHTML = TRUE, fontFamily = "Arial", fontSize = "18px")) %>%
+                        hc_chart(
+                          style = list(fontFamily = "Arial", fontSize = "16px")
+                        ) %>%
+                        hc_legend(enabled = TRUE, reversed = T)
+                        
+                      
+                      
+                    } else if(absolut_selector =="Anzahl"){
+                      
+                      hcoptslang <- getOption("highcharter.lang")
+                      hcoptslang$thousandsSep <- "."
+                      options(highcharter.lang = hcoptslang)
+                      
+                      df_fachbereich$display_abs <- prettyNum(df_fachbereich$wert, big.mark = ".", decimal.mark = ",")
+                      
+                      df_fachbereich <- df_fachbereich %>%
+                        filter(selector == "Anzahl")
+                      
+                      
+                      
+                      
+                      out <- hchart(df_fachbereich, 'bar', hcaes(y = wert, x = fach, group = ausl_detect))%>%
+                        hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anzahl: {point.display_abs}")%>%
+                        hc_size(height = 60*plt.add$höhe[plt.add$ebene == betr_ebene])%>%
+                        hc_yAxis(title = list(text = ""), labels = list(format = "{value:, f}")) %>%
+                        hc_xAxis(title = list(text = ""), categories = c("Alle Fächer",
+                                                                                      "Alle MINT-Fächer",
+                                                                                      "Alle Nicht MINT-Fächer",
+                                                                                      "",
+                                                                                      "Ingenieurwissenschaften (inkl. Informatik)",
+                                                                                      "Rechts-, Wirtschafts- und Sozialwissenschaften",
+                                                                                      "Mathematik, Naturwissenschaften",
+                                                                                      "Geisteswissenschaften",
+                                                                                      "Kunst, Kunstwissenschaft",
+                                                                                      "Humanmedizin/Gesundheitswissenschaften",
+                                                                                      "Agrar-, Forst- und Ernährungswissenschaften, Veterinärmedizin",
+                                                                                      "Sport")) %>%
+                        #hc_plotOptions(bar = list(stacking = "percent")) %>%
+                        hc_colors(c("#ADA58B", "#195365")) %>%
+                        hc_title(text = paste0("Anzahl internationaler ", help, " in ", bl_select,  " (",year_select, ")" ),
+                                              margin = 45,
+                                              align = "center",
+                                              style = list(color = "black", useHTML = TRUE, fontFamily = "Arial", fontSize = "18px")) %>%
+                        hc_chart(
+                          style = list(fontFamily = "Arial", fontSize = "16px")
+                        ) %>%
+                        hc_legend(enabled = TRUE, reversed = T)
+                      
+                    }} else if(betr_ebene == "MINT-Fächer"){
+                      
+                      if(absolut_selector=="In Prozent"){
+                        
+                        
+                        df_faecher <- df_faecher %>%
+                          filter(selector == "In Prozent")%>%
+                          mutate(wert = round(wert*100, 1)) %>%
+                          arrange(wert)
+                        
+                        df_faecher$display_rel <- prettyNum(df_faecher$wert, big.mark = ".", decimal.mark = ",")
+                        
+                        out <- hchart(df_faecher, 'bar', hcaes(y = wert, x = fach, group = ausl_detect))%>%
+                          hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anteil: {point.display_rel} %")%>%
+                          hc_size(height = 60*plt.add$höhe[plt.add$ebene == betr_ebene])%>%
+                          hc_yAxis(title = list(text = ""), labels = list(format = "{value}%")) %>%
+                          hc_xAxis(title = list(text = "")
+                          ) %>%
+                          hc_plotOptions(bar = list(stacking = "percent"))%>%
+                          hc_colors(c("#ADA58B", "#195365")) %>%
+                          
+                          hc_title(text = paste0("Anteil internationaler ", help, " an allen ", help2, " in ", bl_select,  " (",year_select, ")" ),
+                                                margin = 45,
+                                                align = "center",
+                                                style = list(color = "black", useHTML = TRUE, fontFamily = "Arial", fontSize = "18px")) %>%
+                          hc_chart(
+                            style = list(fontFamily = "Arial", fontSize = "16px")
+                          ) %>%
+                          hc_legend(enabled = TRUE, reversed = T) 
+                        
+                        
+                        
+                      } else if(absolut_selector =="Anzahl"){
+                        
+                        hcoptslang <- getOption("highcharter.lang")
+                        hcoptslang$thousandsSep <- "."
+                        options(highcharter.lang = hcoptslang)
+                        
+                        df_faecher <- df_faecher %>%
+                          filter(selector == "Anzahl") %>%
+                          arrange(wert)
+                        
+                        df_faecher$display_abs <- prettyNum(df_faecher$wert, big.mark = ".", decimal.mark = ",")
+                        
+                        df_faecher <- df_faecher[order(-df_faecher$wert),]
+                        
+                        out <- hchart(df_faecher, 'bar', hcaes(y = wert, x = fach, group = ausl_detect))%>%
+                          hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anzahl: {point.display_abs}")%>%
+                          hc_size(height = 60*plt.add$höhe[plt.add$ebene == betr_ebene])%>%
+                          hc_yAxis(title = list(text = ""), labels = list(format = "{value:, f}")) %>%
+                          hc_xAxis(title = list(text = "")) %>%
+                          #hc_plotOptions(bar = list(stacking = "percent")) %>%
+                          hc_colors(c("#ADA58B", "#195365")) %>%
+                          hc_title(text = paste0("Anzahl internationaler ", help, " in ", bl_select,  " (",year_select, ")" ),
+                                                margin = 45,
+                                                align = "center",
+                                                style = list(color = "black", useHTML = TRUE, fontFamily = "Arial", fontSize = "18px")) %>%
+                          hc_chart(
+                            style = list(fontFamily = "Arial", fontSize = "16px")
+                          ) %>%
+                          hc_legend(enabled = TRUE, reversed = T)
+                      }}
+                  out
+                  
+                  })
+                
+                #2 Zeitverlauf
+                
+                observeEvent(input$states_studium_studienzahl_ausl_zeit, {
+                  r$states_studium_studienzahl_ausl_zeit <- input$states_studium_studienzahl_ausl_zeit
+                })
+                
+                observeEvent(input$status_ausl_zeit, {
+                  r$status_ausl_zeit <- input$status_ausl_zeit
+                })
+                
+                observeEvent(input$fach1_studium_studienzahl_ausl_zeit, {
+                  r$fach1_studium_studienzahl_ausl_zeit <- input$fach1_studium_studienzahl_ausl_zeit
+                })
+                
+                observeEvent(input$fach2_studium_studienzahl_ausl_zeit, {
+                  r$fach2_studium_studienzahl_ausl_zeit <- input$fach2_studium_studienzahl_ausl_zeit
+                })
+                observeEvent(input$fach3_studium_studienzahl_ausl_zeit, {
+                  r$fach3_studium_studienzahl_ausl_zeit <- input$fach3_studium_studienzahl_ausl_zeit
+                })
+                
+                observeEvent(input$fach4_studium_studienzahl_ausl_zeit, {
+                  r$fach4_studium_studienzahl_ausl_zeit <- input$fach4_studium_studienzahl_ausl_zeit
+                })
+                observeEvent(input$fach5_studium_studienzahl_ausl_zeit, {
+                  r$fach5_studium_studienzahl_ausl_zeit <- input$fach5_studium_studienzahl_ausl_zeit
+                })
+                
+                observeEvent(input$fach6_studium_studienzahl_ausl_zeit, {
+                  r$fach6_studium_studienzahl_ausl_zeit <- input$fach6_studium_studienzahl_ausl_zeit
+                })
+                observeEvent(input$fach7_studium_studienzahl_ausl_zeit, {
+                  r$fach7_studium_studienzahl_ausl_zeit <- input$fach7_studium_studienzahl_ausl_zeit
+                })
+                
+                observeEvent(input$fach8_studium_studienzahl_ausl_zeit, {
+                  r$fach8_studium_studienzahl_ausl_zeit <- input$fach8_studium_studienzahl_ausl_zeit
+                })
+                
+                observeEvent(input$fach9_studium_studienzahl_ausl_zeit, {
+                  r$fach9_studium_studienzahl_ausl_zeit <- input$fach9_studium_studienzahl_ausl_zeit
+                })
+                
+                observeEvent(input$abs_zahlen_studium_studienzahl_ausl_zeit, {
+                  r$abs_zahlen_studium_studienzahl_ausl_zeit <- input$abs_zahlen_studium_studienzahl_ausl_zeit
+                })
+                
+                output$plot_minternational_zeitverlauf <- renderHighchart({
+           
+                  # bl_select <- r$states_studium_studienzahl_ausl_zeit
+                  absolut_selector <- r$abs_zahlen_studium_studienzahl_ausl_zeit
+                  status_select <- r$status_ausl_zeit
+                  
+                  # if(bl_select %in% c("Deutschland",
+                  #                     "Baden-Württemberg",
+                  #                     "Bayern",
+                  #                     "Berlin",
+                  #                     "Hamburg",
+                  #                     "Hessen",
+                  #                     "Nordrhein-Westfalen",
+                  #                     "Rheinland-Pfalz",
+                  #                     "Sachsen",
+                  #                     "Westdeutschland (o. Berlin)",
+                  #                     "Ostdeutschland (inkl. Berlin)")) {
+                  #   fach_select <- r$fach1_studium_studienzahl_ausl_zeit
+                  # }
+                  # else {
+                  #   if(bl_select == "Brandenburg")fach_select <- r$fach2_studium_studienzahl_ausl_zeit
+                  #   if(bl_select == "Bremen")fach_select <- r$fach3_studium_studienzahl_ausl_zeit
+                  #   if(bl_select == "Mecklenburg-Vorpommern")fach_select <- r$fach4_studium_studienzahl_ausl_zeit
+                  #   if(bl_select == "Niedersachsen")fach_select <- r$fach5_studium_studienzahl_ausl_zeit
+                  #   if(bl_select == "Saarland")fach_select <- r$fach6_studium_studienzahl_ausl_zeit
+                  #   if(bl_select == "Sachsen-Anhalt")fach_select <- r$fach7_studium_studienzahl_ausl_zeit
+                  #   if(bl_select == "Schleswig-Holstein")fach_select <- r$fach8_studium_studienzahl_ausl_zeit
+                  #   if(bl_select == "Thüringen")fach_select <- r$fach9_studium_studienzahl_ausl_zeit
+                  # }
+                  
+                  bl_select <- "Deutschland"
+                  # absolut_selector <- "Anzahl"
+                  # status_select <- "Studierende"
+                  fach_select <- "Alle MINT-Fächer"
+                   
+                  
+                  df <- tbl(con, from = "studierende_detailliert") %>%
+                    filter(indikator %in% c("internationale Studienanfänger:innen (1. Hochschulsemester)",
+                                                   "internationale Studierende",
+                                                   "Studienanfänger:innen (1. Hochschulsemester)",
+                                                   "Studierende"),
+                                  geschlecht == "Gesamt")%>%
+                    select(-mint_select,- fachbereich)%>%
+                    collect() %>%
+                    
+                   pivot_wider(names_from=indikator, values_from = wert)%>%
+                    mutate("deutsche Studierende" =`Studierende`-`internationale Studierende`,
+                                  "deutsche Studienanfänger:innen (1. Hochschulsemester)"=`Studienanfänger:innen (1. Hochschulsemester)`-
+                                    `internationale Studienanfänger:innen (1. Hochschulsemester)`)%>%
+                    mutate("deutsche Studierende_p" =`deutsche Studierende`/Studierende,
+                                  "internationale Studierende_p"= `internationale Studierende`/`Studierende`,
+                                  "deutsche Studienanfänger:innen (1. Hochschulsemester)_p" =`deutsche Studienanfänger:innen (1. Hochschulsemester)`/`Studienanfänger:innen (1. Hochschulsemester)`,
+                                  "internationale Studienanfänger:innen (1. Hochschulsemester)_p"=`internationale Studienanfänger:innen (1. Hochschulsemester)`/`Studienanfänger:innen (1. Hochschulsemester)`)%>%
+                    select(-c(`Studierende`, `Studienanfänger:innen (1. Hochschulsemester)` ))%>%
+                    #  filter(geschlecht=="Gesamt")%>%
+                    pivot_longer(c(7:ncol(.)), names_to="indikator", values_to="wert")%>%
+                    mutate(selector=case_when(str_ends(.$indikator, "_p")~"Relativ",
+                                                            T~"Absolut"))%>%
+                    mutate(selector=case_when(str_ends(.$indikator, "_p") ~ "In Prozent",
+                                                            T ~ "Anzahl"))%>%
+                    mutate(ausl_detect=case_when(str_detect(.$indikator, "international")~"international",
+                                                               T~ "deutsch"))
+                  
+                  df$indikator <- gsub("_p", "", df$indikator)
+                  
+                  df$indikator <- gsub("deutsche ", "", df$indikator)
+                  
+                  df$indikator <- gsub("internationale ", "", df$indikator)
+                  
+                  #df$fach <- gsub("Nicht_MINT", "Nicht MINT", df$fach)
+                  
+                  
+                  df$ausl_detect  <- factor(df$ausl_detect, levels=c("deutsch", "international"))
+                  
+                  df <- df %>%
+                    filter(region == bl_select,
+                                  fach ==fach_select,
+                                  indikator==status_select)
+                  
+                  
+                  # Vorbereitung Überschrift
+                  help <- "Studierender"
+                  help <- ifelse(grepl("anfänger", status_select), "Studienanfänger:innen", help)
+                  
+                  help2 <- "Studierenden"
+                  help2 <- ifelse(grepl("anfänger", status_select), "Studienanfänger:innen", help2)
+                  
+                  fach_help <- fach_select
+                  fach_help <- ifelse(fach_help == "Alle MINT-Fächer", "MINT", fach_help)
+                  
+                  # Plot
+                  
+                  if(absolut_selector=="In Prozent"){
+                    
+                    df <- df %>%
+                      filter(selector == absolut_selector)%>%
+                      mutate(across(wert, ~round(.*100, 1)))
+                    
+                    df$display_rel <- prettyNum(df$wert, big.mark = ".", decimal.mark = ",")
+                    
+                    
+                    
+                    
+                    hchart(df, 'column', hcaes(y = wert, x = jahr, group = ausl_detect))%>%
+                      hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anteil: {point.display_rel} %")%>%
+                      # hc_size(height = 1000)%>%
+                      hc_yAxis(title = list(text = "")
+                                            , labels = list(format = "{value} %")
+                      ) %>%
+                      hc_xAxis(title = list(text = "")) %>%
+                      hc_plotOptions(column = list(stacking = "percent")) %>%
+                     # hc_plotOptions(column = list(pointWidth = 70))%>%
+                      hc_colors(c("#ADA58B", "#195365")) %>%
+                      hc_yAxis(max = 40)%>%
+                      hc_title(text = paste0("Anteil internationaler ", help, " an allen ", help2, " in ", fach_help , " in ", bl_select ),
+                                            align = "center",
+                                            style = list(color = "black", useHTML = TRUE, fontFamily = "Arial", fontSize = "18px")) %>%
+                      hc_chart(
+                        style = list(fontFamily = "Arial", fontSize = "16px")
+                      ) %>%
+                     hc_legend(enabled = TRUE, reversed = T) 
+                    # %>%
+                    #   hc_exporting(enabled = FALSE,
+                    #                             buttons = list(contextButton = list(
+                    #                               symbol = 'url(https://upload.wikimedia.org/wikipedia/commons/f/f7/Font_Awesome_5_solid_download.svg)',
+                    #                               onclick = JS("function () {
+                    #                                         this.exportChart({ type: 'image/png' }); }"),
+                    #                               align = 'right',
+                    #                               verticalAlign = 'bottom',
+                    #                               theme = list(states = list(hover = list(fill = '#FFFFFF'))))))
+                    
+                    
+                  } else if(absolut_selector=="Anzahl"){
+                    
+                    df <- df %>%
+                      filter(selector == absolut_selector)
+                    
+                    hcoptslang <- getOption("highcharter.lang")
+                    hcoptslang$thousandsSep <- "."
+                    options(highcharter.lang = hcoptslang)
+                    
+                    df$display_abs <- prettyNum(df$wert, big.mark = ".", decimal.mark = ",")
+                    
+                    
+                    
+                    
+                    hchart(df, 'column', hcaes(y = wert, x = jahr, group = ausl_detect))%>%
+                      hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anzahl: {point.display_abs}")%>%
+                      hc_yAxis(title = list(text = "")
+                                            , labels = list(format = "{value:, f}"), style = list(color = "black", useHTML = TRUE, fontFamily = "BrandonTextWeb-Regular")
+                      ) %>%
+                      hc_xAxis(title = list(text = "")) %>%
+                      hc_colors(c("#ADA58B", "#195365")) %>%
+                      hc_title(text =  paste0("Anzahl internationaler ", help, " in ", fach_help, " in ", bl_select),
+                                            margin = 45,
+                                            align = "center",
+                                            style = list(color = "black", useHTML = TRUE, fontFamily = "Arial", fontSize = "18px")) %>%
+                      hc_chart(
+                        style = list(fontFamily = "Arial", fontSize = "16px")
+                      ) %>%
+                      hc_legend(enabled = TRUE, reversed = T) 
+                    # %>%
+                      # hc_exporting(enabled = FALSE,
+                      #                           buttons = list(contextButton = list(
+                      #                             symbol = 'url(https://upload.wikimedia.org/wikipedia/commons/f/f7/Font_Awesome_5_solid_download.svg)',
+                      #                             onclick = JS("function () {
+                      #                                       this.exportChart({ type: 'image/png' }); }"),
+                      #                             align = 'right',
+                      #                             verticalAlign = 'bottom',
+                      #                             theme = list(states = list(hover = list(fill = '#FFFFFF'))))))
+                  }
+                  
+                  
+                })
+                  
+                 
+                 
+               #### mint lehramtstudium ----
+                 
+                 observeEvent(input$date_kurse_einstieg_comparison, {
+                   r$date_kurse_einstieg_comparison <- input$date_kurse_einstieg_comparison
+                 })
+                 
+                 #1 übersicht
+                
+                 output$plot_lehrkraft_mint <- renderHighchart({
+                  
+                   # timerange <- r$mint_lehramt_uebersicht_time
+                   timerange <- 2022
+                  # timerange <- r$date_kurse_einstieg_comparison
+                   
+                   # filter dataset based on UI inputs
+                   df <- dplyr::tbl(con, from = "studierende") %>%
+                     dplyr::filter(jahr == timerange,
+                                   geschlecht == "Gesamt",
+                                   region== "Deutschland")%>%
+                     dplyr::collect()
+                   df <- df %>%
+                     tidyr::pivot_wider(names_from=fachbereich, values_from = wert)%>%
+                     #dplyr::rename("MINT (gesamt)" = MINT)%>%
+                     dplyr::select( -region, -Ingenieurwissenschaften,- `Mathematik, Naturwissenschaften`)
+                   
+                   # Calculating props
+                   
+                   df_props <- df %>%
+                     dplyr::mutate(dplyr::across(c("MINT (Gesamt)", "Nicht MINT"), ~round(./Alle * 100,1)))%>%
+                     dplyr::select(-Alle)%>%
+                     tidyr::pivot_longer(c("MINT (Gesamt)", "Nicht MINT"), values_to="prop", names_to = "proportion")
+                   
+                   # joining props and wert
+                   df <- df%>%
+                     dplyr::select(-Alle )%>%
+                     tidyr::pivot_longer(c("MINT (Gesamt)", "Nicht MINT"), values_to="wert", names_to = "proportion")%>%
+                     dplyr::left_join(df_props)
+                   
+                   
+                   #Trennpunkte für lange Zahlen ergänzen
+                   
+                   df$display_abs <- prettyNum(df$wert, big.mark = ".", decimal.mark = ",")
+                   df$display_rel <- prettyNum(df$prop, big.mark = ".", decimal.mark = ",")
+                   
+  
+                   df$indikator <-factor(df$indikator,levels= c("Studierende",
+                                                                "Studierende (Fachhochschulen)",
+                                                                "Studierende (Lehramt, Universität)",
+                                                                "Studierende (Universität)",
+                                                                "Studienanfänger:innen (1.Fachsemester)",
+                                                                "Studienanfänger:innen (1.Hochschulsemester)",
+                                                                "Studienanfänger:innen (Fachhochschulen, 1.Fachsemester)",
+                                                                "Studienanfänger:innen (Fachhochschulen, 1.Hochschulsemester)",
+                                                                "Studienanfänger:innen (Lehramt, Universität, 1.Fachsemester)",
+                                                                "Studienanfänger:innen (Lehramt, Universität, 1.Hochschulsemester)",
+                                                                "Studienanfänger:innen (Universität, 1.Fachsemester)",
+                                                                "Studienanfänger:innen (Universität, 1.Hochschulsemester)"
+                   )
+                   )
+                   df <- within(df, proportion <- factor(proportion, levels=c("Nicht MINT", "MINT (Gesamt)")))
+                   
+                   hchart(df, 'bar', hcaes(y = prop, x = indikator, group = forcats::fct_rev(proportion)))%>%
+                     hc_tooltip(pointFormat = "Fachbereich: {point.proportion} <br> Anteil: {point.display_rel} % <br> Anzahl: {point.display_abs}") %>%
+                     hc_yAxis(title = list(text = ""), labels = list(format = "{value}%"),  reversedStacks =  F) %>%
+                     hc_xAxis(title = list(text = "")) %>%
+                     hc_plotOptions(bar = list(stacking = "percent")) %>%
+                     hc_colors(c("#195365", "#ADA58B")) %>%
+                     hc_title(text = paste0("Anteil von Studierenden in MINT an allen Studierenden", "(", timerange, ")"),
+                                           margin = 45,
+                                           align = "center",
+                                           style = list(color = "black", useHTML = TRUE, fontFamily = "Arial", fontSize = "18px")) %>%
+                     hc_chart(
+                       style = list(fontFamily = "Arial", fontSize = "16px")
+                     ) %>%
+                     hc_legend(enabled = TRUE, reversed = F)
+                   # %>%
+                   #   hc_exporting(enabled = FALSE,
+                   #                             buttons = list(contextButton = list(
+                   #                               symbol = 'url(https://upload.wikimedia.org/wikipedia/commons/f/f7/Font_Awesome_5_solid_download.svg)',
+                   #                               onclick = JS("function () {
+                   #                                            this.exportChart({ type: 'image/png' }); }"),
+                   #                               align = 'right',
+                   #                               verticalAlign = 'bottom',
+                   #                               theme = list(states = list(hover = list(fill = '#FFFFFF'))))))
+                   
+                   })
                }
 
   )
@@ -703,6 +1312,56 @@ create_link_with_svg <- function(link_id, link_text) {
       )
     )
   )
+}
+
+studi_det_ui_faecher <-function(spezif_i, spezif_r){
+  
+  if(missing(spezif_i) & missing(spezif_r)){
+    
+    df <- tbl(con, from = "studierende_detailliert") %>%
+      filter(mint_select == "MINT"  | fach %in% c("Alle MINT-Fächer", "Alle Nicht MINT-Fächer")) %>%
+      select(fach)%>%
+      collect()
+    
+    df <- df %>%
+      unique()%>%
+      as.vector()%>%
+      unlist()%>%
+      unname()
+    
+    df <- sort(df)
+    
+  } else if (missing(spezif_i)){
+    
+    df <- tbl(con, from = "studierende_detailliert") %>%
+      filter(mint_select == "MINT"  | fach %in% c("Alle MINT-Fächer", "Alle Nicht MINT-Fächer"))%>%
+      filter(region %in%  spezif_r) %>%
+      collect()
+    
+    df <- df %>%select(fach)%>%
+      unique()%>%
+      as.vector()%>%
+      unlist()%>%
+      unname()
+    
+    df <- sort(df)
+    
+  } else if(missing(spezif_r)){
+    
+    df <- tbl(con, from = "studierende_detailliert") %>%
+      filter(mint_select == "MINT"  | fach %in% c("Alle MINT-Fächer", "Alle Nicht MINT-Fächer"))%>%
+      filter(indikator %in%  spezif_i) %>%
+      collect()
+    
+    df <- df %>%select(fach)%>%
+      unique()%>%
+      as.vector()%>%
+      unlist()%>%
+      unname()
+    
+    df <- sort(df)
+    
+  }
 }
 
 #' Missing description
@@ -915,13 +1574,272 @@ draw_table_row_content <- function(indikator_ID, ns) {
 
   # MINT ----
 
-  #### Minternational
+  #### Minternational ----
 
   } else if (startsWith(indikator_ID, "minternational")){
     if (indikator_ID == "minternational_studierende") {
       fluidPage(
-        p("")
+        div(class = "small-font",
+        tabsetPanel(
+          type = "tabs",
+          tabPanel("Anteil von internationalen Studierenden nach Fächern",
+                   fluidRow(
+                     column(
+                    width = 3,
+                    br(),
+                   
+                    # sliderTextInput(
+                    #   inputId = ns("date_studium_studienzahl_ausl"),
+                    #   label = "Jahr",
+                    #   choices = 2012:2022,
+                    #   selected = "2022"
+                    # ),
+                    # pickerInput(inputId = ns("region_minternational_übersicht"),
+                    #              label = "Region",
+                    #              choices = c("Deutschland",
+                    #                          "Westdeutschland (o. Berlin)",
+                    #                          "Ostdeutschland (inkl. Berlin)",
+                    #                          "Baden-Württemberg",
+                    #                          "Bayern",
+                    #                          "Berlin",
+                    #                          "Brandenburg",
+                    #                          "Bremen",
+                    #                          "Hamburg",
+                    #                          "Hessen",
+                    #                          "Mecklenburg-Vorpommern",
+                    #                          "Niedersachsen",
+                    #                          "Nordrhein-Westfalen",
+                    #                          "Rheinland-Pfalz",
+                    #                          "Saarland",
+                    #                          "Sachsen",
+                    #                          "Sachsen-Anhalt",
+                    #                          "Schleswig-Holstein",
+                    #                          "Thüringen"),
+                    #              selected = "Deutschland"
+                    # ),
+                    #p("Indikator:"),
+                    radioButtons(
+                      inputId = ns("status_ausl"),
+                      label = "Studierendengruppe",
+                      choices = c("Studierende",
+                                  "Studienanfänger:innen (1. Hochschulsemester)"
+                      ),
+                      selected = "Studierende"
+                    ),
+                    # p("Betrachtung:"),
+                    radioButtons(
+                      inputId = ns("abs_zahlen_studium_studienzahl_ausl"),
+                      label = "Betrachtungart",
+                      choices = c("In Prozent", "Anzahl"),
+                      selected = "Anzahl"
+                      #justified = TRUE,
+                      # checkIcon = list(yes = icon("ok",
+                      #                             lib = "glyphicon"))
+                    ),
+                   # p("Betrachtungsebene:"),
+                    radioButtons(
+                      inputId = ns("ebene_ausl"),
+                      label = "Betrachtungsebene",
+                      choices = c("MINT-Fächer",
+                                  "Fachbereiche"
+                      ),
+                      selected = "Fachbereiche"
+                    )
+
+          ),
+           column(
+             width = 9,
+             withSpinner(highchartOutput(ns("plot_minternational_uebersicht"), height = "600px"))
+           )
+         )
+          )
+         ,
+          tabPanel("Zeitverlauf Zahlen von internationalen Studierenden",
+                   fluidRow(
+                     column(
+                       width = 3,
+                       br(),
+                       # pickerInput(
+                       #   inputId = ns("states_studium_studienzahl_ausl_zeit"),
+                       #   label = "Region",
+                       #   choices = c("Deutschland",
+                       #               "Baden-Württemberg",
+                       #               "Bayern",
+                       #               "Berlin",
+                       #               "Brandenburg",
+                       #               "Bremen",
+                       #               "Hamburg",
+                       #               "Hessen",
+                       #               "Mecklenburg-Vorpommern",
+                       #               "Niedersachsen",
+                       #               "Nordrhein-Westfalen",
+                       #               "Rheinland-Pfalz",
+                       #               "Saarland",
+                       #               "Sachsen",
+                       #               "Sachsen-Anhalt",
+                       #               "Schleswig-Holstein",
+                       #               "Thüringen",
+                       #               "Westdeutschland (o. Berlin)",
+                       #               "Ostdeutschland (inkl. Berlin)"),
+                       #   selected = "Deutschland"
+                       # ),
+                     #   p("Fach/Fächergruppe:"),
+                     # 
+                     #   #Conditonal Panel, dass keine leeren Plots kommen
+                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Deutschland' |
+                     #  input.states_studium_studienzahl_ausl_zeit == 'Baden-Württemberg' |
+                     #  input.states_studium_studienzahl_ausl_zeit == 'Bayern' |
+                     #  input.states_studium_studienzahl_ausl_zeit == 'Berlin' |
+                     #  input.states_studium_studienzahl_ausl_zeit == 'Hamburg' |
+                     #  input.states_studium_studienzahl_ausl_zeit == 'Hessen' |
+                     #  input.states_studium_studienzahl_ausl_zeit == 'Nordrhein-Westfalen' |
+                     # input.states_studium_studienzahl_ausl_zeit == 'Rheinland-Pfalz' |
+                     # input.states_studium_studienzahl_ausl_zeit == 'Sachsen' |
+                     # input.states_studium_studienzahl_ausl_zeit == 'Westdeutschland (o. Berlin)' |
+                     # input.states_studium_studienzahl_ausl_zeit == 'Ostdeutschland (inkl. Berlin)'",
+                     #                    ns = ns,
+                     #                    shinyWidgets::pickerInput(
+                     #                      inputId = ns("fach1_studium_studienzahl_ausl_zeit"),
+                     # 
+                     #                      choices = studi_det_ui_faecher(spezif_r=c('Deutschland','Baden-Württemberg','Bayern','Berlin',
+                     #                                                                'Hamburg', 'Hessen','Nordrhein-Westfalen', 'Rheinland-Pfalz',
+                     #                                                                'Sachsen', 'Westdeutschland (o. Berlin)', 'Ostdeutschland (inkl. Berlin)' )),
+                     #                      selected = "Alle MINT-Fächer",
+                     #                      multiple = FALSE
+                     #                    )),
+                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Brandenburg'",
+                     #                    ns = ns,
+                     #                    shinyWidgets::pickerInput(
+                     #                      inputId = ns("fach2_studium_studienzahl_ausl_zeit"),
+                     # 
+                     #                      choices = studi_det_ui_faecher(spezif_r='Brandenburg'),
+                     #                      selected = "Alle MINT-Fächer",
+                     #                      multiple = FALSE
+                     #                    )),
+                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Bremen'",
+                     #                    ns = ns,
+                     #                    shinyWidgets::pickerInput(
+                     #                      inputId = ns("fach3_studium_studienzahl_ausl_zeit"),
+                     # 
+                     #                      choices = studi_det_ui_faecher(spezif_r='Bremen'),
+                     #                      selected = "Alle MINT-Fächer",
+                     #                      multiple = FALSE
+                     #                    )),
+                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Mecklenburg-Vorpommern'",
+                     #                    ns = ns,
+                     #                    shinyWidgets::pickerInput(
+                     #                      inputId = ns("fach4_studium_studienzahl_ausl_zeit"),
+                     # 
+                     #                      choices = studi_det_ui_faecher(spezif_r='Mecklenburg-Vorpommern'),
+                     #                      selected = "Alle MINT-Fächer",
+                     #                      multiple = FALSE
+                     #                    )),
+                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Niedersachsen'",
+                     #                    ns = ns,
+                     #                    shinyWidgets::pickerInput(
+                     #                      inputId = ns("fach5_studium_studienzahl_ausl_zeit"),
+                     # 
+                     #                      choices = studi_det_ui_faecher(spezif_r='Niedersachsen'),
+                     #                      selected = "Alle MINT-Fächer",
+                     #                      multiple = FALSE
+                     #                    )),
+                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Saarland'",
+                     #                    ns = ns,
+                     #                    shinyWidgets::pickerInput(
+                     #                      inputId = ns("fach6_studium_studienzahl_ausl_zeit"),
+                     # 
+                     #                      choices = studi_det_ui_faecher(spezif_r='Saarland'),
+                     #                      selected = "Alle MINT-Fächer",
+                     #                      multiple = FALSE
+                     #                    )),
+                     # 
+                     # 
+                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Sachsen-Anhalt'",
+                     #                    ns = ns,
+                     #                    shinyWidgets::pickerInput(
+                     #                      inputId = ns("fach7_studium_studienzahl_ausl_zeit"),
+                     # 
+                     #                      choices = studi_det_ui_faecher(spezif_r='Sachsen-Anhalt'),
+                     #                      selected = "Alle MINT-Fächer",
+                     #                      multiple = FALSE
+                     #                    )),
+                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Schleswig-Holstein'",
+                     #                    ns = ns,
+                     #                    shinyWidgets::pickerInput(
+                     #                      inputId = ns("fach8_studium_studienzahl_ausl_zeit"),
+                     # 
+                     #                      choices = studi_det_ui_faecher(spezif_r='Schleswig-Holstein'),
+                     #                      selected = "Alle MINT-Fächer",
+                     #                      multiple = FALSE
+                     #                    )),
+                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Thüringen'",
+                     #                    ns = ns,
+                     #                    shinyWidgets::pickerInput(
+                     #                      inputId = ns("fach9_studium_studienzahl_ausl_zeit"),
+                     # 
+                     #                      choices =studi_det_ui_faecher(spezif_r='Thüringen'),
+                     #                      selected = "Alle MINT-Fächer",
+                     #                      multiple = FALSE
+                     #                    )),
+                     # 
+                     #   p("Status der Studierenden:"),
+                       radioButtons(
+                         inputId = ns("status_ausl_zeit"),
+                         label = "Studierendengruppen",
+                         choices = c("Studierende",
+                                     "Studienanfänger:innen (1. Hochschulsemester)"
+                         ),
+                         selected = "Studierende"
+                       ),
+                     #   p("Betrachtung:"),
+                       radioButtons(
+                         inputId = ns("abs_zahlen_studium_studienzahl_ausl_zeit"),
+                         label = "Betrachtungsart",
+                         choices = c("In Prozent", "Anzahl"),
+                         selected = "Anzahl"
+                         # justified = TRUE,
+                         # checkIcon = list(yes = icon("ok",
+                         #                             lib = "glyphicon"))
+
+                       )
+                     ),
+                     column(
+                       width = 9,
+                       withSpinner(highchartOutput(ns("plot_minternational_zeitverlauf")))
+                     )
+                   )
+          )
+          )
+        )
+      )
+    }
+    
+  # Lehrkräfte FS ----
+
+   #### Lehramt-Studis MINT ----
+  
+  } else if(startsWith(indikator_ID, "fs_")){
+    if (indikator_ID == "fs_mint") {
+      fluidPage(
+        # Sidbar Auswahlmöglichkeiten
+        # column(
+        #   width = 3,
+          
+            #p("Jahr:"),
+            # sliderTextInput(
+            #   inputId = ns("mint_lehramt_uebersicht_time"),
+            #   label = NULL,
+            #   choices = 2013:2022,
+            #   selected = 2022
+            # )
+        # ),
+       column(
+          width = 12,
+          withSpinner(highchartOutput(ns("plot_lehrkraft_mint"))),
+
+         # p("Quelle der Daten: Destatis, 2023, auf Anfrage, eigene Berechnungen durch MINTvernetzt.")
+        )
       )
     }
   }
-}
+ }
