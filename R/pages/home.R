@@ -2,7 +2,7 @@
 
 box::use(
   ../../R/utils/database[get_query],
-  ../../R/utils/earthworm[read_markdown_cache],
+  ../../R/utils/earthworm[read_markdown],
   shiny[
     NS, moduleServer, observeEvent, observe,
     reactiveValues, reactiveValuesToList,

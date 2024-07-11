@@ -88,3 +88,5 @@ downloads/*
 !downloads/.gitkeep
 _experiment/
 www/stories_alt
+
+md/ew_*.md

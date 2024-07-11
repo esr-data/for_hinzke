@@ -3,7 +3,6 @@
 box::use(
   ../../R/utils/team[create_team_member],
   ../../R/utils/earthworm[read_markdown],
-  ../../R/utils/earthworm[read_markdown_cache],
   shiny[
     NS, moduleServer,
     fluidPage, fluidRow, column, uiOutput,

@@ -2,7 +2,7 @@
 
 box::use(
   ../../R/utils/stories[draw_cards],
-  ../../R/utils/earthworm[read_markdown_cache],
+  ../../R/utils/earthworm[read_markdown],
   shiny[
     NS, moduleServer, observeEvent,
     fluidPage, fluidRow, tagList,
@@ -89,7 +89,7 @@ module_stories_server <- function(id = "stories", con) {
                 )
               })
 
-            output$beschreibung <- renderUI({read_markdown_cache("storybeschreibung")})
+            output$beschreibung <- renderUI({read_markdown("beschreibung-der-stories")})
 
             output$stories <- renderUI({div(class = "cards-in-box", ui_stories)})
 
