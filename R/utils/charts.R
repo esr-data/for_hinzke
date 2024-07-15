@@ -511,7 +511,8 @@ produce_plot <-
             xlabel_text = params$x_var,
             ylabel_text = params$y_var,
             plot_title = params$plot_title,
-            interactive = TRUE
+            interactive = TRUE,
+            mode = "group"
           )
 
       } else if (results$result_fct[i] == "create_choropleth_map_germany"){

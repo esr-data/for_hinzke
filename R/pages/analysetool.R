@@ -95,11 +95,11 @@ module_analysetool_ui <- function(id = "analysetool", label = "m_analysetool", t
             div(uiOutput(ns("filter_reichweite_analysetool"),  style = "max-width: 250px; width: 100%"))
           ),
           
-          #4. Schritt Daten laden Button
-          div(
-            style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
-            actionButton(ns("show_results"), "Ergebnisse anzeigen", class = "btn-primary")
-          )
+          # #4. Schritt Daten laden Button
+          # div(
+          #   style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
+          #   actionButton(ns("show_results"), "Ergebnisse anzeigen", class = "btn-primary")
+          # )
         )
       ),
       
@@ -164,6 +164,7 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
         )
       )
       
+      
       # Vergleichsvariable als Option hinzufügbar
       observeEvent(input$new_var_btn, {
    
@@ -197,7 +198,7 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
     
       
       # Ergebnisaufruf über Button
-      results <- eventReactive(input$show_results, {
+      results <- reactive({
         
         # output Tabelle mit Aufruf von get_data() der wrangling Fkt
         
@@ -220,6 +221,7 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
         
         zeit <- NULL
         filter <- daten$filter$werte
+        if(length(filter)==0) filter <- NULL
         filter_typ <- daten$filter$type
         
         if("Zeit" %in% filter_typ){
@@ -241,10 +243,10 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
           time_period = zeit
         )
         
-      }, ignoreNULL = FALSE)
+      })
       
       # Ergebnis-Output-Serverfunktionen
-      observeEvent(input$show_results, {
+      observe({
 
         output$result_tabs <- renderUI({
           result_tabs <- list(
@@ -252,8 +254,9 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
                      withSpinner(reactableOutput(ns("table"))))
           )
           
-           if(nrow(results()) > 1){
-           
+           if(!is.null(nrow(results()))){
+            
+             if(nrow(results())>1){
             plot_list <- produce_plot(results(), 
                                       chart_options_rules_dir = "chart_options_rules")
             
@@ -273,12 +276,12 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
               local({
                 my_i <- i
                 output[[paste("plot", my_i, sep = "")]] <- renderPlotly({
-                  # print(plot_list[[my_i]])
                   plot_list[[my_i]]
                 })
               })
             }
             
+             }
            }
           
           do.call(tabsetPanel, result_tabs)

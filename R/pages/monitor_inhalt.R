@@ -88,7 +88,7 @@ box::use(
   shinyWidgets[
     pickerInput,       updatePickerInput,
     radioGroupButtons, updateRadioGroupButtons,
-    sliderTextInput
+    sliderTextInput, pickerOptions
   ],
   plotly[
     plotlyOutput, renderPlotly, plotly
@@ -575,11 +575,46 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                #### minternational ----
                  
                  #1 übersicht
+                   output$slider_minternational_jahr <- renderUI({
+                     sliderTextInput(
+                       inputId = ns("date_studium_studienzahl_ausl"),
+                       label = "Jahr",
+                       choices = 2012:2022,
+                       selected = 2022
+                     )
+                   })
+                 
+                   output$pickerInput_minternational_region<- renderUI({
+                     pickerInput(
+                       inputId = ns("region_minternational_übersicht"),
+                       label = "Region",
+                       choices = c("Deutschland",
+                                   "Westdeutschland (o. Berlin)",
+                                   "Ostdeutschland (inkl. Berlin)",
+                                   "Baden-Württemberg",
+                                   "Bayern",
+                                   "Berlin",
+                                   "Brandenburg",
+                                   "Bremen",
+                                   "Hamburg",
+                                   "Hessen",
+                                   "Mecklenburg-Vorpommern",
+                                   "Niedersachsen",
+                                   "Nordrhein-Westfalen",
+                                   "Rheinland-Pfalz",
+                                   "Saarland",
+                                   "Sachsen",
+                                   "Sachsen-Anhalt",
+                                   "Schleswig-Holstein",
+                                   "Thüringen"),
+                       selected = "Deutschland"
+                     )
+                   })
                  
                  r <- reactiveValues()
                  
                  observeEvent(input$region_minternational_übersicht, {
-                   r$states_studium_studienzahl_ausl <- input$region_minternational_übersicht
+                   r$region_minternational_übersicht <- input$region_minternational_übersicht
                  })
                  
                  observeEvent(input$date_studium_studienzahl_ausl, {
@@ -600,17 +635,12 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                  
                 output$plot_minternational_uebersicht <- renderHighchart({
                 
-                  # bl_select <- r$region_minternational_übersicht
-                  # year_select <- r$date_studium_studienzahl_ausl
+                  bl_select <- r$region_minternational_übersicht
+                   year_select <- r$date_studium_studienzahl_ausl
                   absolut_selector <- r$abs_zahlen_studium_studienzahl_ausl
                   status_select <- r$status_ausl
                   betr_ebene <- r$ebene_ausl
                   
-                  bl_select <- "Deutschland"
-                  year_select <- "2022"
-                  # absolut_selector <- "Anzahl"
-                  # status_select <- "Studierende"
-                  # betr_ebene <- "Fachbereiche"
                 
                   df <- tbl(con, from = "studierende_detailliert") %>%
                     filter(indikator %in% c("internationale Studienanfänger:innen (1. Hochschulsemester)",
@@ -858,6 +888,133 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                 
                 #2 Zeitverlauf
                 
+                output$pickerInput_minternational_zeitverlauf<- renderUI({
+                  fluidRow(
+                    column(width = 11,
+                    pickerInput(
+                      inputId = ns("states_studium_studienzahl_ausl_zeit"),
+                      label = "Region",
+                      choices = c("Deutschland",
+                                  "Baden-Württemberg",
+                                  "Bayern",
+                                  "Berlin",
+                                  "Brandenburg",
+                                  "Bremen",
+                                  "Hamburg",
+                                  "Hessen",
+                                  "Mecklenburg-Vorpommern",
+                                  "Niedersachsen",
+                                  "Nordrhein-Westfalen",
+                                  "Rheinland-Pfalz",
+                                  "Saarland",
+                                  "Sachsen",
+                                  "Sachsen-Anhalt",
+                                  "Schleswig-Holstein",
+                                  "Thüringen",
+                                  "Westdeutschland (o. Berlin)",
+                                  "Ostdeutschland (inkl. Berlin)"),
+                      selected = "Deutschland"
+                    ),
+                    
+                    #Conditonal Panel, dass keine leeren Plots kommen
+                    conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Deutschland' |
+                                                   input.states_studium_studienzahl_ausl_zeit == 'Baden-Württemberg' |
+                                                   input.states_studium_studienzahl_ausl_zeit == 'Bayern' |
+                                                   input.states_studium_studienzahl_ausl_zeit == 'Berlin' |
+                                                   input.states_studium_studienzahl_ausl_zeit == 'Hamburg' |
+                                                   input.states_studium_studienzahl_ausl_zeit == 'Hessen' |
+                                                   input.states_studium_studienzahl_ausl_zeit == 'Nordrhein-Westfalen' |
+                                                  input.states_studium_studienzahl_ausl_zeit == 'Rheinland-Pfalz' |
+                                                  input.states_studium_studienzahl_ausl_zeit == 'Sachsen' |
+                                                  input.states_studium_studienzahl_ausl_zeit == 'Westdeutschland (o. Berlin)' |
+                                                  input.states_studium_studienzahl_ausl_zeit == 'Ostdeutschland (inkl. Berlin)'",
+                                     ns = ns,
+                                     shinyWidgets::pickerInput(
+                                       inputId = ns("fach1_studium_studienzahl_ausl_zeit"),
+                                       label = "Fachbereich",
+                                       choices = studi_det_ui_faecher(spezif_r=c('Deutschland','Baden-Württemberg','Bayern','Berlin',
+                                                                                 'Hamburg', 'Hessen','Nordrhein-Westfalen', 'Rheinland-Pfalz',
+                                                                                 'Sachsen', 'Westdeutschland (o. Berlin)', 'Ostdeutschland (inkl. Berlin)' )),
+                                       selected = "Alle MINT-Fächer",
+                                       multiple = FALSE
+                                     )),
+                    conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Brandenburg'",
+                                     ns = ns,
+                                     shinyWidgets::pickerInput(
+                                       inputId = ns("fach2_studium_studienzahl_ausl_zeit"),
+                                       label = "Fachbereich",
+                                       choices = studi_det_ui_faecher(spezif_r='Brandenburg'),
+                                       selected = "Alle MINT-Fächer",
+                                       multiple = FALSE
+                                     )),
+                    conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Bremen'",
+                                     ns = ns,
+                                     shinyWidgets::pickerInput(
+                                       inputId = ns("fach3_studium_studienzahl_ausl_zeit"),
+                                       label = "Fachbereich",
+                                       choices = studi_det_ui_faecher(spezif_r='Bremen'),
+                                       selected = "Alle MINT-Fächer",
+                                       multiple = FALSE
+                                     )),
+                    conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Mecklenburg-Vorpommern'",
+                                     ns = ns,
+                                     shinyWidgets::pickerInput(
+                                       inputId = ns("fach4_studium_studienzahl_ausl_zeit"),
+                                       label = "Fachbereich",
+                                       choices = studi_det_ui_faecher(spezif_r='Mecklenburg-Vorpommern'),
+                                       selected = "Alle MINT-Fächer",
+                                       multiple = FALSE
+                                     )),
+                    conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Niedersachsen'",
+                                     ns = ns,
+                                     shinyWidgets::pickerInput(
+                                       inputId = ns("fach5_studium_studienzahl_ausl_zeit"),
+                                       label = "Fachbereich",
+                                       choices = studi_det_ui_faecher(spezif_r='Niedersachsen'),
+                                       selected = "Alle MINT-Fächer",
+                                       multiple = FALSE
+                                     )),
+                    conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Saarland'",
+                                     ns = ns,
+                                     shinyWidgets::pickerInput(
+                                       inputId = ns("fach6_studium_studienzahl_ausl_zeit"),
+                                       label = "Fachbereich",
+                                       choices = studi_det_ui_faecher(spezif_r='Saarland'),
+                                       selected = "Alle MINT-Fächer",
+                                       multiple = FALSE
+                                     )),
+                    conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Sachsen-Anhalt'",
+                                     ns = ns,
+                                     shinyWidgets::pickerInput(
+                                       inputId = ns("fach7_studium_studienzahl_ausl_zeit"),
+                                       label = "Fachbereich",
+                                       choices = studi_det_ui_faecher(spezif_r='Sachsen-Anhalt'),
+                                       selected = "Alle MINT-Fächer",
+                                       multiple = FALSE
+                                     )),
+                    conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Schleswig-Holstein'",
+                                     ns = ns,
+                                     shinyWidgets::pickerInput(
+                                       inputId = ns("fach8_studium_studienzahl_ausl_zeit"),
+                                       label = "Fachbereich",
+                                       choices = studi_det_ui_faecher(spezif_r='Schleswig-Holstein'),
+                                       selected = "Alle MINT-Fächer",
+                                       multiple = FALSE
+                                     )),
+                    conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Thüringen'",
+                                     ns = ns,
+                                     shinyWidgets::pickerInput(
+                                       inputId = ns("fach9_studium_studienzahl_ausl_zeit"),
+                                       label = "Fachbereich",
+                                       choices =studi_det_ui_faecher(spezif_r='Thüringen'),
+                                       selected = "Alle MINT-Fächer",
+                                       multiple = FALSE
+                                     ))
+                    )
+                  ) 
+                   
+                })
+                    
                 observeEvent(input$states_studium_studienzahl_ausl_zeit, {
                   r$states_studium_studienzahl_ausl_zeit <- input$states_studium_studienzahl_ausl_zeit
                 })
@@ -905,38 +1062,38 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                 
                 output$plot_minternational_zeitverlauf <- renderHighchart({
            
-                  # bl_select <- r$states_studium_studienzahl_ausl_zeit
+                  bl_select <- r$states_studium_studienzahl_ausl_zeit
                   absolut_selector <- r$abs_zahlen_studium_studienzahl_ausl_zeit
                   status_select <- r$status_ausl_zeit
                   
-                  # if(bl_select %in% c("Deutschland",
-                  #                     "Baden-Württemberg",
-                  #                     "Bayern",
-                  #                     "Berlin",
-                  #                     "Hamburg",
-                  #                     "Hessen",
-                  #                     "Nordrhein-Westfalen",
-                  #                     "Rheinland-Pfalz",
-                  #                     "Sachsen",
-                  #                     "Westdeutschland (o. Berlin)",
-                  #                     "Ostdeutschland (inkl. Berlin)")) {
-                  #   fach_select <- r$fach1_studium_studienzahl_ausl_zeit
-                  # }
-                  # else {
-                  #   if(bl_select == "Brandenburg")fach_select <- r$fach2_studium_studienzahl_ausl_zeit
-                  #   if(bl_select == "Bremen")fach_select <- r$fach3_studium_studienzahl_ausl_zeit
-                  #   if(bl_select == "Mecklenburg-Vorpommern")fach_select <- r$fach4_studium_studienzahl_ausl_zeit
-                  #   if(bl_select == "Niedersachsen")fach_select <- r$fach5_studium_studienzahl_ausl_zeit
-                  #   if(bl_select == "Saarland")fach_select <- r$fach6_studium_studienzahl_ausl_zeit
-                  #   if(bl_select == "Sachsen-Anhalt")fach_select <- r$fach7_studium_studienzahl_ausl_zeit
-                  #   if(bl_select == "Schleswig-Holstein")fach_select <- r$fach8_studium_studienzahl_ausl_zeit
-                  #   if(bl_select == "Thüringen")fach_select <- r$fach9_studium_studienzahl_ausl_zeit
-                  # }
+                  if(bl_select %in% c("Deutschland",
+                                      "Baden-Württemberg",
+                                      "Bayern",
+                                      "Berlin",
+                                      "Hamburg",
+                                      "Hessen",
+                                      "Nordrhein-Westfalen",
+                                      "Rheinland-Pfalz",
+                                      "Sachsen",
+                                      "Westdeutschland (o. Berlin)",
+                                      "Ostdeutschland (inkl. Berlin)")) {
+                    fach_select <- r$fach1_studium_studienzahl_ausl_zeit
+                  }
+                  else {
+                    if(bl_select == "Brandenburg")fach_select <- r$fach2_studium_studienzahl_ausl_zeit
+                    if(bl_select == "Bremen")fach_select <- r$fach3_studium_studienzahl_ausl_zeit
+                    if(bl_select == "Mecklenburg-Vorpommern")fach_select <- r$fach4_studium_studienzahl_ausl_zeit
+                    if(bl_select == "Niedersachsen")fach_select <- r$fach5_studium_studienzahl_ausl_zeit
+                    if(bl_select == "Saarland")fach_select <- r$fach6_studium_studienzahl_ausl_zeit
+                    if(bl_select == "Sachsen-Anhalt")fach_select <- r$fach7_studium_studienzahl_ausl_zeit
+                    if(bl_select == "Schleswig-Holstein")fach_select <- r$fach8_studium_studienzahl_ausl_zeit
+                    if(bl_select == "Thüringen")fach_select <- r$fach9_studium_studienzahl_ausl_zeit
+                  }
                   
-                  bl_select <- "Deutschland"
+                  #bl_select <- "Deutschland"
                   # absolut_selector <- "Anzahl"
                   # status_select <- "Studierende"
-                  fach_select <- "Alle MINT-Fächer"
+                  # fach_select <- "Alle MINT-Fächer"
                    
                   
                   df <- tbl(con, from = "studierende_detailliert") %>%
@@ -1081,17 +1238,27 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                  
                  
                #### mint lehramtstudium ----
+                
+                output$slider_input_fs_mint_jahr <- renderUI({
+                  
+                  sliderTextInput(
+                    inputId = ns("mint_lehramt_uebersicht_time"),
+                    label = "Jahr",
+                    choices = 2013:2022,
+                    selected = 2022
+                  )
+                })
                  
-                 observeEvent(input$date_kurse_einstieg_comparison, {
-                   r$date_kurse_einstieg_comparison <- input$date_kurse_einstieg_comparison
+                 observeEvent(input$mint_lehramt_uebersicht_time, {
+                   r$mint_lehramt_uebersicht_time <- input$mint_lehramt_uebersicht_time
                  })
                  
                  #1 übersicht
                 
                  output$plot_lehrkraft_mint <- renderHighchart({
                   
-                   # timerange <- r$mint_lehramt_uebersicht_time
-                   timerange <- 2022
+                    timerange <- r$mint_lehramt_uebersicht_time
+                   #timerange <- 2022
                   # timerange <- r$date_kurse_einstieg_comparison
                    
                    # filter dataset based on UI inputs
@@ -1587,37 +1754,9 @@ draw_table_row_content <- function(indikator_ID, ns) {
                      column(
                     width = 3,
                     br(),
-                   
-                    # sliderTextInput(
-                    #   inputId = ns("date_studium_studienzahl_ausl"),
-                    #   label = "Jahr",
-                    #   choices = 2012:2022,
-                    #   selected = "2022"
-                    # ),
-                    # pickerInput(inputId = ns("region_minternational_übersicht"),
-                    #              label = "Region",
-                    #              choices = c("Deutschland",
-                    #                          "Westdeutschland (o. Berlin)",
-                    #                          "Ostdeutschland (inkl. Berlin)",
-                    #                          "Baden-Württemberg",
-                    #                          "Bayern",
-                    #                          "Berlin",
-                    #                          "Brandenburg",
-                    #                          "Bremen",
-                    #                          "Hamburg",
-                    #                          "Hessen",
-                    #                          "Mecklenburg-Vorpommern",
-                    #                          "Niedersachsen",
-                    #                          "Nordrhein-Westfalen",
-                    #                          "Rheinland-Pfalz",
-                    #                          "Saarland",
-                    #                          "Sachsen",
-                    #                          "Sachsen-Anhalt",
-                    #                          "Schleswig-Holstein",
-                    #                          "Thüringen"),
-                    #              selected = "Deutschland"
-                    # ),
-                    #p("Indikator:"),
+                    uiOutput(ns("slider_minternational_jahr")),
+                    uiOutput(ns("pickerInput_minternational_region")),
+                    
                     radioButtons(
                       inputId = ns("status_ausl"),
                       label = "Studierendengruppe",
@@ -1649,6 +1788,7 @@ draw_table_row_content <- function(indikator_ID, ns) {
           ),
            column(
              width = 9,
+             br(),
              withSpinner(highchartOutput(ns("plot_minternational_uebersicht"), height = "600px"))
            )
          )
@@ -1659,129 +1799,7 @@ draw_table_row_content <- function(indikator_ID, ns) {
                      column(
                        width = 3,
                        br(),
-                       # pickerInput(
-                       #   inputId = ns("states_studium_studienzahl_ausl_zeit"),
-                       #   label = "Region",
-                       #   choices = c("Deutschland",
-                       #               "Baden-Württemberg",
-                       #               "Bayern",
-                       #               "Berlin",
-                       #               "Brandenburg",
-                       #               "Bremen",
-                       #               "Hamburg",
-                       #               "Hessen",
-                       #               "Mecklenburg-Vorpommern",
-                       #               "Niedersachsen",
-                       #               "Nordrhein-Westfalen",
-                       #               "Rheinland-Pfalz",
-                       #               "Saarland",
-                       #               "Sachsen",
-                       #               "Sachsen-Anhalt",
-                       #               "Schleswig-Holstein",
-                       #               "Thüringen",
-                       #               "Westdeutschland (o. Berlin)",
-                       #               "Ostdeutschland (inkl. Berlin)"),
-                       #   selected = "Deutschland"
-                       # ),
-                     #   p("Fach/Fächergruppe:"),
-                     # 
-                     #   #Conditonal Panel, dass keine leeren Plots kommen
-                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Deutschland' |
-                     #  input.states_studium_studienzahl_ausl_zeit == 'Baden-Württemberg' |
-                     #  input.states_studium_studienzahl_ausl_zeit == 'Bayern' |
-                     #  input.states_studium_studienzahl_ausl_zeit == 'Berlin' |
-                     #  input.states_studium_studienzahl_ausl_zeit == 'Hamburg' |
-                     #  input.states_studium_studienzahl_ausl_zeit == 'Hessen' |
-                     #  input.states_studium_studienzahl_ausl_zeit == 'Nordrhein-Westfalen' |
-                     # input.states_studium_studienzahl_ausl_zeit == 'Rheinland-Pfalz' |
-                     # input.states_studium_studienzahl_ausl_zeit == 'Sachsen' |
-                     # input.states_studium_studienzahl_ausl_zeit == 'Westdeutschland (o. Berlin)' |
-                     # input.states_studium_studienzahl_ausl_zeit == 'Ostdeutschland (inkl. Berlin)'",
-                     #                    ns = ns,
-                     #                    shinyWidgets::pickerInput(
-                     #                      inputId = ns("fach1_studium_studienzahl_ausl_zeit"),
-                     # 
-                     #                      choices = studi_det_ui_faecher(spezif_r=c('Deutschland','Baden-Württemberg','Bayern','Berlin',
-                     #                                                                'Hamburg', 'Hessen','Nordrhein-Westfalen', 'Rheinland-Pfalz',
-                     #                                                                'Sachsen', 'Westdeutschland (o. Berlin)', 'Ostdeutschland (inkl. Berlin)' )),
-                     #                      selected = "Alle MINT-Fächer",
-                     #                      multiple = FALSE
-                     #                    )),
-                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Brandenburg'",
-                     #                    ns = ns,
-                     #                    shinyWidgets::pickerInput(
-                     #                      inputId = ns("fach2_studium_studienzahl_ausl_zeit"),
-                     # 
-                     #                      choices = studi_det_ui_faecher(spezif_r='Brandenburg'),
-                     #                      selected = "Alle MINT-Fächer",
-                     #                      multiple = FALSE
-                     #                    )),
-                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Bremen'",
-                     #                    ns = ns,
-                     #                    shinyWidgets::pickerInput(
-                     #                      inputId = ns("fach3_studium_studienzahl_ausl_zeit"),
-                     # 
-                     #                      choices = studi_det_ui_faecher(spezif_r='Bremen'),
-                     #                      selected = "Alle MINT-Fächer",
-                     #                      multiple = FALSE
-                     #                    )),
-                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Mecklenburg-Vorpommern'",
-                     #                    ns = ns,
-                     #                    shinyWidgets::pickerInput(
-                     #                      inputId = ns("fach4_studium_studienzahl_ausl_zeit"),
-                     # 
-                     #                      choices = studi_det_ui_faecher(spezif_r='Mecklenburg-Vorpommern'),
-                     #                      selected = "Alle MINT-Fächer",
-                     #                      multiple = FALSE
-                     #                    )),
-                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Niedersachsen'",
-                     #                    ns = ns,
-                     #                    shinyWidgets::pickerInput(
-                     #                      inputId = ns("fach5_studium_studienzahl_ausl_zeit"),
-                     # 
-                     #                      choices = studi_det_ui_faecher(spezif_r='Niedersachsen'),
-                     #                      selected = "Alle MINT-Fächer",
-                     #                      multiple = FALSE
-                     #                    )),
-                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Saarland'",
-                     #                    ns = ns,
-                     #                    shinyWidgets::pickerInput(
-                     #                      inputId = ns("fach6_studium_studienzahl_ausl_zeit"),
-                     # 
-                     #                      choices = studi_det_ui_faecher(spezif_r='Saarland'),
-                     #                      selected = "Alle MINT-Fächer",
-                     #                      multiple = FALSE
-                     #                    )),
-                     # 
-                     # 
-                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Sachsen-Anhalt'",
-                     #                    ns = ns,
-                     #                    shinyWidgets::pickerInput(
-                     #                      inputId = ns("fach7_studium_studienzahl_ausl_zeit"),
-                     # 
-                     #                      choices = studi_det_ui_faecher(spezif_r='Sachsen-Anhalt'),
-                     #                      selected = "Alle MINT-Fächer",
-                     #                      multiple = FALSE
-                     #                    )),
-                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Schleswig-Holstein'",
-                     #                    ns = ns,
-                     #                    shinyWidgets::pickerInput(
-                     #                      inputId = ns("fach8_studium_studienzahl_ausl_zeit"),
-                     # 
-                     #                      choices = studi_det_ui_faecher(spezif_r='Schleswig-Holstein'),
-                     #                      selected = "Alle MINT-Fächer",
-                     #                      multiple = FALSE
-                     #                    )),
-                     #   conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Thüringen'",
-                     #                    ns = ns,
-                     #                    shinyWidgets::pickerInput(
-                     #                      inputId = ns("fach9_studium_studienzahl_ausl_zeit"),
-                     # 
-                     #                      choices =studi_det_ui_faecher(spezif_r='Thüringen'),
-                     #                      selected = "Alle MINT-Fächer",
-                     #                      multiple = FALSE
-                     #                    )),
-                     # 
+                       uiOutput(ns("pickerInput_minternational_zeitverlauf")),
                      #   p("Status der Studierenden:"),
                        radioButtons(
                          inputId = ns("status_ausl_zeit"),
@@ -1805,6 +1823,7 @@ draw_table_row_content <- function(indikator_ID, ns) {
                      ),
                      column(
                        width = 9,
+                       br(),
                        withSpinner(highchartOutput(ns("plot_minternational_zeitverlauf")))
                      )
                    )
@@ -1821,20 +1840,14 @@ draw_table_row_content <- function(indikator_ID, ns) {
   } else if(startsWith(indikator_ID, "fs_")){
     if (indikator_ID == "fs_mint") {
       fluidPage(
-        # Sidbar Auswahlmöglichkeiten
-        # column(
-        #   width = 3,
-          
-            #p("Jahr:"),
-            # sliderTextInput(
-            #   inputId = ns("mint_lehramt_uebersicht_time"),
-            #   label = NULL,
-            #   choices = 2013:2022,
-            #   selected = 2022
-            # )
-        # ),
+        # Auswahlmöglichkeit Jahr
+        column(
+          width = 3,
+          uiOutput(ns("slider_input_fs_mint_jahr"))
+        ),
        column(
           width = 12,
+          br(),
           withSpinner(highchartOutput(ns("plot_lehrkraft_mint"))),
 
          # p("Quelle der Daten: Destatis, 2023, auf Anfrage, eigene Berechnungen durch MINTvernetzt.")
