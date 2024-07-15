@@ -34,7 +34,6 @@ get_data <- function(
     
   }else{
     con <- dbConnect(duckdb(), "data/magpie.db", read_only = TRUE)
-    # bzw. Alternative für Duck DB
   }
   
   
