@@ -2,7 +2,6 @@
 
 box::use(
   ../../R/utils/database[get_query, get_sql],
-  ../../R/utils/routing[add_param_in_url],
   ../../R/utils/ui[draw_under_construction],
   ../../R/utils/charts[produce_plot],
   ../../R/pkgs/wrangling/get_data[get_data],
@@ -20,20 +19,28 @@ box::use(
     renderText, textOutput,
     tabPanel, tabsetPanel,
     renderCachedPlot, mainPanel,
-    updateActionButton
+    updateActionButton,
+    updateTabsetPanel
   ],
   shinyWidgets[pickerInput, updatePickerInput],
-  shiny.router[get_page, get_query_param, change_page],
+  shiny.router[get_query_param, change_page],
   shinycssloaders[withSpinner],
   reactable[reactable, reactableOutput, renderReactable, colDef, reactableTheme, reactableLang],
   sortable[bucket_list, add_rank_list],
-  plotly[plotlyOutput, renderPlotly]
+  plotly[plotlyOutput, renderPlotly],
+  utils[URLencode, URLdecode],
+  urltools[param_get, param_set, path],
+  htmltools[tagQuery]
 )
+
+URL_PATH             <- "analysetool"
+LABEL_TABSET_TABELLE <- "Ergebnistabelle"
+LABEL_TABSET_GRAFIK  <- "Grafik"
 
 #' UI Funktion Analysetool
 #' @export
 
-module_analysetool_ui <- function(id = "analysetool", label = "m_analysetool", type = "all") {
+module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"), type = "all") {
   ns <- NS(id)
   fluidPage(
     div(
@@ -48,7 +55,7 @@ module_analysetool_ui <- function(id = "analysetool", label = "m_analysetool", t
             style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
             # 1. Schritt - erste Variablenwahl
             pickerInput(
-              inputId = ns("select_vars_analysetool"),
+              inputId = ns("select_vars"),
               label = "Liste der Variablen",
               choices = c(""),
               options  = list(
@@ -63,7 +70,7 @@ module_analysetool_ui <- function(id = "analysetool", label = "m_analysetool", t
             ),
             # dazugehörige Tag-Auswahl
             pickerInput(
-              inputId = ns("select_tag_analysetool"),
+              inputId = ns("select_tag"),
               label = "Themenbereiche",
               choices = c(""),
               options  = list(
@@ -92,8 +99,8 @@ module_analysetool_ui <- function(id = "analysetool", label = "m_analysetool", t
           uiOutput(ns("variable")),
           div(
             style = "display: flex; flex-wrap: wrap;",
-            div(uiOutput(ns("select_reichweite_analysetool")), style = "max-width: 650px; width: 80%;"),
-            div(uiOutput(ns("filter_reichweite_analysetool"),  style = "max-width: 250px; width: 100%"))
+            div(uiOutput(ns("select_reichweite")), style = "max-width: 650px; width: 80%;"),
+            div(uiOutput(ns("filter_reichweite"),  style = "max-width: 250px; width: 100%"))
           ),
 
           # #4. Schritt Daten laden Button
@@ -120,7 +127,7 @@ module_analysetool_ui <- function(id = "analysetool", label = "m_analysetool", t
 #' Server Funktion analysetool
 #' @export
 
-module_analysetool_server <- function(id = "analysetool", type = "all"){
+module_analysetool_server <- function(id = URL_PATH, type = "all"){
   moduleServer(
     id,
     function(input, output, session) {
@@ -132,20 +139,21 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
 
       daten <-
         reactiveValues(
-          werte   = data.frame(),
-          gruppen = c(),
-          auswahl = c(),
-          filter  = data.frame(type = c(), werte = c())[0,],
-          variable = c(),
+          werte     = data.frame(),
+          gruppen   = c(),
+          auswahl   = c(),
+          filter    = data.frame(type = c(), werte = c())[0,],
+          variable  = c(),
           variable2 = c(),
           aenderung = c(),
           show_additional_var = FALSE
         )
 
-      input_var <- reactiveVal(data.frame())
+      input_var  <- reactiveVal(data.frame())
       input_var2 <- reactiveVal(data.frame())
-      input_tag <- reactiveVal(data.frame())
-      plot_list <- reactiveVal(list())
+      input_tag  <- reactiveVal(data.frame())
+      plot_list  <- reactiveVal(list())
+      tab_liste  <- reactiveValues(tabs = c())
 
       filter_param <- vergleichen_translate_filter_param()
 
@@ -157,7 +165,7 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
             paste0(
               "parameter <- reactiveValues(",
               paste(
-                paste(c("at_gp", "at_tg", "hf", "at_vr", "at_vr2", filter_param$param), "= ''"),
+                paste(c("at_gp", "at_tg", "hf", "at_vr", "at_vr2", "at_tab", filter_param$param), "= ''"),
                 collapse = ","
               ),
               ")"
@@ -168,9 +176,7 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
 
       # Vergleichsvariable als Option hinzufügbar
       observeEvent(input$new_var_btn, {
-
         daten$show_additional_var <- TRUE
-
         output$variable_vergleichen <- renderUI({
 
           if(isTRUE(daten$show_additional_var) && nrow(input_var2()) > 0){
@@ -192,6 +198,7 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
           } else {
             NULL
           }
+
         })
       })
 
@@ -247,30 +254,14 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
       })
 
       # Ergebnis-Output-Serverfunktionen
+      #TODO kein observe
       observe({
 
         output$result_tabs <- renderUI({
           result_tabs <- list(
-            tabPanel("Ergebnistabelle",
-                     withSpinner(reactableOutput(ns("table")))
-                     )
-          ,
-
-          if(!is.null(nrow(results()))){
-
-            if(nrow(results())>1){
-
-              fluidRow(
-
-                p(),
-
-                p(style = "text-align: center; color: var(--grey);", "Quelle(n): under construction"))
-
-              }
-
-          })
-
-
+            tabPanel(LABEL_TABSET_TABELLE,
+                     withSpinner(reactableOutput(ns("table"))))
+          )
 
            if(!is.null(nrow(results()))){
 
@@ -279,8 +270,10 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
                                       chart_options_rules_dir = "chart_options_rules")
 
 
+            grafiken <- c()
             for(i in seq_along(plot_list)) {
-              result_tabs <- append(result_tabs, list(tabPanel(paste("Grafik", i),
+              grafiken <- c(grafiken, paste(LABEL_TABSET_GRAFIK, i))
+              result_tabs <- append(result_tabs, list(tabPanel(grafiken[length(grafiken)],
                                                                div(
                                                                  class = "content-box",
                                                                  style = "width: 100%; height: 600px;",
@@ -288,6 +281,7 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
                                                                  plotlyOutput(ns(paste("plot", i, sep = "")), height = "100%"))))
                                                       )
             }
+            tab_liste$tabs <- c(LABEL_TABSET_TABELLE, grafiken)
 
             for(i in seq_along(plot_list)) {
 
@@ -302,14 +296,9 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
              }
            }
 
-          do.call(tabsetPanel, result_tabs)
+          do.call(tabsetPanel, args = list.append(result_tabs, id = ns("tab_menu")))#list(result_tabs[[1]], id = ns("tab_menu")))
 
         })
-         #
-         # if(nrow(results()) > 1){
-         #
-         #
-         # }
 
       })
 
@@ -323,11 +312,12 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
       observeEvent(
         get_query_param(), {
 
+          current_url <- session$clientData$url_hash
           if (!gesperrt()){
-            if (get_page() == "analysetool"){
+            if (path(current_url) %in% URL_PATH){
 
               if (is.null(get_query_param())){
-                change_page("analysetool?hf=0") #kein Handlungsfeld-Filter - Grundlink der Seite
+                #change_page(paste0(URL_PATH, "?hf=0")) #kein Handlungsfeld-Filter - Grundlink der Seite
               } else {
                 gesperrt(TRUE)
                 daten$aenderung <- FALSE
@@ -349,10 +339,9 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
                     input_var(indikator_get_variables()) #TODO
                     input_var2(indikator_get_variables())
                     input_tag(get_sql("indikator_get_tag_by_variable", TRUE))
-                    updatePickerInput(session, "select_tag_analysetool",      choices = sort(input_tag()$beschr))
-                    updatePickerInput(session, "select_vars_analysetool", choices = sort(input_var()$beschr[input_var()$relevant]))
+                    updatePickerInput(session, "select_tag",      choices = sort(input_tag()$beschr))
+                    updatePickerInput(session, "select_vars", choices = sort(input_var()$beschr[input_var()$relevant]))
                     updatePickerInput(session, "variable_vergleichen", choices = sort(input_var2()$beschr[input_var2()$relevant]))
-
                     daten$aenderung <- TRUE
                   }
 
@@ -373,9 +362,9 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
 
                   # Picker updaten, wenn ich die ausgewählten Items unterscheiden:
                   # Das ist der Fall, wenn die Paramter-Eingabe über die URL und nicht den Picker erfolgt
-                  if (!(all(selected_tags %in% input$select_tag_analysetool) &
-                        all(input$select_tag_analysetool %in% selected_tags))){
-                    updatePickerInput(session, "select_tag_analysetool", selected = input_tag()$beschr[input_tag()$id %in% param_at_tg])
+                  if (!(all(selected_tags %in% input$select_tag) &
+                        all(input$select_tag %in% selected_tags))){
+                    updatePickerInput(session, "select_tag", selected = input_tag()$beschr[input_tag()$id %in% param_at_tg])
                   }
 
                   # Aktualisierung der Variablen aus Basis der Tags
@@ -383,8 +372,8 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
                   input_var(indikator_get_variables_by_tags(input_var(), selected_tags))
                   updatePickerInput(
                     session = session,
-                    inputId = "select_vars_analysetool",
-                    selected = input$select_vars_analysetool,
+                    inputId = "select_vars",
+                    selected = input$select_vars,
                     choices = sort(input_var()$beschr[input_var()$relevant])
                   )
                   input_var2(indikator_get_variables_by_tags(input_var2(), selected_tags))
@@ -418,11 +407,11 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
                     daten$variable2 <- c()
                     show_additional_var <- FALSE
 
-                    updatePickerInput(session, "select_vars_analysetool", selected = NULL)
+                    updatePickerInput(session, "select_vars", selected = NULL)
                     #updatePickerInput(session, "variable_vergleichen", selected = NULL)
                     output$variable_vergleichen <- renderUI({HTML("")})
-                    output$filter_reichweite_analysetool <- renderUI({HTML("")})
-                    output$select_reichweite_analysetool <- renderUI({HTML("")})
+                    output$filter_reichweite <- renderUI({HTML("")})
+                    output$select_reichweite <- renderUI({HTML("")})
 
 
                   } else {
@@ -441,9 +430,9 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
                       daten$variable2 <- c()
 
 
-                      output$filter_reichweite_analysetool <- renderUI({HTML("")})
-                      output$select_reichweite_analysetool <- renderUI({indikator_draw_eimer(daten$gruppen, ns = ns)})
-                      updatePickerInput(session, "select_vars_analysetool", selected = variable$beschr)
+                      output$filter_reichweite <- renderUI({HTML("")})
+                      output$select_reichweite <- renderUI({indikator_draw_eimer(daten$gruppen, ns = ns)})
+                      updatePickerInput(session, "select_vars", selected = variable$beschr)
                       updatePickerInput(session, "variable_vergleichen", selected = NULL)
                     }
 
@@ -489,7 +478,7 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
 
                     } else {
 
-                    variable <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_at_vr))
+                    variable  <- get_query(paste0("SELECT id, beschr FROM variable WHERE id =", param_at_vr))
                     variable2 <- get_query(paste0("SELECT id, beschr FROM variable WHERE id IN ('",
                                                   paste(param_at_vr2, collapse = "', '"), "')"))
                     tabelle <- vergleiche_load_reichweiten_by_multiple_variables(variable$id, variable2$id)
@@ -497,9 +486,7 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
                     daten$gruppen <- sort(tabelle$gruppe)
                     daten$variable2 <- variable2$beschr
 
-
                     updatePickerInput(session, "variable_vergleichen", selected = variable2$beschr)
-
 
                   }
 
@@ -530,23 +517,23 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
 
                     # Änderung, die nicht im UI-Element persistiert ist?
                     eimer_aenderung <- FALSE
-                    if (length(input$eimer_unterscheiden_analysetool) != length(daten$auswahl)){
+                    if (length(input$eimer_unterscheiden) != length(daten$auswahl)){
                       eimer_aenderung <- TRUE
                     } else if (length(daten$auswahl) > 0){
-                      if (!(all(daten$auswahl %in% input$eimer_unterscheiden_analysetool) &
-                            all(input$eimer_unterscheiden_analysetool %in% daten$auswahl))){
+                      if (!(all(daten$auswahl %in% input$eimer_unterscheiden) &
+                            all(input$eimer_unterscheiden %in% daten$auswahl))){
                         eimer_aenderung <- TRUE
                       }
                     }
                     if (eimer_aenderung){
-                      output$select_reichweite_analysetool <-
+                      output$select_reichweite <-
                         renderUI({
                           indikator_draw_eimer(daten$gruppen, daten$auswahl, ns)
                         })
                     }
 
                     # Filter aktualisieren
-                    output$filter_reichweite_analysetool <-
+                    output$filter_reichweite <-
                       renderUI({
                         indikator_draw_filter(daten$werte, daten$auswahl, ns)
                       })
@@ -619,6 +606,26 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
                   }
                   rm(test)
                 }
+
+                # PARAMETER der Tabsets ____________________________________________________________
+
+                param_at_tab <- get_query_param("at_tab")
+                if (is.null(param_at_tab)) param_at_tab <- ""
+
+                if (!(param_at_tab %in% parameter$at_tab)){
+
+                  parameter$at_tab <- param_at_tab
+                  if (length(tab_liste$tabs) > 0 & param_at_tab != ""){
+                    tab <- process_parameter_input_to_tab(param_at_tab)
+                    if (tab %in% tab_liste$tabs){
+                      updateTabsetPanel(session, "tab_menu", tab)
+                    } else if (paste(LABEL_TABSET_GRAFIK, 1) %in% tab_liste$tabs){
+                      updateTabsetPanel(session, "tab_menu", paste(LABEL_TABSET_GRAFIK, 1))
+                    }
+                  }
+
+                }
+
               }
             }
           }
@@ -627,163 +634,141 @@ module_analysetool_server <- function(id = "analysetool", type = "all"){
         ignoreNULL = FALSE
       ) # Here is the end of the big observeEvent function
 
+      # Observe Input um die URL-Parameter anzupassen
 
       observeEvent(
-        input$select_tag_analysetool, {
-          if (!gesperrt() & !is.null(get_query_param("hf"))){
-            input_select_tag <- input$select_tag_analysetool
-            vergleichen_tags   <- input_tag()
-            new_value        <- ""
-            current_url      <- session$clientData$url_hash
+        input$select_tag, {
 
-            if (!is.null(input_select_tag)){
-              if (nrow(vergleichen_tags) > 0){
-                new_value <-
-                  paste(
-                    sort(vergleichen_tags$id[vergleichen_tags$beschr %in% input_select_tag]),
-                    collapse = ","
-                  )
-              }
-            }
-
-            new_url <-
-              add_param_in_url(
-                current_url  = current_url,
-                current_page = "analysetool",
-                parameter    = "at_tg",
-                value        = new_value,
-                old_value    = get_query_param("at_tg")
-              )
-
-            if (new_url != current_url){
-              # print(paste("tag", 1)) # BENCH-PRINT
-              change_page(new_url)
-            }
-          }
-        },
-        ignoreNULL = FALSE
-      )
-
-      observeEvent(input$select_vars_analysetool, {
-
-          if (!gesperrt() & !is.null(get_query_param("hf"))){
-            input_select_var   <- input$select_vars_analysetool
-            new_value          <- ""
-            current_url        <- session$clientData$url_hash
-            vergleichen_variable <- input_var()
-
-            if (!is.null(input_select_var) & nrow(vergleichen_variable) > 0){
-              new_value <- (vergleichen_variable$id[vergleichen_variable$beschr %in% input_select_var])[1]
-            }
-
-            new_url <-
-              add_param_in_url(
-                current_url  = current_url,
-                current_page = "analysetool",
-                parameter    = "at_vr",
-                value        = new_value,
-                old_value    = get_query_param("at_vr")
-              )
-
-            if(new_value == ""){
-              new_url <-
-                add_param_in_url(
-                  current_url  = new_url,
-                  current_page = "analysetool",
-                  parameter    = "at_vr2",
-                  value        = new_value,
-                  old_value    = get_query_param("at_vr2")
-                )
-            }
-
-            if (new_url != current_url){
-              # print(paste("var", 1)) # BENCH-PRINT
-              change_page(new_url)
-            }
-
-          }
-        },
-        ignoreNULL = FALSE
-      )
-
-      observeEvent(input$variable_vergleichen, {
-
-          if (!gesperrt() & !is.null(get_query_param("hf"))){
-            input_select_var   <- input$variable_vergleichen
-            new_value          <- ""
-            current_url        <- session$clientData$url_hash
-            vergleichen_variable2 <- input_var2()
-
-            if (!is.null(input_select_var) & nrow(vergleichen_variable2) > 0){
-
-              multi_new_values <- vergleichen_variable2$id[vergleichen_variable2$beschr
-                                                           %in% input_select_var]
-
-              new_value <- paste(multi_new_values, collapse = ",")
-
-            }else{
-              daten$variable2 <- c()
-              new_value <- ""
-            }
-
-            new_url <-
-              add_param_in_url(
-                current_url  = current_url,
-                current_page = "analysetool",
-                parameter    = "at_vr2",
-                value        = new_value,
-                old_value    = get_query_param("at_vr2")
-              )
-
-            if (new_url != current_url){
-              #  print(paste("var2", 1)) # BENCH-PRINT
-              change_page(new_url)
-            }
-          }
-        },
-        ignoreNULL = FALSE
-      )
-
-      observeEvent(
-
-        input$eimer_unterscheiden_analysetool, {
-
-          if (!gesperrt() & !is.null(get_query_param("hf"))){
-
-            if (length(daten$gruppen) > 0){
-
-              current_url <- session$clientData$url_hash
-              new_value   <- (1:length(daten$gruppen))[daten$gruppen %in% input$eimer_unterscheiden_analysetool]
-              if (length(new_value) == 0){
-                new_value <- ""
-              } else {
-                new_value <- paste(new_value, collapse = ",")
-              }
+          current_url      <- session$clientData$url_hash
+          if (path(current_url) %in% URL_PATH){
+            if (!gesperrt() & !is.null(get_query_param("hf"))){
 
               new_url <-
-                add_param_in_url(
-                  current_url  = current_url,
-                  current_page = "analysetool",
-                  parameter    = "at_gp",
-                  value        = new_value,
-                  old_value    = get_query_param("at_gp")
+                param_set(
+                  urls  = current_url,
+                  key   = "at_tg",
+                  value = process_input_for_parameter_tag(input$select_tag, input_tag())
                 )
 
               if (new_url != current_url){
                 change_page(new_url)
               }
+
             }
           }
-
-        }
+        },
+        ignoreNULL = FALSE
       )
 
 
+      observeEvent(
+        input$select_vars, {
+
+          current_url <- session$clientData$url_hash
+          if (path(current_url) %in% URL_PATH){
+            if (!gesperrt() & !is.null(get_query_param("hf"))){
+
+              new_url <-
+                param_set(
+                  urls = current_url,
+                  key = "at_vr",
+                  value = process_input_for_parameter_vr(input$select_vars, input_var())
+                )
+
+              if (new_url != current_url){
+                change_page(new_url)
+              }
+
+            }
+          }
+        },
+        ignoreNULL = FALSE
+      )
+
+
+      observeEvent(
+        input$variable_vergleichen, {
+
+          current_url <- session$clientData$url_hash
+          if (path(current_url) %in% URL_PATH){
+            if (!gesperrt() & !is.null(get_query_param("hf"))){
+
+              new_url <-
+                param_set(
+                  urls = current_url,
+                  key = "at_vr2",
+                  value = process_input_for_parameter_vr2(input_select_var, vergleichen_variable2)
+                )
+
+              if (new_url != current_url){
+                change_page(new_url)
+              }
+
+            }
+          }
+
+        },
+        ignoreNULL = FALSE
+      )
+
+
+      observeEvent(
+        input$eimer_unterscheiden, {
+
+          current_url <- session$clientData$url_hash
+          if (path(current_url) %in% URL_PATH){
+            if (!gesperrt() & !is.null(get_query_param("hf"))){
+              if (length(daten$gruppen) > 0){
+
+                new_url     <-
+                  param_set(
+                    urls  = current_url,
+                    key   = "at_gp",
+                    value = process_input_for_parameter_gp(daten$gruppen, input$eimer_unterscheiden)
+                  )
+
+                if (new_url != current_url){
+                  change_page(new_url)
+                }
+
+              }
+            }
+          }
+
+        },
+        ignoreNULL = FALSE
+      )
+
+      observeEvent(
+        input$tab_menu, {
+
+          current_url <- session$clientData$url_hash
+          if (path(current_url) %in% URL_PATH){
+            if (!gesperrt() & !is.null(get_query_param("hf"))){
+              if (!is.null(input$tab_menu)){
+
+                new_url     <-
+                  param_set(
+                    urls  = current_url,
+                    key   = "at_tab",
+                    value = process_input_for_parameter_tab(input$tab_menu)
+                  )
+
+                if (new_url != current_url){
+                  change_page(new_url)
+                }
+
+              }
+            }
+          }
+
+        },
+        ignoreNULL = FALSE
+      )
 
       for (i in write_explorer_filter_observer(filter_param$bez)){
         eval(parse(text = i))
       }
-
 
     }
 
@@ -834,7 +819,6 @@ vergleichen_translate_filter_param <- function(con){
 #' @noRd
 
 indikator_recode_param_int <- function(x, vec = FALSE){
-
   if (is.null(x)) return("")
   if (vec) x <- strsplit(x, ",")[[1]]
   x <- suppressWarnings(as.integer(x))
@@ -922,12 +906,12 @@ indikator_draw_eimer <- function(reichweiten = list(), selected = NULL, ns){
     add_rank_list(
       text      = "Ignoriert",
       labels    = reichweiten,
-      input_id  = ns("eimer_ignorieren_analysetool")
+      input_id  = ns("eimer_ignorieren")
     ),
     add_rank_list(
       text      = "Unterscheiden",
       labels    = selected,
-      input_id  = ns("eimer_unterscheiden_analysetool")
+      input_id  = ns("eimer_unterscheiden")
     )
   )
 }
@@ -978,6 +962,7 @@ vergleichen_draw_reactable <- function(daten){
 
 
   )
+
 }
 
 #' url Anpassungen
@@ -989,23 +974,27 @@ write_explorer_filter_observer <- function(filter_param_bez){
 
   write_code <- function(x){
     "observeEvent(input$ERSETZEN, {
-      if (!gesperrt() & !is.null(get_query_param('hf'))){
 
-        param_attr    <- filter_param[filter_param$bez == 'ERSETZEN',]
-        auspraegungen <- sort(unique(daten$werte[,param_attr$beschr[1]]))
-        auspraegungen <- (1:length(auspraegungen))[auspraegungen %in% input$ERSETZEN]
-        current_url   <- session$clientData$url_hash
+      current_url <- session$clientData$url_hash
+      if (path(current_url) %in% URL_PATH){
+        if (!gesperrt() & !is.null(get_query_param('hf'))){
 
-        new_url <-
-          add_param_in_url(
-            current_url  = current_url,
-            current_page = 'analysetool',
-            parameter    = param_attr$param[1],
-            value        = paste(auspraegungen, collapse = ','),
-            old_value    = get_query_param(param_attr$param[1])
-          )
-        if (new_url != current_url){
-          change_page(new_url)
+          param_attr    <- filter_param[filter_param$bez == 'ERSETZEN',]
+          auspraegungen <- sort(unique(daten$werte[,param_attr$beschr[1]]))
+          auspraegungen <- (1:length(auspraegungen))[auspraegungen %in% input$ERSETZEN]
+          current_url   <- session$clientData$url_hash
+
+          new_url <-
+            param_set(
+              urls  = current_url,
+              key   = param_attr$param[1],
+              value = paste(auspraegungen, collapse = ',')
+            )
+
+          if (new_url != current_url){
+            change_page(new_url)
+          }
+
         }
       }
     }, ignoreNULL = FALSE
@@ -1164,4 +1153,75 @@ vergleiche_load_reichweiten_by_multiple_variables <- function(variable, variable
 
   return(list(daten = daten, gruppe = reichweite_typ))
 
+}
+
+#' @noRd
+process_input_for_parameter_tag <- function(input_select_tag, vergleichen_tags){
+  new_value        <- ""
+  if (!is.null(input_select_tag)){
+    if (nrow(vergleichen_tags) > 0){
+      new_value <-
+        paste(
+          sort(vergleichen_tags$id[vergleichen_tags$beschr %in% input_select_tag]),
+          collapse = ","
+        )
+    }
+  }
+  return(URLencode(as.character(new_value)))
+}
+
+#' @noRd
+process_input_for_parameter_gp <- function(daten_gruppen, input_eimer_unterscheiden){
+  new_value <- (1:length(daten_gruppen))[daten_gruppen %in% input_eimer_unterscheiden]
+  if (length(new_value) != 0){
+    new_value <- paste(new_value, collapse = ",")
+  } else {
+    new_value <- ""
+  }
+  return(URLencode(as.character(new_value), reserved = TRUE))
+}
+
+#' @noRd
+process_input_for_parameter_vr <- function(input_select_var, vergleichen_variable){
+  new_value <- ""
+  if (!is.null(input_select_var) & nrow(vergleichen_variable) > 0){
+    new_value <- (vergleichen_variable$id[vergleichen_variable$beschr %in% input_select_var])[1]
+  }
+  return(URLencode(as.character(new_value), reserved = TRUE))
+}
+
+#' @noRd
+process_input_for_parameter_vr2 <- function(input_select_var, vergleichen_variable2){
+  new_value <- ""
+  if (!is.null(input_select_var) & nrow(vergleichen_variable2) > 0){
+    multi_new_values <- vergleichen_variable2$id[vergleichen_variable2$beschr %in% input_select_var]
+    new_value        <- paste(multi_new_values, collapse = ",")
+  } else {
+    daten$variable2 <- c()
+    new_value <- ""
+  }
+  return(URLencode(as.character(new_value), reserved = TRUE))
+}
+
+#' @noRd
+process_input_for_parameter_tab <- function(input_wert){
+  new_value <- ""
+  if (grepl(LABEL_TABSET_TABELLE, input_wert) | grepl(LABEL_TABSET_GRAFIK, input_wert)){
+    new_value <- input_wert
+    new_value <- gsub(LABEL_TABSET_TABELLE, "tab",    new_value)
+    new_value <- gsub(LABEL_TABSET_GRAFIK,  "grafik", new_value)
+    new_value <- gsub(" ", "", new_value)
+  }
+  return(URLencode(as.character(new_value), reserved = TRUE))
+}
+
+#' @noRd
+process_parameter_input_to_tab <- function(parameter){
+  new_value <- ""
+  if (grepl("", parameter) | grepl("", parameter)){
+    new_value <- parameter
+    new_value <- gsub("tab",    LABEL_TABSET_TABELLE,             new_value)
+    new_value <- gsub("grafik", paste0(LABEL_TABSET_GRAFIK, " "), new_value)
+  }
+  return(new_value)
 }
