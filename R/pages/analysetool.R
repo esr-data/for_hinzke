@@ -30,7 +30,8 @@ box::use(
   plotly[plotlyOutput, renderPlotly],
   utils[URLencode, URLdecode],
   urltools[param_get, param_set, path],
-  htmltools[tagQuery]
+  htmltools[tagQuery],
+  rlist[list.append]
 )
 
 URL_PATH             <- "analysetool"
@@ -260,7 +261,22 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
         output$result_tabs <- renderUI({
           result_tabs <- list(
             tabPanel(LABEL_TABSET_TABELLE,
-                     withSpinner(reactableOutput(ns("table"))))
+                     withSpinner(reactableOutput(ns("table"))),
+                     if(!is.null(nrow(results()))){
+
+                       if(nrow(results())>1){
+
+                         fluidRow(
+
+                           p(),
+
+                           p(style = "text-align: center; color: var(--grey);", "Quelle(n): under construction"))
+
+                       }
+
+                     }
+
+                     )
           )
 
            if(!is.null(nrow(results()))){
@@ -317,7 +333,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
             if (path(current_url) %in% URL_PATH){
 
               if (is.null(get_query_param())){
-                #change_page(paste0(URL_PATH, "?hf=0")) #kein Handlungsfeld-Filter - Grundlink der Seite
+                change_page(paste0(URL_PATH, "?hf=0")) #kein Handlungsfeld-Filter - Grundlink der Seite
               } else {
                 gesperrt(TRUE)
                 daten$aenderung <- FALSE
@@ -871,7 +887,7 @@ get_compatible_variables <- function(variable2, variable){
   }
 
   vars_link <- get_comparison_variables(variable, skip = TRUE)
-  
+
   variable2$tag_relevant <- variable2$relevant
   variable2$var_relevant <- variable2$beschr %in% vars_link$variable_beschr
   variable2$relevant <- variable2$tag_relevant & variable2$var_relevant
