@@ -886,8 +886,8 @@ get_compatible_variables <- function(variable2, variable){
     return(variable2)
   }
 
-  vars_link <- get_comparison_variables(variable)
-
+  vars_link <- get_comparison_variables(variable, skip = TRUE)
+  
   variable2$tag_relevant <- variable2$relevant
   variable2$var_relevant <- variable2$beschr %in% vars_link$variable_beschr
   variable2$relevant <- variable2$tag_relevant & variable2$var_relevant

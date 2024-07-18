@@ -13,7 +13,8 @@ get_possible_input <- function(
     filter = NULL,
     filter_combis = NULL,
     con = NULL,
-    silent = FALSE
+    silent = FALSE,
+    skip = skip
 ){
   
   ## --- group -----------------------------------------------------------------
