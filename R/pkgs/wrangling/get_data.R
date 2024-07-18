@@ -1,12 +1,11 @@
 
 box::use(
+  ../../utils/database[get_query, get_sql],
   . / get_compatible_input[get_compatible_input],
   . / get_possible_input[get_possible_input],
   . / formulate_and_send_query_to_magpie[formulate_and_send_query_to_magpie],
   . / reshape_data[reshape_data],
-  #../../R/utils/database[get_query],
-  
-  DBI[dbGetQuery, dbConnect],
+
   duckdb[duckdb],
   checkmate[check_character],
   stringr[str_replace]
@@ -32,8 +31,6 @@ get_data <- function(
     if (!require("pacman")) install.packages("pacman")
     pacman::p_load(svMagpie, DBI, checkmate, stringr, dplyr, tidyr)
     
-  }else{
-    con <- dbConnect(duckdb(), "data/magpie.db", read_only = TRUE)
   }
   
   
@@ -110,7 +107,8 @@ get_data <- function(
     get_compatible_input(
       variable,
       con = con,
-      silent = silent
+      silent = silent,
+      skip = skip
     )
   
   # --- step 3: check if chosen selection for selected variables is possible -----------
@@ -192,7 +190,8 @@ get_data <- function(
         filter_combis = filter_combis,
         filter_typ = filter_typ,
         con = con,
-        silent = silent
+        silent = silent, 
+        skip = skip
       )
   }
   
@@ -210,7 +209,8 @@ get_data <- function(
       filter_combis_df = filter_combis_df,
       reichweite_typ_in = input_list$reichweite_typ_in,
       reichweite_in = input_list$reichweite_in, # ergebnis ist liste
-      con = con
+      con = con,
+      skip = skip
     )
 
   
@@ -238,9 +238,14 @@ get_data <- function(
 #' Ruft Suche bei Magpie auf
 #' @export
 
-query_magpie <- function(query, con){
+query_magpie <- function(skip, query, con){
 
-  return(dbGetQuery(con, query))
+  if(skip == FALSE){
+    return(dbGetQuery(con, query))
+  }else{
+    return(get_query(x = query))
+  }
+  
 }
 
 #' Prüft ob Varialbe vorhanden ist - brauchen wir hier nicht
@@ -260,6 +265,7 @@ check_existence <-
     check <-
       x %in%
       query_magpie(
+        skip = skip,
         sprintf("SELECT %s FROM %s", column, table_name),
         con = con
       )[,column]
@@ -323,7 +329,7 @@ align_reichweite_typen <- function(
            ON rw.reichweite_typ_id = rwt.id
            WHERE rw.beschr IN ('", paste(filter, collapse = "', '"), "')"
       ) |>
-      query_magpie(con = con)
+      query_magpie(con = con, skip = skip)
   }
 
   

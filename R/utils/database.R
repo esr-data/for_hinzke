@@ -9,7 +9,8 @@ box::use(
   DBI[dbGetQuery, dbConnect, dbDisconnect],
   RSQLite[SQLite],
   data.table[fread],
-  duckdb[duckdb]
+  duckdb[duckdb],
+  dplyr[tbl]
 )
 
 con <- dbConnect(duckdb(), "data/magpie.db", read_only = TRUE)
@@ -143,4 +144,13 @@ disconnect_db <- function(){
   write_log("Verbindung zur Datenbank geschlossen!")
   dbDisconnect(con, shutdown = TRUE)
   return(invisible(NULL))
+}
+
+
+# provisorisch tbl für datalab-Daten
+#' Missing description
+#' @export
+
+capture_tbl <- function(var){
+  tbl(src = con, from = var)
 }

@@ -1,6 +1,6 @@
 box::use(
   ../../R/utils/routing[get_hf_param, add_param_in_url, recode_parameter],
-  ../../R/utils/database[get_query, load_table_by_variable],
+  ../../R/utils/database[get_query, load_table_by_variable, capture_tbl],
   ../../R/utils/js[get_js],
   ../../R/utils/monitor[get_content_monitor],
   ../../R/pkgs/svVis/create_bar_grouped[create_bar_grouped_interactive],
@@ -95,8 +95,8 @@ box::use(
   ],
   magrittr[`%>%`],
   shinycssloaders[withSpinner],
-  dplyr[rename, filter, select, tbl, collect, case_when, across, mutate,
-        arrange],
+  dplyr[rename, filter, select, case_when, across, mutate,
+        arrange, show_query],
   purrr[map2],
   DT[datatable, JS, renderDataTable, dataTableOutput, renderDT],
   shinyjs[
@@ -110,12 +110,9 @@ box::use(
   stringr[str_ends, str_detect],
   forcats[fct_rev],
   stats[na.omit],
-  DBI[dbConnect],
-  duckdb[duckdb]
+  utils[capture.output]
 )
 #TODO irrelevanten Verknüpfungen aussortieren!
-
-con <- dbConnect(duckdb(), "data/magpie.db", read_only = TRUE)
 
 # Global Variables
 
@@ -642,7 +639,7 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                   betr_ebene <- r$ebene_ausl
                   
                 
-                  df <- tbl(con, from = "studierende_detailliert") %>%
+                  df_query <- capture.output(capture_tbl("studierende_detailliert") %>%
                     filter(indikator %in% c("internationale Studienanfänger:innen (1. Hochschulsemester)",
                                                    "internationale Studierende",
                                                    "Studienanfänger:innen (1. Hochschulsemester)",
@@ -652,8 +649,12 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                                   region == bl_select,
                                   jahr == year_select )%>%
                     select(-mint_select,- fachbereich)%>%
-                    collect() %>%
-                    pivot_wider(names_from=indikator, values_from = wert)%>%
+                    show_query())
+                  
+                   df_query <- paste(df_query[-1], collapse = " ")
+                   df <- get_query(df_query)
+                  
+                    df <- df %>% pivot_wider(names_from=indikator, values_from = wert) %>%
                     mutate("deutsche Studierende" =`Studierende` - `internationale Studierende`,
                                   "deutsche Studienanfänger:innen (1. Hochschulsemester)"=`Studienanfänger:innen (1. Hochschulsemester)`-
                                     `internationale Studienanfänger:innen (1. Hochschulsemester)`)%>%
@@ -1095,16 +1096,20 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                   # status_select <- "Studierende"
                   # fach_select <- "Alle MINT-Fächer"
                    
-                  
-                  df <- tbl(con, from = "studierende_detailliert") %>%
+                
+                  df_query <- capture.output(capture_tbl("studierende_detailliert") %>%
                     filter(indikator %in% c("internationale Studienanfänger:innen (1. Hochschulsemester)",
                                                    "internationale Studierende",
                                                    "Studienanfänger:innen (1. Hochschulsemester)",
                                                    "Studierende"),
                                   geschlecht == "Gesamt")%>%
                     select(-mint_select,- fachbereich)%>%
-                    collect() %>%
-                    
+                    show_query())
+                
+                df_query <- paste(df_query[-1], collapse = " ")
+                df <- get_query(df_query)
+                
+                df <- df %>% 
                    pivot_wider(names_from=indikator, values_from = wert)%>%
                     mutate("deutsche Studierende" =`Studierende`-`internationale Studierende`,
                                   "deutsche Studienanfänger:innen (1. Hochschulsemester)"=`Studienanfänger:innen (1. Hochschulsemester)`-
@@ -1262,15 +1267,19 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                   # timerange <- r$date_kurse_einstieg_comparison
                    
                    # filter dataset based on UI inputs
-                   df <- dplyr::tbl(con, from = "studierende") %>%
-                     dplyr::filter(jahr == timerange,
+                   df_query <- capture.output(capture_tbl("studierende") %>%
+                    filter(jahr == timerange,
                                    geschlecht == "Gesamt",
                                    region== "Deutschland")%>%
-                     dplyr::collect()
+                     show_query())
+                 
+                 df_query <- paste(df_query[-1], collapse = " ")
+                 df <- get_query(df_query)
+                 
                    df <- df %>%
-                     tidyr::pivot_wider(names_from=fachbereich, values_from = wert)%>%
+                     pivot_wider(names_from=fachbereich, values_from = wert)%>%
                      #dplyr::rename("MINT (gesamt)" = MINT)%>%
-                     dplyr::select( -region, -Ingenieurwissenschaften,- `Mathematik, Naturwissenschaften`)
+                    select( -region, -Ingenieurwissenschaften,- `Mathematik, Naturwissenschaften`)
                    
                    # Calculating props
                    
@@ -1485,10 +1494,13 @@ studi_det_ui_faecher <-function(spezif_i, spezif_r){
   
   if(missing(spezif_i) & missing(spezif_r)){
     
-    df <- tbl(con, from = "studierende_detailliert") %>%
+    df_query <- capture.output(capture_tbl("studierende_detailliert") %>%
       filter(mint_select == "MINT"  | fach %in% c("Alle MINT-Fächer", "Alle Nicht MINT-Fächer")) %>%
       select(fach)%>%
-      collect()
+      show_query())
+
+    df_query <- paste(df_query[-1], collapse = " ")
+    df <- get_query(df_query)
     
     df <- df %>%
       unique()%>%
@@ -1500,10 +1512,13 @@ studi_det_ui_faecher <-function(spezif_i, spezif_r){
     
   } else if (missing(spezif_i)){
     
-    df <- tbl(con, from = "studierende_detailliert") %>%
+    df_query <- capture.output(capture_tbl("studierende_detailliert") %>%
       filter(mint_select == "MINT"  | fach %in% c("Alle MINT-Fächer", "Alle Nicht MINT-Fächer"))%>%
       filter(region %in%  spezif_r) %>%
-      collect()
+      show_query())
+
+    df_query <- paste(df_query[-1], collapse = " ")
+    df <- get_query(df_query)
     
     df <- df %>%select(fach)%>%
       unique()%>%
@@ -1515,11 +1530,14 @@ studi_det_ui_faecher <-function(spezif_i, spezif_r){
     
   } else if(missing(spezif_r)){
     
-    df <- tbl(con, from = "studierende_detailliert") %>%
+    df_query <- capture.output(capture_tbl("studierende_detailliert") %>%
       filter(mint_select == "MINT"  | fach %in% c("Alle MINT-Fächer", "Alle Nicht MINT-Fächer"))%>%
       filter(indikator %in%  spezif_i) %>%
-      collect()
-    
+      show_query())
+
+      df_query <- paste(df_query[-1], collapse = " ")
+      df <- get_query(df_query)
+      
     df <- df %>%select(fach)%>%
       unique()%>%
       as.vector()%>%

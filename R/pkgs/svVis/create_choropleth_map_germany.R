@@ -3,7 +3,7 @@ box::use(
   . / manage_custome_theme[manage_custome_theme],
   . / transform_title_letter_case_by_theme[transform_title_letter_case_by_theme],
   . / get_map_colors[get_map_colors],
- # ../../R/utils/database[get_query],
+  ../../utils/database[get_query],
 
   magrittr[`%>%`],
   sf[st_as_sf, st_simplify, st_as_sfc],
@@ -15,16 +15,8 @@ box::use(
   plotly[plot_ly, add_sf, config, layout, colorbar, hide_legend],
   stringr[str_c, str_remove],
   stringi[stri_wrap],
-  rlang[enquo, ensym],
-  DBI[dbGetQuery, dbConnect],
- duckdb[duckdb]
+  rlang[enquo, ensym]
 )
-
-# Einlesen über duckdb
-con <- dbConnect(duckdb(), "data/magpie.db", read_only = TRUE)
-get_query <- function(x){
-  dbGetQuery(conn = con, x)
-}
 
 # germany_choropleth_federal_states <- readRDS("data/germany_choropleth_federal_states.rds")
 # middle_points_of_ger_federal_states <- readRDS("data/middle_points_of_ger_federal_states.rds")

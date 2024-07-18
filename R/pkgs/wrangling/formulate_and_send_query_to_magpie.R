@@ -39,7 +39,8 @@ formulate_and_send_query_to_magpie <- function(
     filter_typ,
     filter_combis_df,
     reichweite_typ_in, reichweite_in,
-    con = NULL
+    con = NULL,
+    skip = skip
 ){
   cols <-
     paste(
@@ -206,9 +207,9 @@ formulate_and_send_query_to_magpie <- function(
     }
   }
   
-  
   df <-
     query_magpie(
+      skip,
       paste0(
         zeit_query_start,
         basis_query,

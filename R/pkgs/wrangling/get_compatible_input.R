@@ -7,14 +7,14 @@ box::use(
 #' checking available grouping (reichweiten_typen) & filter (reichweiten) for selected variable/s
 #' @noRd
 
-get_compatible_input <- function(variable, con = NULL, silent = FALSE){
+get_compatible_input <- function(variable, con = NULL, silent = FALSE, skip){
   
   # Mögliche Werte pro Variable identifizieren
-  possible_time            <- get_possible_values(variable, "zeit_einheit", con)
-  possible_units           <- get_possible_values(variable, "wert_einheit", con)
-  possible_kombis_reichweite       <- get_possible_values(variable, "reichweite_beschr_list", con)
-  possible_kombis_reichweite_typen <- get_possible_values(variable, "typ_list", con)
-  possible_kombis_reichweite_und_reichweite_typ <- get_possible_values(variable, "reichweite_typ_list", con)
+  possible_time            <- get_possible_values(variable, "zeit_einheit", con, skip = skip)
+  possible_units           <- get_possible_values(variable, "wert_einheit", con, skip = skip)
+  possible_kombis_reichweite       <- get_possible_values(variable, "reichweite_beschr_list", con, skip = skip)
+  possible_kombis_reichweite_typen <- get_possible_values(variable, "typ_list", con, skip = skip)
+  possible_kombis_reichweite_und_reichweite_typ <- get_possible_values(variable, "reichweite_typ_list", con, skip = skip)
   
   # Bei mehreren Variable Schnittmenge aus Möglichem bilden
   if(length(variable) > 1){
@@ -43,8 +43,9 @@ get_compatible_input <- function(variable, con = NULL, silent = FALSE){
 #' getting available options for given variable(s)
 #' @noRd
 
-get_possible_values <- function(variable, column, con = con){
+get_possible_values <- function(variable, column, skip, con = con){
   query_magpie(
+    skip = skip,
     paste0(
       "SELECT DISTINCT variable_beschr, ", column, " ",
       "FROM mview_daten_reichweite_menge

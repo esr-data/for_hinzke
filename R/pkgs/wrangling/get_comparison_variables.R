@@ -1,8 +1,7 @@
 box::use(
 #  ../../R/utils/database[get_query]
   . / get_data[query_magpie],
-  duckdb[duckdb],
-  DBI[dbConnect]
+  duckdb[duckdb]
 )
 
 get_comparison_variables <-
@@ -12,12 +11,11 @@ get_comparison_variables <-
     ueberschneidung_zeit_einheit = TRUE,
     ueberschneidung_zeit_auspraegung = TRUE,
     ueberschneidung_reichweite_reichweitetyp = TRUE,
-    con = NULL
+    con = NULL,
+    skip = skip
   ){ 
     
     timestamp <- Sys.time()
-    
-    if(is.null(con)) con <- dbConnect(duckdb(), "data/magpie.db", read_only = TRUE)
     
     wert_einheit <- "wert_einheit,"[ueberschneidung_wert_einheit]
     zeit_einheit <- "zeit_einheit,"[ueberschneidung_zeit_einheit]
@@ -58,27 +56,54 @@ get_comparison_variables <-
       
     }
     
-    vergleichs_variablen <-
-     # get_query(
-      query_magpie(
-        paste0(
-          "WITH VAR_START AS (
+    if(skip == FALSE){
+      
+      if(is.null(con)) con <- dbConnect(duckdb(), "data/magpie.db", read_only = TRUE)
+      
+      vergleichs_variablen <-
+        get_query(
+          paste0(
+            "WITH VAR_START AS (
        SELECT DISTINCT ", paste(columns, collapse = "', '"),
-          " FROM mview_daten_reichweite_menge
+            " FROM mview_daten_reichweite_menge
            WHERE variable_beschr ='", start_variable, "'),
 
        VERGLEICH AS (
        SELECT variable_beschr, ", paste(columns, collapse = "', '"),
-          " FROM mview_daten_reichweite_menge
+            " FROM mview_daten_reichweite_menge
             WHERE variable_beschr !='", start_variable, "')
 
       SELECT DISTINCT VERGLEICH.variable_beschr
       FROM VERGLEICH
       INNER JOIN VAR_START
           ON ",  join_statement
-        ),
-        con = con
-      )
+          ),
+          con = con
+        )
+      
+    }else{
+      vergleichs_variablen <-
+        query_magpie(
+          skip = skip,
+          paste0(
+            "WITH VAR_START AS (
+            SELECT DISTINCT ", paste(columns, collapse = "', '"),
+            " FROM mview_daten_reichweite_menge
+           WHERE variable_beschr ='", start_variable, "'),
+
+       VERGLEICH AS (
+       SELECT variable_beschr, ", paste(columns, collapse = "', '"),
+            " FROM mview_daten_reichweite_menge
+            WHERE variable_beschr !='", start_variable, "')
+
+      SELECT DISTINCT VERGLEICH.variable_beschr
+      FROM VERGLEICH
+      INNER JOIN VAR_START
+          ON ",  join_statement
+          ),
+          con = con
+        )
+    }
     
     message(paste("Timestamp:", round(difftime(Sys.time(), timestamp, units = "secs"), 2), "Sekunden"))
     
