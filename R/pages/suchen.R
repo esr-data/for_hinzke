@@ -1,7 +1,6 @@
 #' Necessary Packages/Functions
 
 box::use(
-  ../../R/utils/routing[add_param_in_url],
   ../../R/utils/database[get_query, search_database, get_cache_labels, get_search_data],
   ../../R/utils/ui[draw_search],
   ../../R/utils/string[preprocess_str],
@@ -23,7 +22,8 @@ box::use(
   stats[aggregate],
   htmltools[tags],
   rlist[list.rbind],
-  tibble[tibble]
+  tibble[tibble],
+  urltools[param_get, param_set]
 )
 
 #' Missing description
@@ -137,16 +137,17 @@ module_suchen_server <- function(id = "suchen", type = "all") {
 
       observeEvent(
         input$suchen, {
-          if (get_page() == "suchen"){
-            change_page(
-              add_param_in_url(
-                current_url  = session$clientData$url_hash,
-                current_page = "suchen",
-                parameter    = "term",
-                value        = URLencode(input$suchen, reserved = TRUE),
-                old_value    = URLencode(get_query_param("term"), reserved = TRUE)
+          if (get_page() %in% "suchen"){
+            current_url <- session$clientData$url_hash
+            new_url     <-
+              param_set(
+                urls = current_url,
+                key = "term",
+                value = URLencode(input$suchen, reserved = TRUE)
               )
-            )
+            if (new_url != current_url){
+              change_page(new_url)
+            }
           }
         }
       )
