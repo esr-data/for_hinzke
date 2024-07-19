@@ -14,13 +14,14 @@ box::use(
     HTML, tagList, div, h2, h3, p,
     reactiveVal, reactiveValues,
     actionButton, reactive,
-    eventReactive, observe,
+    eventReactive,
     htmlOutput, plotOutput, renderPlot,
     renderText, textOutput,
     tabPanel, tabsetPanel,
     renderCachedPlot, mainPanel,
     updateActionButton,
-    updateTabsetPanel
+    updateTabsetPanel,
+    isolate
   ],
   shinyWidgets[pickerInput, updatePickerInput],
   shiny.router[get_query_param, change_page],
@@ -35,8 +36,8 @@ box::use(
 )
 
 URL_PATH             <- "analysetool"
-LABEL_TABSET_TABELLE <- "Ergebnistabelle"
-LABEL_TABSET_GRAFIK  <- "Grafik"
+LABEL_TABSET_TABELLE <- "Tabelle"
+LABEL_TABSET_GRAFIK  <- "Abbildung"
 
 #' UI Funktion Analysetool
 #' @export
@@ -255,65 +256,73 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
       })
 
       # Ergebnis-Output-Serverfunktionen
-      #TODO kein observe
-      observe({
+      observeEvent(
+        results(), {
 
-        output$result_tabs <- renderUI({
-          result_tabs <- list(
-            tabPanel(LABEL_TABSET_TABELLE,
-                     withSpinner(reactableOutput(ns("table"))),
-                     if(!is.null(nrow(results()))){
+          output$result_tabs <-
+            renderUI({
 
-                       if(nrow(results())>1){
+              results_data <- results()
 
-                         fluidRow(
-
-                           p(),
-
-                           p(style = "text-align: center; color: var(--grey);", "Quelle(n): under construction"))
-
-                       }
-
-                     }
-
-                     )
-          )
-
-           if(!is.null(nrow(results()))){
-
-             if(nrow(results())>1){
-            plot_list <- produce_plot(results(),
-                                      chart_options_rules_dir = "chart_options_rules")
+              result_tabs <-
+                list(
+                  tabPanel(
+                    LABEL_TABSET_TABELLE,
+                    withSpinner(reactableOutput(ns("table"))),
+                    add_reactable_footer(results_data)
+                  )
+                )
 
 
-            grafiken <- c()
-            for(i in seq_along(plot_list)) {
-              grafiken <- c(grafiken, paste(LABEL_TABSET_GRAFIK, i))
-              result_tabs <- append(result_tabs, list(tabPanel(grafiken[length(grafiken)],
-                                                               div(
-                                                                 class = "content-box",
-                                                                 style = "width: 100%; height: 600px;",
+              if (!is.null(results_data)){
+                if (is.data.frame(results_data)){
+                  if (nrow(results_data) > 0){
 
-                                                                 plotlyOutput(ns(paste("plot", i, sep = "")), height = "100%"))))
-                                                      )
-            }
-            tab_liste$tabs <- c(LABEL_TABSET_TABELLE, grafiken)
+                    plot_list <-
+                      produce_plot(
+                        results(),
+                        chart_options_rules_dir = "chart_options_rules"
+                      )
 
-            for(i in seq_along(plot_list)) {
+                    grafiken <- c()
 
-              local({
-                my_i <- i
-                output[[paste("plot", my_i, sep = "")]] <- renderPlotly({
-                  plot_list[[my_i]]
-                })
-              })
-            }
+                    for(i in seq_along(plot_list)) {
+                      grafiken    <- c(grafiken, paste(LABEL_TABSET_GRAFIK, i))
+                      result_tabs <-
+                        append(
+                          result_tabs,
+                          list(
+                            tabPanel(
+                              grafiken[length(grafiken)],
+                              div(
+                                class = "content-box",
+                                style = "width: 100%; height: 600px;",
+                                plotlyOutput(ns(paste("plot", i, sep = "")), height = "100%")
+                              )
+                            )
+                          )
+                      )
+                    }
 
-             }
-           }
+                    tab_liste$tabs <- c(LABEL_TABSET_TABELLE, grafiken)
 
-          do.call(tabsetPanel, args = list.append(result_tabs, id = ns("tab_menu")))#list(result_tabs[[1]], id = ns("tab_menu")))
+                    for(i in seq_along(plot_list)) {
+                      local({
+                        my_i <- i
+                        output[[paste("plot", my_i, sep = "")]] <- renderPlotly({
+                          plot_list[[my_i]]
+                        })
+                      })
+                    }
 
+                  }
+                }
+              }
+
+
+          aktueller_param <- isolate(get_query_param("at_tab"))
+          aktueller_tab <- process_parameter_input_to_tab(aktueller_param)
+          do.call(tabsetPanel, args = list.append(result_tabs, id = ns("tab_menu"), selected = aktueller_tab))
         })
 
       })
@@ -331,10 +340,8 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
           current_url <- session$clientData$url_hash
           if (!gesperrt()){
             if (path(current_url) %in% URL_PATH){
+              #if (!is.null(get_query_param())){
 
-              if (is.null(get_query_param())){
-                change_page(paste0(URL_PATH, "?hf=0")) #kein Handlungsfeld-Filter - Grundlink der Seite
-              } else {
                 gesperrt(TRUE)
                 daten$aenderung <- FALSE
 
@@ -342,11 +349,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
 
                 param_hf <-
                   get_query_param("hf") |>
-                  indikator_recode_param_int()
-
-                if (param_hf == ""){
-                  param_hf <- 0
-                }
+                  recode_param_int(default = 0)
 
                 if (param_hf != parameter$hf){
                   parameter$hf <- param_hf
@@ -367,7 +370,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
 
                 param_at_tg <-
                   get_query_param("at_tg") |>
-                  indikator_recode_param_int(vec = TRUE)
+                  recode_param_int(vec = TRUE)
 
                 # Nur Änderungen vornehmen, wenn sich etwas geändert hat
                 if (!(all(param_at_tg %in% parameter$at_tg) &
@@ -408,7 +411,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
 
                 param_at_vr <-
                   get_query_param("at_vr") |>
-                  indikator_recode_param_int()
+                  recode_param_int()
 
                 if (param_at_vr != parameter$at_vr){
                   parameter$at_vr <- param_at_vr
@@ -471,7 +474,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
                 # von Tag Auswahl übergeben und miteinbeziehen in Datenoutput
                 param_at_vr2 <-
                   get_query_param("at_vr2") |>
-                  indikator_recode_param_int(TRUE)
+                  recode_param_int(TRUE)
 
 
                 if (!(all(param_at_vr2 %in% parameter$at_vr2) &
@@ -514,7 +517,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
 
                 param_at_gp <-
                   get_query_param("at_gp") |>
-                  indikator_recode_param_int(vec = TRUE)
+                  recode_param_int(vec = TRUE)
 
                 if (!(all(param_at_gp %in% parameter$at_gp) &
                       all(parameter$at_gp %in% param_at_gp))){
@@ -566,7 +569,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
                   # filter_id <- "at_re15"
                   param_filter <-
                     get_query_param(filter_id) |>
-                    indikator_recode_param_int(vec = TRUE)
+                    recode_param_int(vec = TRUE)
 
                   "test <- !(all(param_filter %in% parameter$ERSETZEN) &  all(parameter$ERSETZEN %in% param_filter))" |>
                     gsub(pattern = "ERSETZEN", replacement = filter_id) |>
@@ -642,7 +645,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
 
                 }
 
-              }
+              #}
             }
           }
           gesperrt(FALSE)
@@ -834,11 +837,11 @@ vergleichen_translate_filter_param <- function(con){
 #' Hilfsfunktion Update Link
 #' @noRd
 
-indikator_recode_param_int <- function(x, vec = FALSE){
-  if (is.null(x)) return("")
+recode_param_int <- function(x, vec = FALSE, default = ""){
+  if (is.null(x)) return(default)
   if (vec) x <- strsplit(x, ",")[[1]]
   x <- suppressWarnings(as.integer(x))
-  if (any(is.na(x))) return("")
+  if (any(is.na(x))) return(default)
   return(sort(x))
 }
 
@@ -1225,7 +1228,7 @@ process_input_for_parameter_tab <- function(input_wert){
   if (grepl(LABEL_TABSET_TABELLE, input_wert) | grepl(LABEL_TABSET_GRAFIK, input_wert)){
     new_value <- input_wert
     new_value <- gsub(LABEL_TABSET_TABELLE, "tab",    new_value)
-    new_value <- gsub(LABEL_TABSET_GRAFIK,  "grafik", new_value)
+    new_value <- gsub(LABEL_TABSET_GRAFIK,  "abb", new_value)
     new_value <- gsub(" ", "", new_value)
   }
   return(URLencode(as.character(new_value), reserved = TRUE))
@@ -1234,10 +1237,30 @@ process_input_for_parameter_tab <- function(input_wert){
 #' @noRd
 process_parameter_input_to_tab <- function(parameter){
   new_value <- ""
-  if (grepl("", parameter) | grepl("", parameter)){
+  if (grepl("tab", parameter) | grepl("abb", parameter)){
     new_value <- parameter
-    new_value <- gsub("tab",    LABEL_TABSET_TABELLE,             new_value)
-    new_value <- gsub("grafik", paste0(LABEL_TABSET_GRAFIK, " "), new_value)
+    new_value <- gsub("tab", LABEL_TABSET_TABELLE,             new_value)
+    new_value <- gsub("abb", paste0(LABEL_TABSET_GRAFIK, " "), new_value)
+  }
+  if (new_value %in% ""){
+    new_value <- LABEL_TABSET_TABELLE
   }
   return(new_value)
+}
+
+#' @noRd
+add_reactable_footer <- function(results){
+  if(!is.null(nrow(results))){
+    if(nrow(results) > 1){
+
+      return(
+        fluidRow(
+          p(),
+          p(style = "text-align: center; color: var(--grey);", "Quelle(n): under construction")
+        )
+      )
+
+    }
+  }
+  return(HTML(""))
 }
