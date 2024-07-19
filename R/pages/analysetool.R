@@ -349,7 +349,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
 
             output$result_tabs <-
               renderUI({
-                p("Daten auswählen")
+                p("Daten auswählen") #TODO
               })
 
           }
@@ -489,7 +489,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
                 if(is.null(daten$variable)){
 
                 }else{
-                  selected_tags   <- input_tag()$beschr[input_tag()$id %in% parameter$at_tg] # falls Tags soll das hier auch passen
+                  selected_tags <- input_tag()$beschr[input_tag()$id %in% parameter$at_tg] # falls Tags soll das hier auch passen
                   input_var2(indikator_get_variables_by_tags(input_var2(), selected_tags))
                   input_var2(get_compatible_variables(input_var2(), daten$variable))
                 }
@@ -735,11 +735,13 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
           if (get_page() %in% URL_PATH){
             if (!gesperrt()){
 
+              new_value <- process_input_for_parameter_vr2(input$variable_vergleichen, input_var2())
+              if (new_value %in% "") daten$variable2 <- c()
               new_url <-
                 param_set(
                   urls = current_url,
                   key = "at_vr2",
-                  value = process_input_for_parameter_vr2(input$variable_vergleichen, input_var2())
+                  value = new_value
                 )
 
               if (new_url != current_url){
@@ -1239,7 +1241,7 @@ process_input_for_parameter_vr2 <- function(input_select_var, vergleichen_variab
     multi_new_values <- vergleichen_variable2$id[vergleichen_variable2$beschr %in% input_select_var]
     new_value        <- paste(multi_new_values, collapse = ",")
   } else {
-    daten$variable2 <- c()
+    #daten$variable2 <- c()
     new_value <- ""
   }
   return(URLencode(as.character(new_value), reserved = TRUE))
