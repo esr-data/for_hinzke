@@ -24,7 +24,7 @@ box::use(
     isolate
   ],
   shinyWidgets[pickerInput, updatePickerInput],
-  shiny.router[get_query_param, change_page],
+  shiny.router[get_query_param, change_page, get_page],
   shinycssloaders[withSpinner],
   reactable[reactable, reactableOutput, renderReactable, colDef, reactableTheme, reactableLang],
   sortable[bucket_list, add_rank_list],
@@ -117,7 +117,7 @@ module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"),
 
         # 5. Ergebnisse in Tabs
 
-          uiOutput(ns("result_tabs"))
+        withSpinner(uiOutput(ns("result_tabs")))
 
       )
 
@@ -259,79 +259,102 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
       observeEvent(
         results(), {
 
-          output$result_tabs <-
-            renderUI({
+          results_data <- results()
 
-              results_data <- results()
+          daten_vorhanden <- FALSE
+          if (get_page() %in% URL_PATH){
+            if (!is.null(results_data)){
+              if (is.data.frame(results_data)){
+                daten_vorhanden <- TRUE
+              }
+            }
+          }
 
-              result_tabs <-
-                list(
-                  tabPanel(
-                    LABEL_TABSET_TABELLE,
-                    withSpinner(reactableOutput(ns("table"))),
-                    add_reactable_footer(results_data)
+          if (daten_vorhanden){
+
+            output$result_tabs <-
+              renderUI({
+
+                result_tabs <-
+                  list(
+                    tabPanel(
+                      LABEL_TABSET_TABELLE,
+                      reactableOutput(ns("table")),
+                      add_reactable_footer(results_data)
+                    )
                   )
-                )
 
 
-              if (!is.null(results_data)){
-                if (is.data.frame(results_data)){
-                  if (nrow(results_data) > 0){
+                if (!is.null(results_data)){
+                  if (is.data.frame(results_data)){
+                    if (nrow(results_data) > 0){
 
-                    plot_list <-
-                      produce_plot(
-                        results(),
-                        chart_options_rules_dir = "chart_options_rules"
-                      )
+                      plot_list <-
+                        produce_plot(
+                          results(),
+                          chart_options_rules_dir = "chart_options_rules"
+                        )
 
-                    grafiken <- c()
+                      grafiken <- c()
 
-                    for(i in seq_along(plot_list)) {
-                      grafiken    <- c(grafiken, paste(LABEL_TABSET_GRAFIK, i))
-                      result_tabs <-
-                        append(
-                          result_tabs,
-                          list(
-                            tabPanel(
-                              grafiken[length(grafiken)],
-                              div(
-                                class = "content-box",
-                                style = "width: 100%; height: 600px;",
-                                plotlyOutput(ns(paste("plot", i, sep = "")), height = "100%")
+                      for(i in seq_along(plot_list)) {
+                        grafiken    <- c(grafiken, paste(LABEL_TABSET_GRAFIK, i))
+                        result_tabs <-
+                          append(
+                            result_tabs,
+                            list(
+                              tabPanel(
+                                grafiken[length(grafiken)],
+                                div(
+                                  class = "content-box",
+                                  style = "width: 100%; height: 600px;",
+                                  plotlyOutput(ns(paste("plot", i, sep = "")), height = "100%")
+                                )
                               )
                             )
                           )
-                      )
-                    }
+                      }
 
-                    tab_liste$tabs <- c(LABEL_TABSET_TABELLE, grafiken)
+                      tab_liste$tabs <- c(LABEL_TABSET_TABELLE, grafiken)
 
-                    for(i in seq_along(plot_list)) {
-                      local({
-                        my_i <- i
-                        output[[paste("plot", my_i, sep = "")]] <- renderPlotly({
-                          plot_list[[my_i]]
+                      for(i in seq_along(plot_list)) {
+                        local({
+                          my_i <- i
+                          output[[paste("plot", my_i, sep = "")]] <- renderPlotly({
+                            plot_list[[my_i]]
+                          })
                         })
-                      })
-                    }
+                      }
 
+                    }
                   }
                 }
-              }
 
+                result_tabs   <- list.append(result_tabs, id = ns("tab_menu"))
+                aktueller_tab <- isolate(get_query_param("at_tab"))
+                if (!is.null(aktueller_tab)){
+                  aktueller_tab <- process_parameter_input_to_tab(aktueller_tab)
+                  result_tabs   <- list.append(result_tabs, selected = aktueller_tab)
+                }
 
-          aktueller_param <- isolate(get_query_param("at_tab"))
-          aktueller_tab <- process_parameter_input_to_tab(aktueller_param)
-          do.call(tabsetPanel, args = list.append(result_tabs, id = ns("tab_menu"), selected = aktueller_tab))
-        })
+                do.call(tabsetPanel, args = result_tabs)
+              })
 
-      })
+            # rendering tabelle, wenn Knopf gedrückt wird
+            output$table <- renderReactable({
+              vergleichen_draw_reactable(results())
+            })
 
-      # rendering tabelle, wenn Knopf gedrückt wird
-      output$table <- renderReactable({
-        vergleichen_draw_reactable(results())
-      })
+          } else {
 
+            output$result_tabs <-
+              renderUI({
+                p("Daten auswählen")
+              })
+
+          }
+
+      }, ignoreNULL = FALSE)
 
       # Das zentrale Event bezieht sich auf die URL-Parameter; auf dieser Basis werden alle Anpassungen vorgenommen
       observeEvent(
@@ -339,8 +362,8 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
 
           current_url <- session$clientData$url_hash
           if (!gesperrt()){
-            if (path(current_url) %in% URL_PATH){
-              #if (!is.null(get_query_param())){
+            if (get_page() %in% URL_PATH){
+              if (TRUE){#!is.null(get_query_param())){
 
                 gesperrt(TRUE)
                 daten$aenderung <- FALSE
@@ -645,7 +668,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
 
                 }
 
-              #}
+              }
             }
           }
           gesperrt(FALSE)
@@ -659,8 +682,8 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
         input$select_tag, {
 
           current_url      <- session$clientData$url_hash
-          if (path(current_url) %in% URL_PATH){
-            if (!gesperrt() & !is.null(get_query_param("hf"))){
+          if (get_page() %in% URL_PATH){
+            if (!gesperrt()){
 
               new_url <-
                 param_set(
@@ -684,8 +707,8 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
         input$select_vars, {
 
           current_url <- session$clientData$url_hash
-          if (path(current_url) %in% URL_PATH){
-            if (!gesperrt() & !is.null(get_query_param("hf"))){
+          if (get_page() %in% URL_PATH){
+            if (!gesperrt()){
 
               new_url <-
                 param_set(
@@ -709,14 +732,14 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
         input$variable_vergleichen, {
 
           current_url <- session$clientData$url_hash
-          if (path(current_url) %in% URL_PATH){
-            if (!gesperrt() & !is.null(get_query_param("hf"))){
+          if (get_page() %in% URL_PATH){
+            if (!gesperrt()){
 
               new_url <-
                 param_set(
                   urls = current_url,
                   key = "at_vr2",
-                  value = process_input_for_parameter_vr2(input_select_var, vergleichen_variable2)
+                  value = process_input_for_parameter_vr2(input$variable_vergleichen, input_var2())
                 )
 
               if (new_url != current_url){
@@ -735,8 +758,8 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
         input$eimer_unterscheiden, {
 
           current_url <- session$clientData$url_hash
-          if (path(current_url) %in% URL_PATH){
-            if (!gesperrt() & !is.null(get_query_param("hf"))){
+          if (get_page() %in% URL_PATH){
+            if (!gesperrt()){
               if (length(daten$gruppen) > 0){
 
                 new_url     <-
@@ -762,8 +785,8 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
         input$tab_menu, {
 
           current_url <- session$clientData$url_hash
-          if (path(current_url) %in% URL_PATH){
-            if (!gesperrt() & !is.null(get_query_param("hf"))){
+          if (get_page() %in% URL_PATH){
+            if (!gesperrt()){
               if (!is.null(input$tab_menu)){
 
                 new_url     <-
@@ -995,7 +1018,7 @@ write_explorer_filter_observer <- function(filter_param_bez){
     "observeEvent(input$ERSETZEN, {
 
       current_url <- session$clientData$url_hash
-      if (path(current_url) %in% URL_PATH){
+      if (get_page() %in% URL_PATH){
         if (!gesperrt() & !is.null(get_query_param('hf'))){
 
           param_attr    <- filter_param[filter_param$bez == 'ERSETZEN',]
