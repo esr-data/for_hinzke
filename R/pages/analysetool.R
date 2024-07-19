@@ -20,19 +20,21 @@ box::use(
     tabPanel, tabsetPanel,
     renderCachedPlot, mainPanel,
     updateActionButton,
-    updateTabsetPanel,
-    isolate
+    updateTabsetPanel, icon, isolate
   ],
-  shinyWidgets[pickerInput, updatePickerInput],
+  shinyWidgets[pickerInput, updatePickerInput,
+               sliderTextInput],
   shiny.router[get_query_param, change_page, get_page],
+  shinyBS[bsTooltip],
   shinycssloaders[withSpinner],
   reactable[reactable, reactableOutput, renderReactable, colDef, reactableTheme, reactableLang],
   sortable[bucket_list, add_rank_list],
   plotly[plotlyOutput, renderPlotly],
   utils[URLencode, URLdecode],
   urltools[param_get, param_set, path],
-  htmltools[tagQuery],
-  rlist[list.append]
+  htmltools[tagQuery, tags],
+  rlist[list.append],
+  stats[median]
 )
 
 URL_PATH             <- "analysetool"
@@ -45,6 +47,14 @@ LABEL_TABSET_GRAFIK  <- "Abbildung"
 module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"), type = "all") {
   ns <- NS(id)
   fluidPage(
+    #TODO läuft noch nicht
+    # tags$head(
+    #   tags$script(HTML('
+    #   $(document).ready(function(){
+    #     $(\'[data-toggle="tooltip"]\').tooltip(); 
+    #   });
+    # '))
+    # ),
     div(
       class = "panel-content",
       h2("Explorer - Analysieren von Variablen"),
@@ -54,26 +64,15 @@ module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"),
           class = "content-box",
           style = "width: 100%;",
           div(
-            style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
-            # 1. Schritt - erste Variablenwahl
-            pickerInput(
-              inputId = ns("select_vars"),
-              label = "Liste der Variablen",
-              choices = c(""),
-              options  = list(
-                `actions-box`        = FALSE,
-                `none-selected-text` = "nichts ausgewählt",
-                `select-all-text`    = "alle auswählen",
-                `deselect-all-text`  = "nichts auswählen",
-                `live-search`        = TRUE,
-                `max-options`        = 1
-              ),
-              multiple = TRUE
-            ),
-            # dazugehörige Tag-Auswahl
+            style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;
+                padding: 16px 20px 1px 20px; align-items: center;",
+            
+            # Themenbereich/Tags
             pickerInput(
               inputId = ns("select_tag"),
-              label = "Themenbereiche",
+              label = p(style = "color: var(--light-blue);
+                        margin-bottom: 0px;", 
+                        "Themenbereiche:"),
               choices = c(""),
               options  = list(
                 `actions-box`        = TRUE,
@@ -83,33 +82,97 @@ module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"),
                 `live-search`        = TRUE
               ),
               multiple = TRUE
+            ),
+            
+            div(
+              class = "menu-box", style = "margin-left: auto; display: flex; 
+              flex-direction: column; align-items: flex-end;
+              padding: 10px 20px 20px;",
+              p("Speichern & Teilen:", style = "margin-bottom: 4px;"),
+              div(
+                style = "display: flex;",
+                actionButton(
+                  ns("speichern"),
+                  icon  = icon("floppy-disk", class = "fa-solid"),
+                  label = "",
+                  class = "button_icon"
+                ),
+                actionButton(
+                  ns("teilen"),
+                  icon  = icon("share-nodes"),
+                  label = "",
+                  class = "button_icon"
+                ),
+                actionButton(
+                  ns("bookmark"),
+                  icon  = icon("bookmark", class = "fa-solid"),
+                  label = "",
+                  class = "button_icon"
+                )
+              )
             )
           ),
-
-          # 2. Schritt - Auswahl weiterer, passender Variablen - als Option ergänzbar
-
+          
           div(
-            style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
-            actionButton(ns("new_var_btn"), "Vergleichsvariable hinzufügen")
-          ),
-          div(
-            style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
-            uiOutput(ns("variable_vergleichen"))
+            style = "padding: 1px 20px 1px 20px; display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center;",
+            
+            # Variable wählen
+            div(
+              style = "display: flex; flex-direction: column;",
+              pickerInput(
+                inputId = ns("select_vars"),
+                label = "Variablenauswahl:",
+                choices = c(""),
+                options  = list(
+                  `actions-box`        = FALSE,
+                  `none-selected-text` = "nichts ausgewählt",
+                  `select-all-text`    = "alle auswählen",
+                  `deselect-all-text`  = "nichts auswählen",
+                  `live-search`        = TRUE,
+                  `max-options`        = 1
+                ),
+                multiple = TRUE
+              )
+            ),
+            
+            div(
+              style = "margin-left: 20px; display: flex; flex-direction: column; align-items: flex-start;",
+              div(
+                style = "display: flex; align-items: center; margin-top: -6px;", # Adjusted the margin-top to align better
+                p("Vergleichsvariable hinzufügen:", style = "margin: 0; font-weight: 700; margin-right: 10px;"),
+                actionButton(
+                  ns("new_var_btn"),
+                  icon  = icon("square-plus", class = "fa-solid"),
+                  label = "",
+                  class = "button_icon"
+                )
+              ),
+              uiOutput(ns("variable_vergleichen"), style = "margin-top: 2px; width: 100%;")
+            )
           ),
 
           # 3. Schritt Wahl der Reichweiten/Filter
           uiOutput(ns("variable")),
           div(
-            style = "display: flex; flex-wrap: wrap;",
+            style = "display: flex; flex-wrap: wrap; margin-left: 30px;",
             div(uiOutput(ns("select_reichweite")), style = "max-width: 650px; width: 80%;"),
-            div(uiOutput(ns("filter_reichweite"),  style = "max-width: 250px; width: 100%"))
+            div(uiOutput(ns("filter_reichweite"),  style = "max-width: 250px; width: 100%;
+                         margin-left: 25px; margin-top: 65px;"))
           ),
 
-          # #4. Schritt Daten laden Button
-          # div(
-          #   style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;",
-          #   actionButton(ns("show_results"), "Ergebnisse anzeigen", class = "btn-primary")
-          # )
+          # #4. Reset-Button
+          div(class = "menu-box", stlye = "margin: 20px",
+              actionButton(
+                ns("reset"),
+                icon  = icon("repeat", class = "fa-solid"),
+                label = "",
+                class = "button_icon"
+                #TODO vgl. oben, läuft noch nicht
+                # ,
+                # `data-toggl` = "tooltip",
+                # text = "Hier setzen Sie alle Ihre Einstellungen zurück"
+              )
+            )
         )
       ),
 
@@ -184,7 +247,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
           if(isTRUE(daten$show_additional_var) && nrow(input_var2()) > 0){
             pickerInput(
               inputId = ns("variable_vergleichen"),
-              label = "Liste möglicher Vergleichsvariablen",
+              label = NULL,
               choices = sort(input_var2()$beschr[input_var2()$relevant]),
               selected = daten$variable2,
               options  = list(
@@ -353,8 +416,26 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
               })
 
           }
-
       }, ignoreNULL = FALSE)
+
+      observeEvent(input$reset, {
+        
+        daten$filter  <- data.frame()
+        daten$gruppen <- c()
+        daten$werte   <- data.frame()
+        daten$auswahl <- c()
+        daten$variable <- c()
+        daten$variable2 <- c()
+        show_additional_var <- FALSE
+        
+        updatePickerInput(session, "select_tag", selected = NULL)
+        updatePickerInput(session, "select_vars", selected = NULL)
+        output$variable_vergleichen <- renderUI({HTML("")})
+        output$filter_reichweite <- renderUI({HTML("")})
+        output$select_reichweite <- renderUI({HTML("")})
+        
+        #TODO link resetten
+      })
 
       # Das zentrale Event bezieht sich auf die URL-Parameter; auf dieser Basis werden alle Anpassungen vorgenommen
       observeEvent(
@@ -473,7 +554,13 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
 
 
                       output$filter_reichweite <- renderUI({HTML("")})
-                      output$select_reichweite <- renderUI({indikator_draw_eimer(daten$gruppen, ns = ns)})
+                      output$select_reichweite <- renderUI({
+                        fluidRow(
+                          p(style= "font-weight: 700; margin-left: 10px;
+                            margin-top: 20px;",
+                          "Variablenausprägungen:"),
+                        indikator_draw_eimer(daten$gruppen, ns = ns)
+                        )})
                       updatePickerInput(session, "select_vars", selected = variable$beschr)
                       updatePickerInput(session, "variable_vergleichen", selected = NULL)
                     }
@@ -548,6 +635,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
                   parameter$at_gp <- param_at_gp
                   daten_gruppe <- 1:length(daten$gruppen)
                   daten_gruppe <- daten_gruppe[daten_gruppe %in% param_at_gp]
+                  
 
                   if (length(daten_gruppe) > 0){
                     daten$auswahl <- daten$gruppen[daten_gruppe]
@@ -570,7 +658,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
                     if (eimer_aenderung){
                       output$select_reichweite <-
                         renderUI({
-                          indikator_draw_eimer(daten$gruppen, daten$auswahl, ns)
+                            indikator_draw_eimer(daten$gruppen, daten$auswahl, ns)
                         })
                     }
 
@@ -942,18 +1030,18 @@ indikator_draw_eimer <- function(reichweiten = list(), selected = NULL, ns){
   if (!is.null(selected)){
     reichweiten <- reichweiten[!(reichweiten %in% selected)]
   }
-
+  
   bucket_list(
     header      = NULL,
     group_name  = "eimer_reichweiten",
     orientation = "horizontal",
     add_rank_list(
-      text      = "Ignoriert",
+      text      = "Auswahl",
       labels    = reichweiten,
       input_id  = ns("eimer_ignorieren")
     ),
     add_rank_list(
-      text      = "Unterscheiden",
+      text      = "Gewählt",
       labels    = selected,
       input_id  = ns("eimer_unterscheiden")
     )
@@ -1068,30 +1156,70 @@ indikator_draw_filter <- function(werte, unterscheiden = NULL, ns){
   }
 
   if (length(unterscheiden) > 0){
-    gsub_name <- function(x){gsub("[^a-z]", "", tolower(x))}
+    
+    if("Zeit" %in% unterscheiden){
+      
+      unterscheiden <- setdiff(unterscheiden, "Zeit")
+      
+      gsub_name <- function(x){gsub("[^a-z]", "", tolower(x))}
 
-    filter_ui <-
-      tagList(
-        lapply(
-          unterscheiden,
-          \(x){
-            pickerInput(
-              inputId  = ns(gsub_name(x)),
-              label    = x,
-              choices  = setdiff(unique(werte[,x]), "Insgesamt"),
-              selected = NULL,
-              options  = list(
-                `actions-box`        = TRUE,
-                `none-selected-text` = "nichts ausgewählt",
-                `select-all-text`    = "alle auswählen",
-                `deselect-all-text`  = "nichts auswählen",
-                `live-search`        = TRUE
-              ),
-              multiple = TRUE
-            )
-          }
+      filter_ui <-
+        tagList(
+          lapply(
+            unterscheiden,
+            \(x){
+              pickerInput(
+                inputId  = ns(gsub_name(x)),
+                label    = x,
+                choices  = setdiff(unique(werte[,x]), "Insgesamt"),
+                selected = NULL,
+                options  = list(
+                  `actions-box`        = TRUE,
+                  `none-selected-text` = "nichts ausgewählt",
+                  `select-all-text`    = "alle auswählen",
+                  `deselect-all-text`  = "nichts auswählen",
+                  `live-search`        = TRUE
+                ),
+                multiple = TRUE
+              )
+            }
+          ),
+          
+          sliderTextInput(
+            inputId = ns("zeit"),
+            label = "Zeit",
+            choices = as.numeric(unique(werte$Zeit)),
+            selected = as.numeric(median(unique(werte$Zeit))):as.numeric(max(unique(werte$Zeit)))
+          )
         )
-      )
+    }else{
+      
+      gsub_name <- function(x){gsub("[^a-z]", "", tolower(x))}
+      
+      filter_ui <-
+        tagList(
+          lapply(
+            unterscheiden,
+            \(x){
+              pickerInput(
+                inputId  = ns(gsub_name(x)),
+                label    = x,
+                choices  = setdiff(unique(werte[,x]), "Insgesamt"),
+                selected = NULL,
+                options  = list(
+                  `actions-box`        = TRUE,
+                  `none-selected-text` = "nichts ausgewählt",
+                  `select-all-text`    = "alle auswählen",
+                  `deselect-all-text`  = "nichts auswählen",
+                  `live-search`        = TRUE
+                ),
+                multiple = TRUE
+              )
+            }
+          )
+        )
+    }
+   
   }
 
   return(filter_ui)

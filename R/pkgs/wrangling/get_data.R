@@ -127,7 +127,8 @@ get_data <- function(
           #  variable,
           filter = filter,
           filter_typ,
-          con = con
+          con = con,
+          skip = skip
         )
       filter_typ <- filter_typ_df$rwt_beschr
       filter_combis_df <-
@@ -316,7 +317,8 @@ check_existence <-
 align_reichweite_typen <- function(
     filter,
     filter_typ = NULL,
-    con = NULL
+    con = NULL,
+    skip
 ){
   
   if (!(is.null(filter))){
