@@ -841,6 +841,73 @@ p.rank-list-title {
 }
 */
 
+/* TABSET ------------------------------------------------------------------- */
+
+.tabset-menu>div>div>.tabbable>.nav-tabs>li>a {
+  background-color: var(--light-grey);
+  color: var(--dark-grey);
+  border: 1px solid transparent;
+  transition: margin .3s ease;
+  border-radius: 0px;
+  margin: 0px 8px 16px 8px;
+  min-width: 130px;
+  text-align: center;
+}
+
+.tabset-menu>div>div>.tabbable>.nav-tabs>li>a:hover,
+.tabset-menu>div>div>.tabbable>.nav-tabs>li>a:active,
+.tabset-menu>div>div>.tabbable>.nav-tabs>li>a:focus {
+  background-color: var(--beige);
+  color: white;
+}
+
+.tabset-menu>div>div>.tabbable>.nav-tabs>li>a[data-value="Tabelle"]:hover,
+.tabset-menu>div>div>.tabbable>.nav-tabs>li>a[data-value="Tabelle"]:active,
+.tabset-menu>div>div>.tabbable>.nav-tabs>li>a[data-value="Tabelle"]:focus {
+  background-color: var(--primary);
+  font-family: var(--font-family-bold);
+  color: white;
+}
+
+.tabset-menu>div>div>.tabbable>.nav-tabs>li.active>a {
+  background-color: var(--dark-beige);
+  color: white;
+  margin: 16px 8px 0px 8px;
+  font-family: var(--font-family-bold);
+}
+
+.tabset-menu>div>div>.tabbable>.nav-tabs>li.active>a[data-value="Tabelle"] {
+  background-color: var(--blue);
+}
+
+.tabset-menu>div>div>.tabbable>.nav-tabs {
+  min-height: 64px;
+  border-bottom: 2px solid var(--blue);
+	margin-bottom: 24px;
+}
+
+.tabset-menu>div>div>.tabbable>.nav-tabs {
+  border-bottom: 2px solid var(--dark-beige);
+  animation: tabset-change-border-to-beige .3s forwards;
+}
+
+.tabset-menu>div>div>.tabbable>.nav-tabs:has(li.active>a[data-value="Tabelle"]) {
+ border-bottom: 2px solid var(--blue);
+ animation: tabset-change-border-to-blue .3s forwards;
+}
+
+@keyframes tabset-change-border-to-blue {
+    0%   {border-bottom: 2px solid var(--dark-beige);}
+    50%  {border-bottom: 2px solid transparent;}
+    100% {border-bottom: 2px solid var(--blue);}
+}
+
+@keyframes tabset-change-border-to-beige {
+    0%   {border-bottom: 2px solid var(--blue);}
+    50%  {border-bottom: 2px solid transparent;}
+    100% {border-bottom: 2px solid var(--dark-beige);}
+}
+
 /* STORY-PREVIEW-CARDS ------------------------------------------------------ */
 
 .cards-in-box {
