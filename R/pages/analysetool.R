@@ -2,7 +2,7 @@
 
 box::use(
   ../../R/utils/database[get_query, get_sql],
-  ../../R/utils/ui[draw_under_construction],
+  ../../R/utils/ui[draw_under_construction, draw_zurueck_button],
   ../../R/utils/charts[produce_plot],
   ../../R/pkgs/wrangling/get_data[get_data],
   ../../R/pkgs/wrangling/get_comparison_variables[get_comparison_variables],
@@ -57,7 +57,11 @@ module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"),
     # ),
     div(
       class = "panel-content",
-      h2("Explorer - Analysieren von Variablen"),
+      div(
+        style = "display: flex; justify-content: space-between;",
+        h2("Explorer - Analysieren von Variablen"),
+        div(draw_zurueck_button())
+      ),
       fluidRow(
         style = "padding: 10px; display: flex; margin: 0;",
         div(
@@ -179,8 +183,13 @@ module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"),
       fluidRow(
 
         # 5. Ergebnisse in Tabs
-
-        withSpinner(uiOutput(ns("result_tabs")))
+        div(
+          style = "margin-top: 24px",
+          class = "tabset-menu",
+          withSpinner(
+            uiOutput(ns("result_tabs"))
+          )
+        )
 
       )
 
@@ -399,7 +408,6 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
                   aktueller_tab <- process_parameter_input_to_tab(aktueller_tab)
                   result_tabs   <- list.append(result_tabs, selected = aktueller_tab)
                 }
-
                 do.call(tabsetPanel, args = result_tabs)
               })
 
