@@ -25,23 +25,23 @@ get_data <- function(
 ){
 
   # --- step 0: package loading for R version ----
-  
+
   if(!skip){
-    
+
     if (!require("pacman")) install.packages("pacman")
-    pacman::p_load(svMagpie, DBI, checkmate, stringr, dplyr, tidyr)
-    
+    pacman::p_load(DBI, checkmate, stringr, dplyr, tidyr)
+
   }
-  
-  
+
+
   # --- step 1: Check if input is correct (isolated check for different parameters) ----
   # only, if not from shiny
   if (skip == FALSE){
-    
+
     if(is.null(con)) con <- connect_magpie()
-    
+
     on.exit(dbDisconnect(con))
-    
+
     variable <-
       check_existence(
         variable,
@@ -49,9 +49,9 @@ get_data <- function(
         silent = silent,
         con = con
       )
-    
+
     stopifnot("Cannot proceed without at least one valid variable input." = !is.null(variable))
-    
+
     if (length(group) > 0){
       group <-
         check_existence(
@@ -61,7 +61,7 @@ get_data <- function(
           con    = con
         )
     }
-    
+
     if (length(filter) > 0){
       filter <-
         check_existence(
@@ -71,14 +71,14 @@ get_data <- function(
           con    = con
         )
     }
-    
+
     if (length(time_measure) > 1){
       if (!silent){
         message("Considering different time measures is not possible. Only your first entry will be considered.")
       }
       time_measure <- time_measure[1]
     }
-    
+
     if (!is.null(time_measure)){
       time_measure <-
         check_existence(
@@ -88,7 +88,7 @@ get_data <- function(
           con    = con
         )
     }
-    
+
     if (!is.null(measure)){
       measure <-
         check_existence(
@@ -102,7 +102,7 @@ get_data <- function(
     if(is.null(variable)) return(NULL)
   }
   # --- step 2: get available categories for selected variable/s -----------------------
-  
+
   possible_input <-
     get_compatible_input(
       variable,
@@ -110,15 +110,15 @@ get_data <- function(
       silent = silent,
       skip = skip
     )
-  
+
   # --- step 3: check if chosen selection for selected variables is possible -----------
-  
+
   filter_typ <- NULL
-  
+
   if(length(c(filter, group)) > 0){
-    
-    
-    
+
+
+
     if(!is.null(group)& is.null(filter)){
       filter_typ_df <-NULL
     }else{
@@ -135,18 +135,18 @@ get_data <- function(
         expand.grid(
           split(filter_typ_df$rw_beschr, filter_typ_df$rwt_beschr)
         )
-      
+
     }
   }
-  
-  
+
+
   # das klappt nicht aber für was genau wird das dann genutzt?
   # filter_combis <-
   #   ifelse(length(unique(filter_typ_df$rwt_beschr)) > 1,
   #   apply( filter_combis_df[ , 1:length(names(filter_combis_df))] , 1 , paste , collapse = ", " ),# BUG!!!
   #   filter_typ_df$rw_beschr)
   # } --> ggf gar nicht mehr notwendig?
-  
+
   if (!silent){
     message(
       "Possible grouping options for this/these variable/s are: ",
@@ -159,24 +159,24 @@ get_data <- function(
       )
     )
   }
-  
-  
+
+
   # if(!is.null(group) & !is.null(filter)){
-  
+
   reichweite_typ_in <-
     c(
       group,
       filter_typ
     ) |>
     unique()
-  
+
   #  }
-  
+
   reichweite_in <-
     filter |>
     unique()
-  
-  
+
+
   ## --- check match with possibilities ----------------------------------------
   if (
     length(c(group, filter)) > 0
@@ -191,13 +191,13 @@ get_data <- function(
         filter_combis = filter_combis,
         filter_typ = filter_typ,
         con = con,
-        silent = silent, 
+        silent = silent,
         skip = skip
       )
   }
-  
+
   # --- step 4: retrieve selected data -------------------------------------------------
-  
+
   df <-
     formulate_and_send_query_to_magpie(
       possible_kombis_reichweite = possible_input$possible_kombis_reichweite,
@@ -214,24 +214,24 @@ get_data <- function(
       skip = skip
     )
 
-  
+
   # --- step 5: restructure data for plotting ------------------------------------------
-  
+
   if(skip == FALSE){
     stopifnot(
       "Selected grouping and categorie variables are not available.
      Please select from the list of possible grouping options." = dim(df)[1] != 0
     )
   }else{
-    
+
     if(dim(df)[1] == 0) return(NULL)
-    
+
   }
-  
-  
+
+
   df <- reshape_data(df)
-  
-  
+
+
   return(df)
 }
 
@@ -246,7 +246,7 @@ query_magpie <- function(skip, query, con){
   }else{
     return(get_query(x = query))
   }
-  
+
 }
 
 #' Prüft ob Varialbe vorhanden ist - brauchen wir hier nicht
@@ -258,11 +258,11 @@ check_existence <-
            column = "beschr",
            silent = FALSE,
            con = NULL){
-    
+
     if (!check_character(x, any.missing = FALSE)){
       stop(sprintf("Please select (a) valid vector of %s to plot.", table_name))
     }
-    
+
     check <-
       x %in%
       query_magpie(
@@ -270,9 +270,9 @@ check_existence <-
         sprintf("SELECT %s FROM %s", column, table_name),
         con = con
       )[,column]
-    
+
     if (sum(check) == 0){
-      
+
       if (!silent){
         message(
           sprintf(
@@ -282,9 +282,9 @@ check_existence <-
         )
       }
       return(NULL)
-      
+
     } else {
-      
+
       if (sum(check) > 0 & (sum(check) < length(var))){
         if (!silent){
           message(
@@ -305,9 +305,9 @@ check_existence <-
           message(sprintf("All passed elements of %s found.", table_name))
         }
       }
-      
+
     }
-    
+
     return(x[check])
   }
 
@@ -320,9 +320,9 @@ align_reichweite_typen <- function(
     con = NULL,
     skip
 ){
-  
+
   if (!(is.null(filter))){
-    
+
     filter_typ_df <-
       paste0(
         "SELECT rw.beschr AS rw_beschr, rwt.beschr AS rwt_beschr
@@ -334,7 +334,7 @@ align_reichweite_typen <- function(
       query_magpie(con = con, skip = skip)
   }
 
-  
+
   return(
     filter_typ_df
   )

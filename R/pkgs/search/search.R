@@ -300,7 +300,7 @@ get_data_to_search <- function(tables = NA, columns = NA, con = NA, print_messag
 
   if (!dont_need_con){
     if (print_messages) message("  > Keine gültige Verbindung üebrgeben, Verbindung über svMagpie")
-    con <- try(svMagpie::connect_magpie())
+    con <- try(connect_magpie())
   }
 
   for (i in tables){
