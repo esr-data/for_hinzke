@@ -1436,3 +1436,10 @@ img.thumbnail-image.card-img {
 .reactable-details p {
   font-size: var(--font-size-small);
 }
+
+.reactable-details-label {
+  font-size: var(--font-size-small);
+  font-family: var(--font-family-bold);
+  margin-top: 6px;
+  color: var(--primary);
+}

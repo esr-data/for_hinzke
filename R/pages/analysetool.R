@@ -51,7 +51,7 @@ module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"),
     # tags$head(
     #   tags$script(HTML('
     #   $(document).ready(function(){
-    #     $(\'[data-toggle="tooltip"]\').tooltip(); 
+    #     $(\'[data-toggle="tooltip"]\').tooltip();
     #   });
     # '))
     # ),
@@ -70,12 +70,12 @@ module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"),
           div(
             style = "padding: 10px; display: flex; flex-direction: row; flex-wrap: wrap;
                 padding: 16px 20px 1px 20px; align-items: center;",
-            
+
             # Themenbereich/Tags
             pickerInput(
               inputId = ns("select_tag"),
               label = p(style = "color: var(--light-blue);
-                        margin-bottom: 0px;", 
+                        margin-bottom: 0px;",
                         "Themenbereiche:"),
               choices = c(""),
               options  = list(
@@ -87,9 +87,9 @@ module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"),
               ),
               multiple = TRUE
             ),
-            
+
             div(
-              class = "menu-box", style = "margin-left: auto; display: flex; 
+              class = "menu-box", style = "margin-left: auto; display: flex;
               flex-direction: column; align-items: flex-end;
               padding: 10px 20px 20px;",
               p("Speichern & Teilen:", style = "margin-bottom: 4px;"),
@@ -116,10 +116,10 @@ module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"),
               )
             )
           ),
-          
+
           div(
             style = "padding: 1px 20px 1px 20px; display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center;",
-            
+
             # Variable wählen
             div(
               style = "display: flex; flex-direction: column;",
@@ -138,7 +138,7 @@ module_analysetool_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m"),
                 multiple = TRUE
               )
             ),
-            
+
             div(
               style = "margin-left: 20px; display: flex; flex-direction: column; align-items: flex-start;",
               div(
@@ -318,20 +318,31 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
         }
 
 
-        get_data(
+        data_wrangling_output <-
+          get_data(
           variable = vars,
           group = unique(auswahl),#unique(daten$auswahl),
           filter = unique(filter),
           time_period = zeit
         )
 
+        selected_data         <- data_wrangling_output$df
+        selected_data_quellen <- data_wrangling_output$df_quellen
+
+        list(
+          selected_data = selected_data,
+          selected_data_quellen = selected_data_quellen
+        )
+
       })
+
 
       # Ergebnis-Output-Serverfunktionen
       observeEvent(
-        results(), {
+        results()$selected_data, {
 
-          results_data <- results()
+          results_data    <- results()$selected_data
+          results_quellen <- results()$selected_data_quellen
 
           daten_vorhanden <- FALSE
           if (get_page() %in% URL_PATH){
@@ -352,7 +363,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
                     tabPanel(
                       LABEL_TABSET_TABELLE,
                       reactableOutput(ns("table")),
-                      add_reactable_footer(results_data)
+                      add_reactable_footer(results_quellen)
                     )
                   )
 
@@ -363,7 +374,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
 
                       plot_list <-
                         produce_plot(
-                          results(),
+                          results()$selected_data,
                           chart_options_rules_dir = "chart_options_rules"
                         )
 
@@ -413,7 +424,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
 
             # rendering tabelle, wenn Knopf gedrückt wird
             output$table <- renderReactable({
-              vergleichen_draw_reactable(results())
+              vergleichen_draw_reactable(results()$selected_data)
             })
 
           } else {
@@ -427,7 +438,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
       }, ignoreNULL = FALSE)
 
       observeEvent(input$reset, {
-        
+
         daten$filter  <- data.frame()
         daten$gruppen <- c()
         daten$werte   <- data.frame()
@@ -435,13 +446,13 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
         daten$variable <- c()
         daten$variable2 <- c()
         show_additional_var <- FALSE
-        
+
         updatePickerInput(session, "select_tag", selected = NULL)
         updatePickerInput(session, "select_vars", selected = NULL)
         output$variable_vergleichen <- renderUI({HTML("")})
         output$filter_reichweite <- renderUI({HTML("")})
         output$select_reichweite <- renderUI({HTML("")})
-        
+
         #TODO link resetten
       })
 
@@ -643,7 +654,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
                   parameter$at_gp <- param_at_gp
                   daten_gruppe <- 1:length(daten$gruppen)
                   daten_gruppe <- daten_gruppe[daten_gruppe %in% param_at_gp]
-                  
+
 
                   if (length(daten_gruppe) > 0){
                     daten$auswahl <- daten$gruppen[daten_gruppe]
@@ -1038,7 +1049,7 @@ indikator_draw_eimer <- function(reichweiten = list(), selected = NULL, ns){
   if (!is.null(selected)){
     reichweiten <- reichweiten[!(reichweiten %in% selected)]
   }
-  
+
   bucket_list(
     header      = NULL,
     group_name  = "eimer_reichweiten",
@@ -1065,7 +1076,7 @@ vergleichen_draw_reactable <- function(daten){
   if (nrow(daten) < 1) return(reactable(data.frame(keine = "daten")))
 
   reactable(
-    daten,
+    daten[, !names(daten) %in% c("meta_info_einheiten", "meta_info_zeit", "meta_info_quellen")],
     columns = list(), # Links ergänzen
     showSortable = TRUE,
     searchable   = TRUE,
@@ -1088,12 +1099,16 @@ vergleichen_draw_reactable <- function(daten){
     details = function(index){
       datum <- daten[index,]
       div(
-        #draw_under_construction()
         class = "reactable-details",
-        h3("Details"),
-        # p("Under Construction"),
-        p("Zu ergänzen: Hier kommen die Variablen-Beschreibung, zugehörige Tags, eventuell vorhandenen Erklärungen und die Quellenangabe hin."),
-        p(paste("Quelle: kommt noch...")) # TODO
+        h3(paste0("Details zu der Variable '", datum$`Variable/n`, "'")),
+        div(class = "reactable-details-label", "Beschreibung"),
+        div(class = "reactable-details", p("kommt noch...")),
+        div(class = "reactable-details-label", "Verfügbare Einheiten"),
+        div(class = "reactable-details", p(datum$meta_info_einheiten)),
+        div(class = "reactable-details-label", "Verfügbare Jahre"), # TODO: dynamisch für versch. Zeiteinheiten!
+        div(class = "reactable-details", p(datum$meta_info_zeit)),
+        div(class = "reactable-details-label", "Quellenangabe"),
+        div(class = "reactable-details", p(datum$meta_info_quellen))
 
       )
     }
@@ -1164,11 +1179,11 @@ indikator_draw_filter <- function(werte, unterscheiden = NULL, ns){
   }
 
   if (length(unterscheiden) > 0){
-    
+
     if("Zeit" %in% unterscheiden){
-      
+
       unterscheiden <- setdiff(unterscheiden, "Zeit")
-      
+
       gsub_name <- function(x){gsub("[^a-z]", "", tolower(x))}
 
       filter_ui <-
@@ -1192,7 +1207,7 @@ indikator_draw_filter <- function(werte, unterscheiden = NULL, ns){
               )
             }
           ),
-          
+
           sliderTextInput(
             inputId = ns("zeit"),
             label = "Zeit",
@@ -1201,9 +1216,9 @@ indikator_draw_filter <- function(werte, unterscheiden = NULL, ns){
           )
         )
     }else{
-      
+
       gsub_name <- function(x){gsub("[^a-z]", "", tolower(x))}
-      
+
       filter_ui <-
         tagList(
           lapply(
@@ -1227,7 +1242,7 @@ indikator_draw_filter <- function(werte, unterscheiden = NULL, ns){
           )
         )
     }
-   
+
   }
 
   return(filter_ui)
@@ -1411,13 +1426,13 @@ process_parameter_input_to_tab <- function(parameter){
 
 #' @noRd
 add_reactable_footer <- function(results){
-  if(!is.null(nrow(results))){
-    if(nrow(results) > 1){
+  if(!is.null(results)){
+    if(length(results) > 0){
 
       return(
         fluidRow(
           p(),
-          p(style = "text-align: center; color: var(--grey);", "Quelle(n): under construction")
+          p(style = "text-align: center; color: var(--grey);", paste0("Quelle(n):", results))
         )
       )
 

@@ -228,11 +228,17 @@ get_data <- function(
 
   }
 
+  reshaped_data <- reshape_data(df)
+  df <- reshaped_data$df
+  df_quellen <- reshaped_data$df_quellen
 
-  df <- reshape_data(df)
 
-
-  return(df)
+  return(
+    list(
+      df = df,
+      df_quellen = df_quellen
+    )
+  )
 }
 
 
