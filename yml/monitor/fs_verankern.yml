@@ -20,22 +20,22 @@ Inhalt:
     Variable:  studienanfanger_dual
     Auswahl:   Gliederung
     Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        verankern_fs_module
-    Titel:     Experimentierklauseln im Lehramt
-    Frage:     Sind Future Skills ausreichend in den Hochschulcurricula verankert?
-    Ziel:      Future Skills sind in den Studiengängen integriert
-    Indikator: Anteil Studiengänge, die mind. 20 % verpflichtende überfachliche Qualifikationen (Future Skills Module) aufweisen
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        verankern_fs_hochschulen
-    Titel:     Future Skill Hochschulen
-    Frage:     Verschreiben sich Hochschulen der Vermittlung von Zukunftskompetenzen?
-    Ziel:      Hochschulen sind Future-Skill Hochschulen
-    Indikator: Anzahl Future Skills-Hochschulen
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
+  # - ID:        verankern_fs_module # Gespräch zu Ersatzindikator läuft, war eigentlich Teil der ZMB
+  #   Titel:     Future Skills in den Hochschulcurricula
+  #   Frage:     Sind Future Skills ausreichend in den Hochschulcurricula verankert?
+  #   Ziel:      Future Skills sind in den Studiengängen integriert
+  #   Indikator: Anteil Studiengänge, die mind. 20 % verpflichtende überfachliche Qualifikationen (Future Skills Module) aufweisen
+  #   Variable:  studienanfanger_dual
+  #   Auswahl:   Gliederung
+  #   Darstellungen: Zeitverlauf, Tabelle, Karte
+  # - ID:        verankern_fs_hochschulen # Gespräch zu Ersatzindikator läuft, war eigentlich Teil der ZMB
+  #   Titel:     Future Skill Hochschulen
+  #   Frage:     Verschreiben sich Hochschulen der Vermittlung von Zukunftskompetenzen?
+  #   Ziel:      Hochschulen sind Future-Skill Hochschulen
+  #   Indikator: Anzahl Future Skills-Hochschulen
+  #   Variable:  studienanfanger_dual
+  #   Auswahl:   Gliederung
+  #   Darstellungen: Zeitverlauf, Tabelle, Karte
 
 Aktivitaet:
   - Label: Übersicht

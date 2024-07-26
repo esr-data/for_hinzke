@@ -31,14 +31,14 @@ Inhalt:
     Variable:  studienanfanger_dual
     Auswahl:   Gliederung
     Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        bedingungen_bildungsinländer
-    Titel:     Bildungsinländer Lehramt
-    Frage:     Schaffen wir es, dass mehr unterschiedliche Biografien/Erfahrungs-Empathie für Benachteiligung Eingang in die Lehrkräftezimmer zu bringen?
-    Ziel:      Vielfalt im Lehrkräftezimmer
-    Indikator: Bildungsinländer Lehramt an allen Lehramtsstudierenden
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
+  # - ID:        bedingungen_bildungsinlaender # Daten bei Bestellung zu teuer
+  #   Titel:     Bildungsinländer Lehramt
+  #   Frage:     Schaffen wir es, dass mehr unterschiedliche Biografien/Erfahrungs-Empathie für Benachteiligung Eingang in die Lehrkräftezimmer zu bringen?
+  #   Ziel:      Vielfalt im Lehrkräftezimmer
+  #   Indikator: Bildungsinländer Lehramt an allen Lehramtsstudierenden
+  #   Variable:  studienanfanger_dual
+  #   Auswahl:   Gliederung
+  #   Darstellungen: Zeitverlauf, Tabelle, Karte
   - ID:        bedingungen_universitaetsschulen
     Titel:     Universitätsschulen
     Frage:     Schaffen wir es, qualitativ gute Referandszeiten zu ermöglichen?

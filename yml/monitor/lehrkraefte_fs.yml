@@ -23,14 +23,14 @@ Inhalt:
     Variable:  studienanfanger_dual
     Auswahl:   Gliederung
     Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        fs_digital_lehrkraft
-    Titel:     Medienkompetenz in der Lehrkräftefortbildung
-    Frage:     Schaffen wir es Lehrkräfte für die Vermittlung digitaler Welten zu qualifizieren?
-    Ziel:      Lehramtsstudierende lernen digitale Welten zu vermitteln
-    Indikator: Anzahl Fortbidlungskurse zu Medienkompetenzen in Lehrkräftefortbildungs-Akademien
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
+  # - ID:        fs_digital_lehrkraft
+  #   Titel:     Medienkompetenz in der Lehrkräftefortbildung
+  #   Frage:     Schaffen wir es Lehrkräfte für die Vermittlung digitaler Welten zu qualifizieren?
+  #   Ziel:      Lehramtsstudierende lernen digitale Welten zu vermitteln
+  #   Indikator: Anzahl Fortbidlungskurse zu Medienkompetenzen in Lehrkräftefortbildungs-Akademien
+  #   Variable:  studienanfanger_dual
+  #   Auswahl:   Gliederung
+  #   Darstellungen: Zeitverlauf, Tabelle, Karte
   - ID:        fs_mint
     Titel:     MINT-Lehrkräfte
     Frage:     Schaffen wir es den besonderen Mangel an MINT-Lehrkräften in den Griff zu bekommen?
