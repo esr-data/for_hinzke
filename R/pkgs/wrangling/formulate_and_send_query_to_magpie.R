@@ -10,7 +10,7 @@ box::use(
 #' @noRd
 
 search_simplest_category <- function(possible_kombis_reichweite){
-  
+
   if ("Deutschland" %in% possible_kombis_reichweite$reichweite_beschr_list){
     reichweite_select <- "Deutschland"
   } else {
@@ -20,9 +20,82 @@ search_simplest_category <- function(possible_kombis_reichweite){
         str_count(possible_kombis_reichweite$reichweite_beschr_list,"\\|") == i
       ]
   }
-  
+
   return(reichweite_select)
 }
+
+
+#' Used as internal function
+#' Function to retrieve and structure meta data for each variable
+#' @noRd
+get_variable_meta_data <-
+  function(variable_beschr, skip, con){
+
+    query_meta_data <-
+      paste0(
+        "SELECT variable_beschr,
+                zeit_start, zeit_ende, zeit_einheit,
+                wert_einheit, quelle_list, tag_list
+         FROM mview_daten_reichweite_menge
+         WHERE variable_beschr IN ('",
+        paste(variable_beschr, collapse = "', '"),
+        "')"
+      )
+
+    meta_data_raw <-
+      query_magpie(
+        skip,
+        query_meta_data,
+        con = con
+      )
+
+    meta_data_prepared <-
+      data.frame(
+        variable_beschr = unique(meta_data_raw$variable_beschr),
+        meta_info_einheiten = rep(NA, length(unique(meta_data_raw$variable_beschr))),
+        meta_info_zeit      = rep(NA, length(unique(meta_data_raw$variable_beschr))),
+        meta_info_quellen    = rep(NA, length(unique(meta_data_raw$variable_beschr)))
+      )
+
+    for(i in 1:nrow(meta_data_prepared)){
+
+      sub <- meta_data_raw[meta_data_raw$variable_beschr == meta_data_prepared$variable_beschr[i], ]
+
+      meta_data_prepared$meta_info_einheiten[i] <- unique(sub$wert_einheit)
+
+      variable_quellen <- unique(sub$quelle_list)
+      variable_quellen <- trimws(unlist(strsplit(variable_quellen, "\\|")))
+      variable_quellen <- unique(variable_quellen[!variable_quellen %in% c("", "---")])
+      meta_data_prepared$meta_info_quellen[i] <- paste0(" ", paste(variable_quellen, collapse = ", "), ".")
+
+      vorhandene_zeit_einheiten <- unique(sub$zeit_einheit)
+
+      if(length(vorhandene_zeit_einheiten) == 1 & vorhandene_zeit_einheiten == "Jahr"){ # TODO: was, wenn nicht?
+
+        jahre <- unique(substr(as.character(sub$zeit_start),1 , 4))
+        min_jahr <- min(as.numeric(jahre))
+        max_jahr <- max(as.numeric(jahre))
+        seq_jahre <- seq(min_jahr, max_jahr, 1)
+
+        if(all(seq_jahre == as.numeric(jahre))){
+
+          meta_data_prepared$meta_info_zeit[i] <- paste0(min_jahr, " bis ", max_jahr)
+
+        } else {
+
+          meta_data_prepared$meta_info_zeit[i] <- paste(jahre[order(jahre)], collapse = ", ")
+
+        }
+
+
+      }
+
+    }
+
+    return(meta_data_prepared)
+
+
+  }
 
 
 #' Used as internal function
@@ -46,52 +119,53 @@ formulate_and_send_query_to_magpie <- function(
     paste(
       c(
         "daten_id", "wert", "variable_beschr", "zeit_einheit", "wert_einheit",
-        "zeit_start", "zeit_ende", "reichweite_beschr_list", "reichweite_typ_list"
-      ),
+        "zeit_start", "zeit_ende", "reichweite_beschr_list", "reichweite_typ_list",
+        "quelle_list"
+      ), # TODO: "tag_list" hinzu und im weiteren Verlauf verwurschteln
       collapse = ", "
     )
   #für mengen "reichweite_id_list", "reichweite_menge_id_list"
-  
+
   # Variable filtern & Spalten auswählen
   basis_query <-
     sprintf("SELECT  %s
             FROM mview_daten_reichweite_menge
             WHERE variable_beschr IN ('%s')",
             cols, paste(variable, collapse = "', '"))
-  
+
   # Zeit filtern
   # Zeitpunkt
   if (is.null(time) &
       (!is.null(time_period) & length(time_period) == 1)){
-    
+
     time <- time_period
-    
+
   }
-  
+
   if (!is.null(time)){
-    
+
     zeit_query_start <- " "
     zeit_query <- sprintf(
       " AND extract(year from zeit_start) IN ('%s')",
       paste(time, collapse = "', '")
     )
-    
+
     # Zeitspanne
   } else if (!is.null(time_period)){
-    
+
     zeit_query_start <- " "
     zeit_query <- paste0(
       " AND extract(year from zeit_start) IN ('",
       paste(time_period[1]:time_period[2], collapse = "','"),
       "')"
     )
-    
+
   } else if (is.null(time) & is.null(time_period) &
              is.null(group) &
              is.null(filter)){
     zeit_query_start <- " "
     zeit_query <- " "
-    
+
   } else if(is.null(time) & is.null(time_period) &
             !is.null(group)){ # es gibt nur group ODER (group UND filter) -> sobald es group gibt, schauen wir auf reichweite_typ_in
     #Maximaler Zeitpunkt als Default
@@ -120,7 +194,7 @@ formulate_and_send_query_to_magpie <- function(
              is.null(time_period) &
              !is.null(filter) &
              is.null(group)){
-    
+
     zeit_query_start <- paste0(
       " with
 
@@ -143,7 +217,7 @@ formulate_and_send_query_to_magpie <- function(
           ON a.max = b.zeit_start"
     )
   }
-  
+
   # Gruppen-/Filterkategorie filtern
   if(is.null(group) & is.null(filter)){
     reichweite_select <- search_simplest_category(possible_kombis_reichweite)
@@ -151,7 +225,7 @@ formulate_and_send_query_to_magpie <- function(
       " AND reichweite_beschr_list = '", reichweite_select[1], "'"
     )
   }
-  
+
   if(
     !is.null(group) &
     is.null(filter)
@@ -160,25 +234,25 @@ formulate_and_send_query_to_magpie <- function(
       " AND typ_list = '", reichweite_typ_in, "'"
     )
   }
-  
+
   if(
     !is.null(filter) &
     is.null(group)
   ){
-    
+
     reichweite_typ_query <- paste0("
         AND (reichweite_beschr_list IN ('",
                                    paste(reichweite_in, collapse = "', '"),
                                    "'))"
     )
-    
+
   }
-  
+
   if(
     !is.null(filter) &
     !is.null(group)
   ){
-    
+
     if(length(unique(filter_typ)) == 1){ # gleiche Gruppe von Filtern --> OR
       reichweite_typ_query <- paste0(
         "AND typ_list = '", reichweite_typ_in, "'
@@ -199,14 +273,14 @@ formulate_and_send_query_to_magpie <- function(
           rowwise() |>
           mutate(input = paste(c_across(everything()), collapse = "%' AND reichweite_beschr_list LIKE '%")) |>
           mutate(input = paste0(input, "%') "))
-      
+
       reichweite_typ_query <- paste0(
         "AND typ_list = '", reichweite_typ_in, "'
         AND ((reichweite_beschr_list LIKE '%",
         paste(filter_combis_df$input, collapse = " OR (reichweite_beschr_list LIKE '%"), ")")
     }
   }
-  
+
   df <-
     query_magpie(
       skip,
@@ -218,7 +292,24 @@ formulate_and_send_query_to_magpie <- function(
       ),
       con = con
     )
-  
+
+
+  df_meta_data <-
+    get_variable_meta_data(
+      variable_beschr = unique(df$variable_beschr),
+      skip,
+      con = con
+    )
+
+  df <- # TODO: hübscher & direkter Lösen
+    merge(
+      df,
+      df_meta_data,
+      by = "variable_beschr"
+    )
+
+
+
   return(df)
 }
 

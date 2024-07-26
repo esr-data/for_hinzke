@@ -24,30 +24,42 @@ reshape_data <- function(df) {
     df$zeit <- format(as.Date(df$zeit_start, format = "%Y-%m-%d"), "%Y")
     df$zeit <- as.numeric(df$zeit)
   }
-  
+
+
+  # Details extrahieren & aufbereiten
+
+
+  # Quelle extrahieren & aufbereiten
+  df_quellen <- unique(df$quelle_list)
+  df_quellen <- trimws(unlist(strsplit(df_quellen, "\\|")))
+  df_quellen <- unique(df_quellen[!df_quellen %in% c("", "---")])
+  df_quellen <- paste0(" ", paste(df_quellen, collapse = ", "), ".")
+
+  df <- df[, names(df)[names(df) != "quelle_list"]]
+
   df <- select(df,-c(zeit_start, zeit_ende))
-  
+
   # bei mehreren Gruppen-Vars: Kategorien in eigene Spalten schreiben
-  
+
   # Kategorien in gleicher Reihenfolge wie reichweite bringen und auslesen aus reichweite_typ_list
   df$reichweite_typ_list <- sapply(df$reichweite_typ_list,
                                    extracting_associated_categories)
-  
+
   # Indikatoren als neue Spaltenüberschriften auslesen
   indikatoren <-
     strsplit(unique(df$reichweite_typ_list), " \\| ")[[1]]
   indikatoren <- indikatoren[indikatoren != "|"]
-  
+
   # Reichweiten teilen und den Spalten zuordnen
   df <-
     df |>
     separate(reichweite_beschr_list, indikatoren, sep = " \\| ") |>
     select(-reichweite_typ_list,-daten_id)
-  
+
   if (sum(grepl("max", colnames(df))) == 1) {
     df <- select(df,-max)
   }
-  
+
   # sortieren für Typen-Zuweisung
   df <- df |>
     select(wert,
@@ -66,22 +78,27 @@ reshape_data <- function(df) {
       mutate_at(vars(6:ncol(df)), as.factor) |>
       mutate(wert = as.character(wert))
   }
- 
-  
+
+
   #sortieren für Umbenennung und final
   name_wert <- paste0("Wert (",unique(df$wert_einheit), ")")
   name_zeit <- paste0("Zeit (",unique(df$zeit_einheit), ")")
-  
+
   df <- df |>
     select(-zeit_einheit, -wert_einheit)
-  
+
   colnames(df)[1] <- name_wert
   colnames(df)[2] <- name_zeit
   colnames(df)[3] <- "Variable/n"
-  
+
   df <- df |>
     select(-1, -2, everything(), 1:2)
-  
-  
-  return(df)
+
+  return(
+    list(
+      df = df,
+      df_quellen = df_quellen
+      )
+    )
+
 }
