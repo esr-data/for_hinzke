@@ -20,7 +20,7 @@ box::use(
 module_home_ui <- function(id = "home", label = "m_home") {
   ns <- NS(id)
   fluidPage(
-    uiOutput(ns("startseite"))
+    draw_landing_page(ns)
   )
 }
 
@@ -36,8 +36,7 @@ module_home_server <- function(id = "home") {
       observeEvent(
         session$clientData$url_hash, {
           if(session$clientData$url_hash == "#!/"){
-            output$startseite <- renderUI({draw_landing_page(ns)})
-            output$willkommen <- renderUI({markdown(readLines("md/willkommen.md"))})
+            #TODO LÖSCHEN? output$startseite <- renderUI({draw_landing_page(ns)})
             output$slick_output <- renderSlickR({
               slickR(
                 obj = paste0("img/projects/", grep("_alt.svg", list.files("www/img/projects"), value = TRUE)),
@@ -63,7 +62,7 @@ draw_landing_page <- function(ns){
       div(
         style = "width: 500px; padding: 50px;",
         h2(class = "moodie_title", "Bildung und Innovation in Zahlen"),
-        uiOutput(ns("willkommen"))
+        read_markdown("willkommen")
       ),
       div(
         style = "padding: 70px; border: 2px solid var(--grey); border-radius: 8px;",

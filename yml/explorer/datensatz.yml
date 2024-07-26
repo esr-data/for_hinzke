@@ -11,14 +11,14 @@ drittmittel_aggregate:
   variable: 1
   handlungsfeld: 2
 fue_erhebung:
-  label: "FuE-Erhebung"
+  label: "FuE-Erhebung in der Wirtschaft"
   sql: datensatz_fue_erhebung
-  beschreibung: Datensatz zu den Drittmittel an Hochschule auf Aggregatebene, z.B. Bundesländer oder nach Trägern aggregiert.
+  beschreibung: Aptent vulputate dapibus morbi turpis justo taciti consequat donec. Luctus nisi fermentum accumsan; nunc, nam suspendisse eleifend lobortis curae nisi iaculis..
   variable: 1
   handlungsfeld: 2
 hbr_report:
-  label: "Hochschulbildungsreprot"
+  label: "Hochschul-Bildungs-Report"
   sql: datensatz_hbr_report
-  beschreibung: Datensatz zu den Drittmittel an Hochschule auf Aggregatebene, z.B. Bundesländer oder nach Trägern aggregiert.
+  beschreibung: Set aliquet pretium eleifend lacinia ac montes maecenas ultrices aptent. Et elementum aliquet nascetur dictumst nam primis facilisis! Fames ut cras praesent.
   variable: 1
   handlungsfeld: 2

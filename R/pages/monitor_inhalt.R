@@ -103,8 +103,8 @@ box::use(
     removeCssClass,
     addCssClass
   ],
-  highcharter[renderHighchart, hchart, hcaes, hc_tooltip, hc_size, 
-              hc_yAxis, hc_xAxis, hc_plotOptions, hc_colors, hc_title, 
+  highcharter[renderHighchart, hchart, hcaes, hc_tooltip, hc_size,
+              hc_yAxis, hc_xAxis, hc_plotOptions, hc_colors, hc_title,
               hc_chart, hc_legend,  highchartOutput],
   tidyr[pivot_longer, pivot_wider],
   stringr[str_ends, str_detect],
@@ -318,30 +318,39 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                    }
                  )
 
-                 output$content_table <- renderReactable({
-                   reactable(
-                     tibble(section = unlist(current$content[["Inhalt"]][["Titel"]])),
-                     columns = list(
-                       section = colDef(name = "")
-                     ),
-                     details = function(index) {
-                       fluidPage(
-                         div(
-                           class = "content-ask-aim-ind",
-                           tags$ul(
-                             tags$li(tags$i(class = "fa-solid fa-clipboard-question"), tags$b("Frage: "), current$content[["Inhalt"]][["Frage"]][[index]]),
-                             tags$li(tags$i(class = "fa-solid fa-bullseye"), tags$b("Ziel: "), current$content[["Inhalt"]][["Ziel"]][[index]]),
-                             tags$li(tags$i(class = "fa-solid fa-ruler"), tags$b("Indikator: "), current$content[["Inhalt"]][["Indikator"]][[index]])
+                 observeEvent(
+                   current$content, {
+                     if (get_page() == "monitor_inhalt"){
+                       if (!is.null(current$content)){
+                         output$content_table <- renderReactable({
+                           reactable(
+                             tibble(section = unlist(current$content[["Inhalt"]][["Titel"]])),
+                             columns = list(
+                               section = colDef(name = "")
+                             ),
+                             details = function(index) {
+                               fluidPage(
+                                 div(
+                                   class = "content-ask-aim-ind",
+                                   tags$ul(
+                                     tags$li(tags$i(class = "fa-solid fa-clipboard-question"), tags$b("Frage: "), current$content[["Inhalt"]][["Frage"]][[index]]),
+                                     tags$li(tags$i(class = "fa-solid fa-bullseye"), tags$b("Ziel: "), current$content[["Inhalt"]][["Ziel"]][[index]]),
+                                     tags$li(tags$i(class = "fa-solid fa-ruler"), tags$b("Indikator: "), current$content[["Inhalt"]][["Indikator"]][[index]])
+                                   )
+                                 ),
+                                 br(),
+                                 div(
+                                   draw_table_row_content(current$content$Inhalt$ID[[index]], ns)
+                                 )
+                               )
+                             }
                            )
-                         ),
-                         br(),
-                         div(
-                           draw_table_row_content(current$content$Inhalt$ID[[index]], ns)
-                         )
-                       )
+                         })
+                       }
                      }
-                   )
-                 })
+                   }
+                 )
+
 
                  # bildung ----
                  #### ganztag -----------------------------------------------------
@@ -568,9 +577,9 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                      )
                    )
                  })
-                 
+
                #### minternational ----
-                 
+
                  #1 übersicht
                    output$slider_minternational_jahr <- renderUI({
                      sliderTextInput(
@@ -580,7 +589,7 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                        selected = 2022
                      )
                    })
-                 
+
                    output$pickerInput_minternational_region<- renderUI({
                      pickerInput(
                        inputId = ns("region_minternational_übersicht"),
@@ -607,38 +616,38 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                        selected = "Deutschland"
                      )
                    })
-                 
+
                  r <- reactiveValues()
-                 
+
                  observeEvent(input$region_minternational_übersicht, {
                    r$region_minternational_übersicht <- input$region_minternational_übersicht
                  })
-                 
+
                  observeEvent(input$date_studium_studienzahl_ausl, {
                    r$date_studium_studienzahl_ausl <- input$date_studium_studienzahl_ausl
                  })
-                 
+
                  observeEvent(input$status_ausl, {
                    r$status_ausl <- input$status_ausl
                  })
-                 
+
                  observeEvent(input$abs_zahlen_studium_studienzahl_ausl, {
                    r$abs_zahlen_studium_studienzahl_ausl <- input$abs_zahlen_studium_studienzahl_ausl
                  })
-                 
+
                  observeEvent(input$ebene_ausl, {
                    r$ebene_ausl <- input$ebene_ausl
                  })
-                 
+
                 output$plot_minternational_uebersicht <- renderHighchart({
-                
+
                   bl_select <- r$region_minternational_übersicht
                    year_select <- r$date_studium_studienzahl_ausl
                   absolut_selector <- r$abs_zahlen_studium_studienzahl_ausl
                   status_select <- r$status_ausl
                   betr_ebene <- r$ebene_ausl
-                  
-                
+
+
                   df_query <- capture.output(capture_tbl("studierende_detailliert") %>%
                     filter(indikator %in% c("internationale Studienanfänger:innen (1. Hochschulsemester)",
                                                    "internationale Studierende",
@@ -650,10 +659,10 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                                   jahr == year_select )%>%
                     select(-mint_select,- fachbereich)%>%
                     show_query())
-                  
+
                    df_query <- paste(df_query[-1], collapse = " ")
                    df <- get_query(df_query)
-                  
+
                     df <- df %>% pivot_wider(names_from=indikator, values_from = wert) %>%
                     mutate("deutsche Studierende" =`Studierende` - `internationale Studierende`,
                                   "deutsche Studienanfänger:innen (1. Hochschulsemester)"=`Studienanfänger:innen (1. Hochschulsemester)`-
@@ -673,22 +682,22 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                     filter(!fach %in% c("Weitere ingenieurwissenschaftliche Fächer",
                                                "Weitere naturwissenschaftliche und mathematische Fächer",
                                                "Außerhalb der Studienbereichsgliederung/Sonstige Fächer"))
-                  
-                  
+
+
                   df$indikator <- gsub("_p", "", df$indikator)
-                  
+
                   df$indikator <- gsub("deutsche ", "", df$indikator)
-                  
+
                   df$indikator <- gsub("internationale ", "", df$indikator)
-                  
+
                   #df$fach <- gsub("Nicht_MINT", "Nicht MINT", df$fach)
-                  
-                  
+
+
                   df$ausl_detect  <- factor(df$ausl_detect, levels=c("Deutsch", "International"))
-                  
+
                   df <- df %>%
                     filter(indikator == status_select)
-                  
+
                   df_fachbereich <- df %>%
                     filter(fach %in% c("Geisteswissenschaften",
                                               "Mathematik, Naturwissenschaften",
@@ -701,8 +710,8 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                                               "Alle MINT-Fächer",
                                               "Alle Nicht MINT-Fächer",
                                               "Ingenieurwissenschaften (inkl. Informatik)"))
-                  
-                  
+
+
                   df_faecher <- df %>%
                     filter(!fach %in% c("Geisteswissenschaften",
                                                "Rechts-, Wirtschafts- und Sozialwissenschaften",
@@ -717,12 +726,12 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                                                "Mathematik, Naturwissenschaften",
                                                "Ingenieurwissenschaften (inkl. Informatik)"))
                   df_faecher$fach <- as.factor(df_faecher$fach)
-                  
+
                   #Faktor für Höhe des Grafens berechnen
                   ebene <- c("Fachbereiche", "MINT-Fächer")
                   höhe <- c(8, 11)
                   plt.add <- data.frame(ebene, höhe)
-                  
+
                   # NA aus fach entfernen für BULAs mit weniger Studienfachgruppen
                   df_fachbereich <-na.omit(df_fachbereich)
                   df_fachbereich <- df_fachbereich %>%
@@ -730,27 +739,27 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                   df_faecher <- na.omit(df_faecher)
                   df_faecher <- df_faecher %>%
                     arrange(wert)
-                  
-                  
+
+
                   # Vorbereitung Überschrift
                   help <- "Studierender"
                   help <- ifelse(grepl("anfänger", status_select), "Studienanfänger:innen", help)
-                  
+
                   help2 <- "Studierenden"
                   help2 <- ifelse(grepl("anfänger", status_select), "Studienanfänger:innen", help2)
-                  
-                  
+
+
                   if(betr_ebene=="Fachbereiche"){
-                    
+
                     if(absolut_selector=="In Prozent"){
-                      
+
                       df_fachbereich <- df_fachbereich %>%
                         filter(selector == "In Prozent")%>%
                         mutate(wert = round(wert*100, 1))
-                      
+
                       df_fachbereich$display_rel <- prettyNum(df_fachbereich$wert, big.mark = ".", decimal.mark = ",")
-    
-                      
+
+
                       out <- hchart(df_fachbereich, 'bar', hcaes(y = wert, x = fach, group = ausl_detect))%>%
                         hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anteil: {point.display_rel} %")%>%
                         hc_size(height = 60*plt.add$höhe[plt.add$ebene == betr_ebene])%>%
@@ -777,23 +786,23 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                           style = list(fontFamily = "Arial", fontSize = "16px")
                         ) %>%
                         hc_legend(enabled = TRUE, reversed = T)
-                        
-                      
-                      
+
+
+
                     } else if(absolut_selector =="Anzahl"){
-                      
+
                       hcoptslang <- getOption("highcharter.lang")
                       hcoptslang$thousandsSep <- "."
                       options(highcharter.lang = hcoptslang)
-                      
+
                       df_fachbereich$display_abs <- prettyNum(df_fachbereich$wert, big.mark = ".", decimal.mark = ",")
-                      
+
                       df_fachbereich <- df_fachbereich %>%
                         filter(selector == "Anzahl")
-                      
-                      
-                      
-                      
+
+
+
+
                       out <- hchart(df_fachbereich, 'bar', hcaes(y = wert, x = fach, group = ausl_detect))%>%
                         hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anzahl: {point.display_abs}")%>%
                         hc_size(height = 60*plt.add$höhe[plt.add$ebene == betr_ebene])%>%
@@ -820,19 +829,19 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                           style = list(fontFamily = "Arial", fontSize = "16px")
                         ) %>%
                         hc_legend(enabled = TRUE, reversed = T)
-                      
+
                     }} else if(betr_ebene == "MINT-Fächer"){
-                      
+
                       if(absolut_selector=="In Prozent"){
-                        
-                        
+
+
                         df_faecher <- df_faecher %>%
                           filter(selector == "In Prozent")%>%
                           mutate(wert = round(wert*100, 1)) %>%
                           arrange(wert)
-                        
+
                         df_faecher$display_rel <- prettyNum(df_faecher$wert, big.mark = ".", decimal.mark = ",")
-                        
+
                         out <- hchart(df_faecher, 'bar', hcaes(y = wert, x = fach, group = ausl_detect))%>%
                           hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anteil: {point.display_rel} %")%>%
                           hc_size(height = 60*plt.add$höhe[plt.add$ebene == betr_ebene])%>%
@@ -841,7 +850,7 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                           ) %>%
                           hc_plotOptions(bar = list(stacking = "percent"))%>%
                           hc_colors(c("#ADA58B", "#195365")) %>%
-                          
+
                           hc_title(text = paste0("Anteil internationaler ", help, " an allen ", help2, " in ", bl_select,  " (",year_select, ")" ),
                                                 margin = 45,
                                                 align = "center",
@@ -849,24 +858,24 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                           hc_chart(
                             style = list(fontFamily = "Arial", fontSize = "16px")
                           ) %>%
-                          hc_legend(enabled = TRUE, reversed = T) 
-                        
-                        
-                        
+                          hc_legend(enabled = TRUE, reversed = T)
+
+
+
                       } else if(absolut_selector =="Anzahl"){
-                        
+
                         hcoptslang <- getOption("highcharter.lang")
                         hcoptslang$thousandsSep <- "."
                         options(highcharter.lang = hcoptslang)
-                        
+
                         df_faecher <- df_faecher %>%
                           filter(selector == "Anzahl") %>%
                           arrange(wert)
-                        
+
                         df_faecher$display_abs <- prettyNum(df_faecher$wert, big.mark = ".", decimal.mark = ",")
-                        
+
                         df_faecher <- df_faecher[order(-df_faecher$wert),]
-                        
+
                         out <- hchart(df_faecher, 'bar', hcaes(y = wert, x = fach, group = ausl_detect))%>%
                           hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anzahl: {point.display_abs}")%>%
                           hc_size(height = 60*plt.add$höhe[plt.add$ebene == betr_ebene])%>%
@@ -884,11 +893,11 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                           hc_legend(enabled = TRUE, reversed = T)
                       }}
                   out
-                  
+
                   })
-                
+
                 #2 Zeitverlauf
-                
+
                 output$pickerInput_minternational_zeitverlauf<- renderUI({
                   fluidRow(
                     column(width = 11,
@@ -916,7 +925,7 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                                   "Ostdeutschland (inkl. Berlin)"),
                       selected = "Deutschland"
                     ),
-                    
+
                     #Conditonal Panel, dass keine leeren Plots kommen
                     conditionalPanel(condition = "input.states_studium_studienzahl_ausl_zeit == 'Deutschland' |
                                                    input.states_studium_studienzahl_ausl_zeit == 'Baden-Württemberg' |
@@ -1012,61 +1021,61 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                                        multiple = FALSE
                                      ))
                     )
-                  ) 
-                   
+                  )
+
                 })
-                    
+
                 observeEvent(input$states_studium_studienzahl_ausl_zeit, {
                   r$states_studium_studienzahl_ausl_zeit <- input$states_studium_studienzahl_ausl_zeit
                 })
-                
+
                 observeEvent(input$status_ausl_zeit, {
                   r$status_ausl_zeit <- input$status_ausl_zeit
                 })
-                
+
                 observeEvent(input$fach1_studium_studienzahl_ausl_zeit, {
                   r$fach1_studium_studienzahl_ausl_zeit <- input$fach1_studium_studienzahl_ausl_zeit
                 })
-                
+
                 observeEvent(input$fach2_studium_studienzahl_ausl_zeit, {
                   r$fach2_studium_studienzahl_ausl_zeit <- input$fach2_studium_studienzahl_ausl_zeit
                 })
                 observeEvent(input$fach3_studium_studienzahl_ausl_zeit, {
                   r$fach3_studium_studienzahl_ausl_zeit <- input$fach3_studium_studienzahl_ausl_zeit
                 })
-                
+
                 observeEvent(input$fach4_studium_studienzahl_ausl_zeit, {
                   r$fach4_studium_studienzahl_ausl_zeit <- input$fach4_studium_studienzahl_ausl_zeit
                 })
                 observeEvent(input$fach5_studium_studienzahl_ausl_zeit, {
                   r$fach5_studium_studienzahl_ausl_zeit <- input$fach5_studium_studienzahl_ausl_zeit
                 })
-                
+
                 observeEvent(input$fach6_studium_studienzahl_ausl_zeit, {
                   r$fach6_studium_studienzahl_ausl_zeit <- input$fach6_studium_studienzahl_ausl_zeit
                 })
                 observeEvent(input$fach7_studium_studienzahl_ausl_zeit, {
                   r$fach7_studium_studienzahl_ausl_zeit <- input$fach7_studium_studienzahl_ausl_zeit
                 })
-                
+
                 observeEvent(input$fach8_studium_studienzahl_ausl_zeit, {
                   r$fach8_studium_studienzahl_ausl_zeit <- input$fach8_studium_studienzahl_ausl_zeit
                 })
-                
+
                 observeEvent(input$fach9_studium_studienzahl_ausl_zeit, {
                   r$fach9_studium_studienzahl_ausl_zeit <- input$fach9_studium_studienzahl_ausl_zeit
                 })
-                
+
                 observeEvent(input$abs_zahlen_studium_studienzahl_ausl_zeit, {
                   r$abs_zahlen_studium_studienzahl_ausl_zeit <- input$abs_zahlen_studium_studienzahl_ausl_zeit
                 })
-                
+
                 output$plot_minternational_zeitverlauf <- renderHighchart({
-           
+
                   bl_select <- r$states_studium_studienzahl_ausl_zeit
                   absolut_selector <- r$abs_zahlen_studium_studienzahl_ausl_zeit
                   status_select <- r$status_ausl_zeit
-                  
+
                   if(bl_select %in% c("Deutschland",
                                       "Baden-Württemberg",
                                       "Bayern",
@@ -1090,13 +1099,13 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                     if(bl_select == "Schleswig-Holstein")fach_select <- r$fach8_studium_studienzahl_ausl_zeit
                     if(bl_select == "Thüringen")fach_select <- r$fach9_studium_studienzahl_ausl_zeit
                   }
-                  
+
                   #bl_select <- "Deutschland"
                   # absolut_selector <- "Anzahl"
                   # status_select <- "Studierende"
                   # fach_select <- "Alle MINT-Fächer"
-                   
-                
+
+
                   df_query <- capture.output(capture_tbl("studierende_detailliert") %>%
                     filter(indikator %in% c("internationale Studienanfänger:innen (1. Hochschulsemester)",
                                                    "internationale Studierende",
@@ -1105,11 +1114,11 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                                   geschlecht == "Gesamt")%>%
                     select(-mint_select,- fachbereich)%>%
                     show_query())
-                
+
                 df_query <- paste(df_query[-1], collapse = " ")
                 df <- get_query(df_query)
-                
-                df <- df %>% 
+
+                df <- df %>%
                    pivot_wider(names_from=indikator, values_from = wert)%>%
                     mutate("deutsche Studierende" =`Studierende`-`internationale Studierende`,
                                   "deutsche Studienanfänger:innen (1. Hochschulsemester)"=`Studienanfänger:innen (1. Hochschulsemester)`-
@@ -1127,47 +1136,47 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                                                             T ~ "Anzahl"))%>%
                     mutate(ausl_detect=case_when(str_detect(.$indikator, "international")~"international",
                                                                T~ "deutsch"))
-                  
+
                   df$indikator <- gsub("_p", "", df$indikator)
-                  
+
                   df$indikator <- gsub("deutsche ", "", df$indikator)
-                  
+
                   df$indikator <- gsub("internationale ", "", df$indikator)
-                  
+
                   #df$fach <- gsub("Nicht_MINT", "Nicht MINT", df$fach)
-                  
-                  
+
+
                   df$ausl_detect  <- factor(df$ausl_detect, levels=c("deutsch", "international"))
-                  
+
                   df <- df %>%
                     filter(region == bl_select,
                                   fach ==fach_select,
                                   indikator==status_select)
-                  
-                  
+
+
                   # Vorbereitung Überschrift
                   help <- "Studierender"
                   help <- ifelse(grepl("anfänger", status_select), "Studienanfänger:innen", help)
-                  
+
                   help2 <- "Studierenden"
                   help2 <- ifelse(grepl("anfänger", status_select), "Studienanfänger:innen", help2)
-                  
+
                   fach_help <- fach_select
                   fach_help <- ifelse(fach_help == "Alle MINT-Fächer", "MINT", fach_help)
-                  
+
                   # Plot
-                  
+
                   if(absolut_selector=="In Prozent"){
-                    
+
                     df <- df %>%
                       filter(selector == absolut_selector)%>%
                       mutate(across(wert, ~round(.*100, 1)))
-                    
+
                     df$display_rel <- prettyNum(df$wert, big.mark = ".", decimal.mark = ",")
-                    
-                    
-                    
-                    
+
+
+
+
                     hchart(df, 'column', hcaes(y = wert, x = jahr, group = ausl_detect))%>%
                       hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anteil: {point.display_rel} %")%>%
                       # hc_size(height = 1000)%>%
@@ -1185,7 +1194,7 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                       hc_chart(
                         style = list(fontFamily = "Arial", fontSize = "16px")
                       ) %>%
-                     hc_legend(enabled = TRUE, reversed = T) 
+                     hc_legend(enabled = TRUE, reversed = T)
                     # %>%
                     #   hc_exporting(enabled = FALSE,
                     #                             buttons = list(contextButton = list(
@@ -1195,22 +1204,22 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                     #                               align = 'right',
                     #                               verticalAlign = 'bottom',
                     #                               theme = list(states = list(hover = list(fill = '#FFFFFF'))))))
-                    
-                    
+
+
                   } else if(absolut_selector=="Anzahl"){
-                    
+
                     df <- df %>%
                       filter(selector == absolut_selector)
-                    
+
                     hcoptslang <- getOption("highcharter.lang")
                     hcoptslang$thousandsSep <- "."
                     options(highcharter.lang = hcoptslang)
-                    
+
                     df$display_abs <- prettyNum(df$wert, big.mark = ".", decimal.mark = ",")
-                    
-                    
-                    
-                    
+
+
+
+
                     hchart(df, 'column', hcaes(y = wert, x = jahr, group = ausl_detect))%>%
                       hc_tooltip(pointFormat = "{point.ausl_detect} <br> Anzahl: {point.display_abs}")%>%
                       hc_yAxis(title = list(text = "")
@@ -1225,7 +1234,7 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                       hc_chart(
                         style = list(fontFamily = "Arial", fontSize = "16px")
                       ) %>%
-                      hc_legend(enabled = TRUE, reversed = T) 
+                      hc_legend(enabled = TRUE, reversed = T)
                     # %>%
                       # hc_exporting(enabled = FALSE,
                       #                           buttons = list(contextButton = list(
@@ -1236,16 +1245,16 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                       #                             verticalAlign = 'bottom',
                       #                             theme = list(states = list(hover = list(fill = '#FFFFFF'))))))
                   }
-                  
-                  
+
+
                 })
-                  
-                 
-                 
+
+
+
                #### mint lehramtstudium ----
-                
+
                 output$slider_input_fs_mint_jahr <- renderUI({
-                  
+
                   sliderTextInput(
                     inputId = ns("mint_lehramt_uebersicht_time"),
                     label = "Jahr",
@@ -1253,54 +1262,54 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                     selected = 2022
                   )
                 })
-                 
+
                  observeEvent(input$mint_lehramt_uebersicht_time, {
                    r$mint_lehramt_uebersicht_time <- input$mint_lehramt_uebersicht_time
                  })
-                 
+
                  #1 übersicht
-                
+
                  output$plot_lehrkraft_mint <- renderHighchart({
-                  
+
                     timerange <- r$mint_lehramt_uebersicht_time
                    #timerange <- 2022
                   # timerange <- r$date_kurse_einstieg_comparison
-                   
+
                    # filter dataset based on UI inputs
                    df_query <- capture.output(capture_tbl("studierende") %>%
                     filter(jahr == timerange,
                                    geschlecht == "Gesamt",
                                    region== "Deutschland")%>%
                      show_query())
-                 
+
                  df_query <- paste(df_query[-1], collapse = " ")
                  df <- get_query(df_query)
-                 
+
                    df <- df %>%
                      pivot_wider(names_from=fachbereich, values_from = wert)%>%
                      #dplyr::rename("MINT (gesamt)" = MINT)%>%
                     select( -region, -Ingenieurwissenschaften,- `Mathematik, Naturwissenschaften`)
-                   
+
                    # Calculating props
-                   
+
                    df_props <- df %>%
                      dplyr::mutate(dplyr::across(c("MINT (Gesamt)", "Nicht MINT"), ~round(./Alle * 100,1)))%>%
                      dplyr::select(-Alle)%>%
                      tidyr::pivot_longer(c("MINT (Gesamt)", "Nicht MINT"), values_to="prop", names_to = "proportion")
-                   
+
                    # joining props and wert
                    df <- df%>%
                      dplyr::select(-Alle )%>%
                      tidyr::pivot_longer(c("MINT (Gesamt)", "Nicht MINT"), values_to="wert", names_to = "proportion")%>%
                      dplyr::left_join(df_props)
-                   
-                   
+
+
                    #Trennpunkte für lange Zahlen ergänzen
-                   
+
                    df$display_abs <- prettyNum(df$wert, big.mark = ".", decimal.mark = ",")
                    df$display_rel <- prettyNum(df$prop, big.mark = ".", decimal.mark = ",")
-                   
-  
+
+
                    df$indikator <-factor(df$indikator,levels= c("Studierende",
                                                                 "Studierende (Fachhochschulen)",
                                                                 "Studierende (Lehramt, Universität)",
@@ -1316,7 +1325,7 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                    )
                    )
                    df <- within(df, proportion <- factor(proportion, levels=c("Nicht MINT", "MINT (Gesamt)")))
-                   
+
                    hchart(df, 'bar', hcaes(y = prop, x = indikator, group = forcats::fct_rev(proportion)))%>%
                      hc_tooltip(pointFormat = "Fachbereich: {point.proportion} <br> Anteil: {point.display_rel} % <br> Anzahl: {point.display_abs}") %>%
                      hc_yAxis(title = list(text = ""), labels = list(format = "{value}%"),  reversedStacks =  F) %>%
@@ -1340,7 +1349,7 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                    #                               align = 'right',
                    #                               verticalAlign = 'bottom',
                    #                               theme = list(states = list(hover = list(fill = '#FFFFFF'))))))
-                   
+
                    })
                }
 
@@ -1491,9 +1500,9 @@ create_link_with_svg <- function(link_id, link_text) {
 }
 
 studi_det_ui_faecher <-function(spezif_i, spezif_r){
-  
+
   if(missing(spezif_i) & missing(spezif_r)){
-    
+
     df_query <- capture.output(capture_tbl("studierende_detailliert") %>%
       filter(mint_select == "MINT"  | fach %in% c("Alle MINT-Fächer", "Alle Nicht MINT-Fächer")) %>%
       select(fach)%>%
@@ -1501,17 +1510,17 @@ studi_det_ui_faecher <-function(spezif_i, spezif_r){
 
     df_query <- paste(df_query[-1], collapse = " ")
     df <- get_query(df_query)
-    
+
     df <- df %>%
       unique()%>%
       as.vector()%>%
       unlist()%>%
       unname()
-    
+
     df <- sort(df)
-    
+
   } else if (missing(spezif_i)){
-    
+
     df_query <- capture.output(capture_tbl("studierende_detailliert") %>%
       filter(mint_select == "MINT"  | fach %in% c("Alle MINT-Fächer", "Alle Nicht MINT-Fächer"))%>%
       filter(region %in%  spezif_r) %>%
@@ -1519,17 +1528,17 @@ studi_det_ui_faecher <-function(spezif_i, spezif_r){
 
     df_query <- paste(df_query[-1], collapse = " ")
     df <- get_query(df_query)
-    
+
     df <- df %>%select(fach)%>%
       unique()%>%
       as.vector()%>%
       unlist()%>%
       unname()
-    
+
     df <- sort(df)
-    
+
   } else if(missing(spezif_r)){
-    
+
     df_query <- capture.output(capture_tbl("studierende_detailliert") %>%
       filter(mint_select == "MINT"  | fach %in% c("Alle MINT-Fächer", "Alle Nicht MINT-Fächer"))%>%
       filter(indikator %in%  spezif_i) %>%
@@ -1537,15 +1546,15 @@ studi_det_ui_faecher <-function(spezif_i, spezif_r){
 
       df_query <- paste(df_query[-1], collapse = " ")
       df <- get_query(df_query)
-      
+
     df <- df %>%select(fach)%>%
       unique()%>%
       as.vector()%>%
       unlist()%>%
       unname()
-    
+
     df <- sort(df)
-    
+
   }
 }
 
@@ -1774,7 +1783,7 @@ draw_table_row_content <- function(indikator_ID, ns) {
                     br(),
                     uiOutput(ns("slider_minternational_jahr")),
                     uiOutput(ns("pickerInput_minternational_region")),
-                    
+
                     radioButtons(
                       inputId = ns("status_ausl"),
                       label = "Studierendengruppe",
@@ -1850,11 +1859,11 @@ draw_table_row_content <- function(indikator_ID, ns) {
         )
       )
     }
-    
+
   # Lehrkräfte FS ----
 
    #### Lehramt-Studis MINT ----
-  
+
   } else if(startsWith(indikator_ID, "fs_")){
     if (indikator_ID == "fs_mint") {
       fluidPage(

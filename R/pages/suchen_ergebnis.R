@@ -4,7 +4,6 @@ box::use(
   ../../R/utils/ui[draw_under_construction, draw_zurueck_button],
   ../../R/utils/database[get_query],
   ../../R/utils/string[preprocess_str],
-  ../../R/utils/routing[add_param_in_url],
   ../../R/pkgs/svNum/numeric[roundFive],
   shiny[
     NS, moduleServer, observeEvent, observe,

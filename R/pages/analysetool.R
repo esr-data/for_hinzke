@@ -781,9 +781,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
           gesperrt(FALSE)
         },
         ignoreNULL = FALSE
-      ) # Here is the end of the big observeEvent function
-
-      # Observe Input um die URL-Parameter anzupassen
+      )
 
       observeEvent(
         input$select_tag, {
@@ -798,7 +796,6 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
                   key   = "at_tg",
                   value = process_input_for_parameter_tag(input$select_tag, input_tag())
                 )
-
               if (new_url != current_url){
                 change_page(new_url)
               }
@@ -806,7 +803,7 @@ module_analysetool_server <- function(id = URL_PATH, type = "all"){
             }
           }
         },
-        ignoreNULL = FALSE
+        ignoreNULL = TRUE
       )
 
 

@@ -5,10 +5,29 @@ box::use(
   httr[timeout, GET]
 )
 
-EARTHWORM_URL <- "http://srv-data02:3000/artikel/%s/markdown"
+#'@noRd
+get_cache <- function(){
+  dateien <- list.files("md")
+  dateien <- dateien[grepl("ew_", dateien)]
+  output <-
+    lapply(
+      dateien,
+      \(.){
+        markdown(readLines(file.path("md", .)))
+      }
+    )
+
+  names(output) <- substr(dateien, 4, nchar(dateien) - 3)
+  return(output)
+}
+
+EARTHWORM_URL   <- "http://srv-data02:3000/artikel/%s/markdown"
+USE_CACHE_FIRST <- TRUE
+ONLY_USE_CACHE  <- TRUE
+CACHE_EW        <- get_cache()
 
 #' @export
-read_markdown <- function(slug, use_cache_first = FALSE, to_cache = TRUE){
+read_markdown <- function(slug, to_cache = TRUE){
 
   if (is.null(slug))     return(HTML(""))
   if (length(slug) != 1) return(HTML(""))
@@ -17,10 +36,14 @@ read_markdown <- function(slug, use_cache_first = FALSE, to_cache = TRUE){
   md_text <- NULL
   datei   <- sprintf("md/ew_%s.md", slug)
 
-  if (use_cache_first){
-    if (file.exists(datei)){
-      md_text <- suppressWarnings(try(readLines(datei), silent = TRUE))
+  if (USE_CACHE_FIRST){
+    if (slug %in% names(CACHE_EW)){
+      return(CACHE_EW[[slug]])
     }
+  }
+
+  if (ONLY_USE_CACHE){
+    return(HTML(""))
   }
 
   if (is.null(md_text)){
@@ -77,3 +100,4 @@ curl_earthworm <- function(slug, timeout = .5){
 
   return(md_text)
 }
+

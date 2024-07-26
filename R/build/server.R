@@ -3,18 +3,17 @@
 
 box::use(
   ../../R/pages/explorer[module_explorer_server, report_explorer_subpages],
- # ../../R/pages/indikator[module_indikator_server],
- # ../../R/pages/vergleichen[module_vergleichen_server],
   ../../R/pages/analysetool[module_analysetool_server],
   ../../R/pages/suchen[module_suchen_server],
   ../../R/pages/suchen_ergebnis[module_suche_ergebnis_server],
+  ../../R/pages/datensaetze[module_datensaetze_server],
   ../../R/pages/home[module_home_server],
   ../../R/pages/monitor[module_monitor_server],
   ../../R/pages/studies[module_studies_server],
   ../../R/pages/stories[module_stories_server],
   ../../R/pages/stories_inhalt[module_stories_inhalt_server],
   ../../R/pages/monitor_inhalt[module_monitor_inhalt_server],
-  ../../R/utils/routing[add_param_in_url, recode_param_int],
+  ../../R/utils/routing[recode_param_int],
   ../../R/utils/tutorial[plan_tutorial_tour],
   ../../R/utils/routing[get_hf_param],
   ../../R/pages/fdz[module_fdz_server],
@@ -41,7 +40,7 @@ box::use(
     updateRadioGroupButtons
   ],
   utils[URLencode],
-  urltools[url_parse]
+  urltools[url_parse, param_set]
 )
 
 # Global Variables
@@ -53,6 +52,12 @@ HF_FILTER         <- data.frame(id = 0:2, label = c("alle", "bildung", "forschun
 #' @export
 
 server <- function(input, output, session) {
+
+  # --- Routing ------------------------------------------------------------------------------------
+
+  router_server()
+
+  # ------------------------------------------------------------------------------------------------
 
   sidebar_dynamic_explorer <- renderUI(HTML(""))
   sidebar_dynamic_monitor  <- renderUI(HTML(""))
@@ -207,24 +212,22 @@ server <- function(input, output, session) {
   observeEvent(input$sb_fdz,         {change_page("fdz")})
 
   observeEvent(input$sbd_explorer_suche,     {change_page("suchen")})
-  # observeEvent(input$sbd_explorer_indikator, {change_page("indikator")})
-  # observeEvent(input$sbd_explorer_vergleich, {change_page("vergleichen")})
   observeEvent(input$sbd_explorer_analysetool, {change_page("analysetool")})
   observeEvent(input$sbd_explorer_datensatz, {change_page("datensaetze")})
   observeEvent(input$sbd_explorer_karten,    {change_page("karten")})
 
   observeEvent(input$sb_handlung, {
     current_url <- session$clientData$url_hash
-    new_url <-
-      add_param_in_url(
-        current_url  = current_url,
-        current_page = get_page(),
-        parameter    = "hf",
-        value        = HF_FILTER$id[match(input$sb_handlung, HF_FILTER$label)],
-        old_value    = get_query_param("hf")
-      )
-    if (new_url != current_url){
-      change_page(new_url)
+    if (grepl("#!/", current_url)){
+      new_url     <-
+        param_set(
+          urls  = current_url,
+          key   = "hf",
+          value = HF_FILTER$id[match(input$sb_handlung, HF_FILTER$label)]
+        )
+      if (new_url != current_url){
+        change_page(new_url)
+      }
     }
   })
 
@@ -252,18 +255,13 @@ server <- function(input, output, session) {
 
   })
 
-  # --- Routing ------------------------------------------------------------------------------------
-
-  router_server()
-
   # --- Server der Shiny-Modules -------------------------------------------------------------------
 
   module_explorer_server()
- # module_indikator_server()
-  #module_vergleichen_server()
   module_analysetool_server()
   module_suchen_server()
   module_suche_ergebnis_server()
+  module_datensaetze_server()
   module_home_server()
   module_studies_server()
   module_stories_server()
