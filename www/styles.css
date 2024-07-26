@@ -3,21 +3,23 @@
 
 :root{
   /*colors*/
-  --primary:         #6896a8;
-  --soft-primary:    #b3c8d3;
-  --light-primary:   #e0e8ed;
-  --blue:            #195365;
-  --blue-trans:      #195365cc;
-  --light-blue:      #8d9ca9;
-  --red:             #e73f0c;
-  --grey:            #b5bfc5;
-  --light-grey:      #dae0e3;
-  --very-light-grey: #f0f3f4;
-  --dark-grey:       #6A6F73;
-  --very-dark-grey:  #575757;
-  --beige:           #ada58b;
-  --dark-beige:      #8A8161;
-  --mint:            #91BEA0;
+  --primary:               #6896a8;
+  --soft-primary:          #b3c8d3;
+  --light-primary:         #e0e8ed;
+  --blue:                  #195365;
+  --blue-trans:            #195365cc;
+  --light-blue:            #8d9ca9;
+  --red:                   #e73f0c;
+  --grey:                  #b5bfc5;
+  --light-grey:            #dae0e3;
+  --very-light-grey:       #f0f3f4;
+  --dark-grey:             #6A6F73;
+  --very-dark-grey:        #575757;
+  --beige-trans-strong:    #ada58b44;
+  --beige-trans:           #ada58b66;
+  --beige:                 #ada58b;
+  --dark-beige:            #8A8161;
+  --mint:                  #91BEA0;
   --color-bildung:         #C3DA46;
   --color-forschung:       #A96BF1;
   --color-bildung-trans:   #C3DA46cc;
@@ -82,15 +84,16 @@
 
 /* Font --------------------------------------------------------------------- */
 
-h1, h2, h3, h4, h5, h6, p,
-.h1, .h2, .h3, .h4, .h5, .h6, .p {
+.p, p {
   font-family: var(--font-family);
   color: var(--blue);
 }
 
-h2, h3, h4,
-.h2, .h3, .h4 {
-  font-weight: 600;
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: var(--font-family-bold);
+  font-weight: 100 !important;
+  color: var(--blue);
 }
 
 li {
@@ -432,6 +435,8 @@ button.active:has(input[value="forschung"]){
 .button_icon:active:focus i {
   color: var(--primary);
 }
+
+
 
 /* Input-Switch ------------------------------------------------------------- */
 
@@ -1172,18 +1177,70 @@ img.thumbnail-image.card-img {
   }
 }
 
+/* Buttons Book --------------------------------------------------------------------------------- */
+
+#datensaetze-div_auswahl {
+  transition: all .25s ease;
+  margin-left: 100px;
+}
+
 .book {
   /*writing-mode: vertical-rl;*/
-  margin-right: 20px;
-  border: 1px solid black;
+  margin-right: 40px;
+  border: 1px solid transparent;
   border-radius: 0px;
-  background-color: var(--blue);
-  color: white;
-  font-weight: 900;
+  background-color: var(--grey);
+  color: var(--blue);
+  font-family: var(--font-family-bold);
+  font-size: var(--font-size);
   width: 100%;
   text-align: left;
-  margin-top: 4px;
-  margin-bottom: 4px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  transition: all .3s ease;
+  height: 40px;
+}
+
+.book:focus,
+.book:active,
+.book:active:focus {
+  border: 1px solid transparent;
+  background-color: var(--grey);
+  color: var(--blue);
+}
+
+.book.markiert:focus,
+.book.markiert:active,
+.book.markiert:active:focus,
+.markiert {
+  border: 1px solid transparent;
+  background-color: var(--blue);
+  color: white;
+}
+
+.book.markiert::before {
+  content: "\f054";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  margin-left: -40px;
+  position: absolute;
+  color: var(--blue);
+  font-size: 30px;
+  line-height: 1;
+}
+
+.book:hover {
+  border: 1px solid transparent;
+  background-color: var(--primary);
+  color: white;
+}
+
+.markiert {
+  margin-left: 40px;
+}
+
+.eingerueckt {
+  margin-left: -420px!important;
 }
 
 /* ---------------------------------------------------------------------------*/
@@ -1370,6 +1427,59 @@ img.thumbnail-image.card-img {
   font-size: 22px;
 }
 
+/* Callout-Box ---------------------------------------------------------------*/
+
+.callout-info {
+  margin: 20px 0px;
+  max-width: 800px;
+  border-left: 4px solid var(--blue);
+  box-shadow: 1px 1px 5px 0.5px var(--light-grey);
+}
+
+.callout-info-head {
+  display: flex;
+  background-color: var(--light-grey);
+  padding: 4px;
+}
+
+.callout-info-head i {
+  color: var(--blue);
+  margin-right: 5px;
+  font-size: 20px;
+  margin: auto 8px auto 8px;
+}
+
+.callout-info-h {
+  font-family: var(--font-family-bold);
+  color: var(--blue);
+}
+
+.callout-info-body {
+  padding: 12px 24px 4px 24px;
+}
+
+.callout-info:hover {
+  border-left: 4px solid var(--dark-beige);
+  transition: all .4s ease;
+  box-shadow: 1px 1px 5px 0.5px var(--beige-trans);
+}
+
+.callout-info:hover .callout-info-head .callout-info-h{
+  color: var(--dark-beige);
+  transition: all .4s ease;
+}
+
+.callout-info:hover .callout-info-head {
+  background-color: var(--beige-trans-strong);
+  transition: all .4s ease;
+}
+
+.callout-info:hover .callout-info-head i {
+  color: var(--dark-beige);
+  transition: all .4s ease;
+}
+
+
 /*Team-Cards -----------------------------------------------------------------*/
 
 .row .col, .row [class^="col-"] {
@@ -1435,6 +1545,17 @@ img.thumbnail-image.card-img {
 
 .reactable-details p {
   font-size: var(--font-size-small);
+}
+
+div#driver-popover-item {
+  max-width: 1000px;
+  margin-right: 40px;
+}
+
+.strich{
+  border-bottom: 3px solid var(--blue);
+    margin: 20px 0;
+    width: 50px;
 }
 
 .reactable-details-label {

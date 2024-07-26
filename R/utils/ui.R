@@ -99,3 +99,23 @@ draw_search <- function(
   )
 }
 
+#' Missing description
+#' @export
+
+create_callout_info <- function(text, titel = "Information"){
+  div(
+    class = "callout-info",
+    div(
+      class = "callout-info-head",
+      shiny::icon("circle-info"),
+      div(
+        class = "callout-info-h",
+        titel
+      )
+    ),
+    div(
+      class = "callout-info-body",
+      text
+    )
+  )
+}

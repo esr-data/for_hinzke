@@ -52,6 +52,7 @@ draw_ui <- function(){
       get_js("overwrite_proxy_default"),
       tags$link(rel = "stylesheet", href = "default.css"),
       get_js("go_back_page"),
+      get_js("select_dataset"),
       tags$link(rel = "apple-touch-icon-precomposed", sizes = "180x180", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/apple-touch-icon.png"),
       tags$link(rel = "icon",                         sizes = "192x192", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/touch-icon-192x192.png"),
       tags$link(rel = "shortcut icon",                                   href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/favicon.ico"),
