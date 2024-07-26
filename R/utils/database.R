@@ -146,7 +146,6 @@ disconnect_db <- function(){
   return(invisible(NULL))
 }
 
-
 # provisorisch tbl für datalab-Daten
 #' Missing description
 #' @export

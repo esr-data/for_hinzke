@@ -1,11 +1,12 @@
 box::use(
-  grDevices[colorRamp,rgb]
+  grDevices[colorRamp,rgb],
+  stats[setNames]
 )
 
 get_map_colors <- function(var, theme) {
-  
+
   # browser()
-  
+
   var_type <- class(var)
   if (var_type %in% c("numeric", "integer")) {
     start_color <- theme$color[2]
@@ -14,7 +15,7 @@ get_map_colors <- function(var, theme) {
     met_var_range <- range(var)
     colors <-
       rgb(color_ramp((var - met_var_range[1]) / diff(met_var_range)), maxColorValue = 255)
-    
+
   } else if (var_type %in% c("factor", "character")) {
     colors <- theme$color
     unique_values <- unlist(unique(var))

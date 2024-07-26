@@ -27,12 +27,15 @@ create_view_daten_detailed(con_duck)
 # Lade die Daten
 load(file = "data/studierende.rda")
 load(file = "data/studierende_detailliert.rda")
+load(file = "data/kurse.rda")
 studierende <- as.data.frame(studierende)
 studierende_detailliert <- as.data.frame(studierende_detailliert)
+kurse <- as.data.frame(kurse)
 
 # Schreibe die Daten in die Datenbank
 DBI::dbWriteTable(con_duck, 'studierende', studierende, overwrite = TRUE, append = FALSE)
 DBI::dbWriteTable(con_duck, 'studierende_detailliert', studierende_detailliert, overwrite = TRUE, append = FALSE)
+DBI::dbWriteTable(con_duck, 'kurse', kurse, overwrite = TRUE, append = FALSE)
 
 # Lade die Geometrie-Daten und passe sie an
 germany_choropleth_federal_states <- readRDS("data/germany_choropleth_federal_states.rds")
@@ -52,4 +55,5 @@ DBI::dbWriteTable(con_duck, 'chart_options_rules', chart_options_rules,
                   overwrite = TRUE, append = FALSE)
 
 DBI::dbDisconnect(con_duck, shutdown = TRUE)
-rm(con_duck, DB_FILE, germany_choropleth_federal_states, middle_points_of_ger_federal_states, studierende, studierende_detailliert)
+rm(con_duck, DB_FILE, germany_choropleth_federal_states, middle_points_of_ger_federal_states,
+   studierende, studierende_detailliert, kurse, chart_options_rules)

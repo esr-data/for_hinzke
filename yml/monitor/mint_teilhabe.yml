@@ -19,11 +19,11 @@ Inhalt:
     Variable:  studienanfanger_dual
     Auswahl:   Gliederung
     Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        teilhabe_lehrkräfte
-    Titel:     Lehrbefähigungen MINT
-    Frage:     Haben wir genügend Lehrkräfte für den MINT Unterricht?
-    Ziel:      Es gibt ausreichend Lehrkräfte für den MINT Unterricht
-    Indikator: Anteil an Lehrkräften mit Lehrbefähigungen in MINT an allen Lehrkräften
+  - ID:        teilhabe_lehrkraefte
+    Titel:     Lehrbefähigungen Informatik
+    Frage:     Haben wir genügend Lehrkräfte für den Informatik Unterricht?
+    Ziel:      Es gibt ausreichend Lehrkräfte für den Informatik Unterricht
+    Indikator: Anteil an Lehrkräften mit Lehrbefähigungen in Informatik an allen Lehrkräften
     Variable:  studienanfanger_dual
     Auswahl:   Gliederung
     Darstellungen: Zeitverlauf, Tabelle, Karte
@@ -61,7 +61,7 @@ Aktivitaet:
     URL:   https://www.stifterverband.org/medien/informatikunterricht-europa
   - Label: MINT-Campus
     URL:   https://mintcampus.org/
-    
+
 Datenbasis:
   - Label: Studierendenstatistik Destatis
     URL:   https://www.google.de
