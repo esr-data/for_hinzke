@@ -194,6 +194,8 @@ get_data <- function(
         silent = silent,
         skip = skip
       )
+
+    test3 <<- input_list
   }
 
   # --- step 4: retrieve selected data -------------------------------------------------
@@ -213,7 +215,7 @@ get_data <- function(
       con = con,
       skip = skip
     )
-
+test4 <<- df
 
   # --- step 5: restructure data for plotting ------------------------------------------
 

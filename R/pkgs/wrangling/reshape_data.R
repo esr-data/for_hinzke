@@ -20,9 +20,36 @@ extracting_associated_categories <- function(string) {
 #' @noRd
 
 reshape_data <- function(df) {
-  if (df$zeit_einheit[1] == "Jahr") {
+
+ # browser()
+
+  if (all(length(unique(df$zeit_einheit)) == 1 & unique(df$zeit_einheit) == "Jahr")) {
     df$zeit <- format(as.Date(df$zeit_start, format = "%Y-%m-%d"), "%Y")
     df$zeit <- as.numeric(df$zeit)
+  } else if(all(length(unique(df$zeit_einheit)) == 1 & unique(df$zeit_einheit) == "Jahre")){
+    df$zeit <-
+      paste(
+        substr(df$zeit_start, 1, 4),
+        "-",
+        substr(df$zeit_ende, 1, 4)
+      )
+  } else if(all(length(unique(df$zeit_einheit)) > 1 &
+            "Jahr" %in% unique(df$zeit_einheit) &
+            "Jahre" %in% unique(df$zeit_einheit))){
+
+    df1 <- df[df$zeit_einheit == "Jahr",]
+    df1$zeit <- format(as.Date(df1$zeit_start, format = "%Y-%m-%d"), "%Y")
+    df1$zeit <- as.numeric(df1$zeit)
+
+    df2 <- df[df$zeit_einheit == "Jahre",]
+    df2$zeit <-
+      paste(
+        substr(df2$zeit_start, 1, 4),
+        "-",
+        substr(df2$zeit_ende, 1, 4)
+      )
+
+    df <- rbind(df1, df2)
   }
 
 
@@ -81,8 +108,8 @@ reshape_data <- function(df) {
 
 
   #sortieren für Umbenennung und final
-  name_wert <- paste0("Wert (",unique(df$wert_einheit), ")")
-  name_zeit <- paste0("Zeit (",unique(df$zeit_einheit), ")")
+  name_wert <- paste0("Wert (", paste(unique(df$wert_einheit), collapse = ", "), ")")
+  name_zeit <- paste0("Zeit (", paste(unique(df$zeit_einheit), collapse = ", "), ")")
 
   df <- df |>
     select(-zeit_einheit, -wert_einheit)
