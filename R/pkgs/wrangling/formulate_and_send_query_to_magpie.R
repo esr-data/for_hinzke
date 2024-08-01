@@ -2,7 +2,7 @@
 box::use(
   . / get_data[query_magpie],
   stringr[str_count],
-  dplyr[rowwise, mutate, c_across]
+  dplyr[rowwise, mutate, c_across, group_by, filter, distinct]
 )
 
 #' Used as internal function
@@ -30,13 +30,13 @@ search_simplest_category <- function(possible_kombis_reichweite){
 #' @noRd
 get_variable_meta_data <-
   function(variable_beschr, skip, con){
-
+#browser()
     query_meta_data <-
       paste0(
         "SELECT variable_beschr,
                 zeit_start, zeit_ende, zeit_einheit,
                 wert_einheit, quelle_list, tag_list
-         FROM mview_daten_reichweite_menge
+         FROM wrangling_input_view_daten
          WHERE variable_beschr IN ('",
         paste(variable_beschr, collapse = "', '"),
         "')"
@@ -61,7 +61,7 @@ get_variable_meta_data <-
 
       sub <- meta_data_raw[meta_data_raw$variable_beschr == meta_data_prepared$variable_beschr[i], ]
 
-      meta_data_prepared$meta_info_einheiten[i] <- unique(sub$wert_einheit)
+      meta_data_prepared$meta_info_einheiten[i] <- paste(unique(sub$wert_einheit), collapse = ", ")
 
       variable_quellen <- unique(sub$quelle_list)
       variable_quellen <- trimws(unlist(strsplit(variable_quellen, "\\|")))
@@ -70,7 +70,7 @@ get_variable_meta_data <-
 
       vorhandene_zeit_einheiten <- unique(sub$zeit_einheit)
 
-      if(length(vorhandene_zeit_einheiten) == 1 & vorhandene_zeit_einheiten == "Jahr"){ # TODO: was, wenn nicht?
+      if(all(length(vorhandene_zeit_einheiten) == 1 & vorhandene_zeit_einheiten == "Jahr")){ # TODO: was, wenn nicht?
 
         jahre <- unique(substr(as.character(sub$zeit_start),1 , 4))
         min_jahr <- min(as.numeric(jahre))
@@ -86,6 +86,75 @@ get_variable_meta_data <-
           meta_data_prepared$meta_info_zeit[i] <- paste(jahre[order(jahre)], collapse = ", ")
 
         }
+
+
+      } else if (all(length(vorhandene_zeit_einheiten) == 1 & vorhandene_zeit_einheiten == "Jahre")){
+
+        df_jahre <-
+          sub |>
+          distinct(
+            zeit_start,
+            zeit_ende
+          ) |>
+          group_by(
+            zeit_start,
+            zeit_ende
+          ) |>
+          mutate(
+            zeit_spanne = paste0(
+              "Jahre ",
+              substr(zeit_start, 1, 4),
+              "-",
+              substr(zeit_ende, 1, 4)
+            )
+          )
+
+        meta_data_prepared$meta_info_zeit[i] <- paste(unique(df_jahre$zeit_spanne), collapse = ", ")
+
+
+      } else if (all(length(vorhandene_zeit_einheiten) > 1 &
+                 "Jahr" %in% vorhandene_zeit_einheiten &
+                 "Jahre" %in% vorhandene_zeit_einheiten)){
+
+        sub_1 <-
+          sub[sub$zeit_einheit == "Jahr",]
+
+        sub_2 <-
+          sub[sub$zeit_einheit == "Jahre",]
+
+        jahre <- unique(substr(as.character(sub_1$zeit_start), 1 , 4))
+        min_jahr <- min(as.numeric(jahre))
+        max_jahr <- max(as.numeric(jahre))
+        seq_jahre <- seq(min_jahr, max_jahr, 1)
+
+        df_jahre <-
+          sub_2 |>
+          distinct(
+            zeit_start,
+            zeit_ende
+          ) |>
+          group_by(
+            zeit_start,
+            zeit_ende
+          ) |>
+          mutate(
+            zeit_spanne = paste0(
+              "Jahre ",
+              substr(zeit_start, 1, 4),
+              "-",
+              substr(zeit_ende, 1, 4)
+            )
+          )
+
+        meta_data_prepared$meta_info_zeit[i] <-
+          paste0(
+            "Einzelangaben für: ",
+            seq_jahre,
+            "; Durchschnittsangaben für: ",
+            df_jahre$zeit_spanne,
+            "."
+          )
+
 
 
       }
@@ -129,9 +198,10 @@ formulate_and_send_query_to_magpie <- function(
   # Variable filtern & Spalten auswählen
   basis_query <-
     sprintf("SELECT  %s
-            FROM mview_daten_reichweite_menge
+            FROM wrangling_input_view_daten
             WHERE variable_beschr IN ('%s')",
             cols, paste(variable, collapse = "', '"))
+
 
   # Zeit filtern
   # Zeitpunkt
@@ -174,7 +244,7 @@ formulate_and_send_query_to_magpie <- function(
 
             date as
             (SELECT MAX(zeit_start) as max
-            FROM mview_daten_reichweite_menge
+            FROM wrangling_input_view_daten
             WHERE variable_beschr IN ('", paste(variable, collapse = "', '"), "')
              AND typ_list = '", reichweite_typ_in, "'),
 
@@ -200,7 +270,7 @@ formulate_and_send_query_to_magpie <- function(
 
             date as
             (SELECT MAX(zeit_start) as max
-            FROM mview_daten_reichweite_menge
+            FROM wrangling_input_view_daten
             WHERE variable_beschr IN ('", paste(variable, collapse = "', '"), "')
             AND reichweite_beschr_list = '", reichweite_in[1], "'),
 

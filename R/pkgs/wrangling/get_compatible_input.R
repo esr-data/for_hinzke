@@ -8,26 +8,26 @@ box::use(
 #' @noRd
 
 get_compatible_input <- function(variable, con = NULL, silent = FALSE, skip){
-  
+
   # Mögliche Werte pro Variable identifizieren
   possible_time            <- get_possible_values(variable, "zeit_einheit", con, skip = skip)
   possible_units           <- get_possible_values(variable, "wert_einheit", con, skip = skip)
   possible_kombis_reichweite       <- get_possible_values(variable, "reichweite_beschr_list", con, skip = skip)
   possible_kombis_reichweite_typen <- get_possible_values(variable, "typ_list", con, skip = skip)
   possible_kombis_reichweite_und_reichweite_typ <- get_possible_values(variable, "reichweite_typ_list", con, skip = skip)
-  
+
   # Bei mehreren Variable Schnittmenge aus Möglichem bilden
   if(length(variable) > 1){
     possible_time <- keep_compatible_values(possible_time, variable, silent = silent)
     possible_unit <- keep_compatible_values(possible_units, variable, silent = silent)
-    possible_kombis_reichweite_typen <- keep_compatible_values(possible_kombis_reichweite_typen, 
+    possible_kombis_reichweite_typen <- keep_compatible_values(possible_kombis_reichweite_typen,
                                                                variable, silent = silent)
-    possible_kombis_reichweite       <- keep_compatible_values(possible_kombis_reichweite, variable, 
+    possible_kombis_reichweite       <- keep_compatible_values(possible_kombis_reichweite, variable,
                                                                silent = silent)
     possible_kombis_reichweite_und_reichweite_typ <- keep_compatible_values(
       possible_kombis_reichweite_und_reichweite_typ, variable, silent = silent)
   }
-  
+
   return(
     list(
       possible_time = possible_time,
@@ -48,7 +48,7 @@ get_possible_values <- function(variable, column, skip, con = con){
     skip = skip,
     paste0(
       "SELECT DISTINCT variable_beschr, ", column, " ",
-      "FROM mview_daten_reichweite_menge
+      "FROM wrangling_input_view_daten
      WHERE variable_beschr IN ('", paste(variable, collapse = "', '"), "')"
     ),
     con = con
@@ -61,13 +61,13 @@ get_possible_values <- function(variable, column, skip, con = con){
 #' @noRd
 
 keep_compatible_values <- function(values, variable, silent = FALSE){
-  
+
   unique_values <- data.frame(value = unique(values[,2]))
   for(i in 1:length(variable)){
     unique_values[,paste0("variable_", i)] <-
       unique_values$value %in% unique(values[values[,1] == variable[i], 2])
   }
-  
+
   if (any(apply(unique_values[,2:ncol(unique_values)], 1, all))){
     values <- values[values[,2] %in% unique_values$value[apply(unique_values[,2:ncol(unique_values)], 1, all)],]
   } else {
