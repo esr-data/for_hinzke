@@ -18,11 +18,11 @@ WITH
    LEFT JOIN quelle quelle ON daten_quelle.quelle_id = quelle.id
    GROUP BY daten_id
   )
-
 SELECT
  daten.id AS id,
  variable.beschr AS Variable,
  extract('year' FROM zeit_ende) AS Jahr,
+ zeit_start AS Zeit,
  hochschule.beschr AS Hochschule,
  daten.wert AS Wert,
  wert_einheit.beschr AS Einheit,

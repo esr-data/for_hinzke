@@ -1,24 +1,46 @@
+hbr_report:
+  label: "Hochschul-Bildungs-Report"
+  sql: datensatz_hbr_report
+  beschreibung: Set aliquet pretium eleifend lacinia ac montes maecenas ultrices aptent. Et elementum aliquet nascetur dictumst nam primis facilisis! Fames ut cras praesent.
+  variable: 1
+  handlungsfeld: 1
+  optionen:
+   - "Gesamtwerte": "AND Region = 'Deutschland'  AND g_Hochschultyp IS NULL AND g_Geschlecht IS NULL"
+   - "Bundesländer": "AND Region != 'Deutschland'  AND g_Hochschultyp IS NULL AND g_Geschlecht IS NULL"
+   - "Hochschultypen": "AND Region = 'Deutschland'  AND g_Hochschultyp IS NOT NULL AND g_Geschlecht IS NULL"
+   - "Geschlecht": "AND Region = 'Deutschland'  AND g_Hochschultyp IS NULL AND g_Geschlecht IS NOT NULL"
+   - "Alle Daten": ""
+fue_erhebung:
+  label: "FuE-Erhebung in der Wirtschaft"
+  sql: datensatz_fue_erhebung
+  beschreibung: "Aptent vulputate dapibus **morbi turpis justo** taciti consequat donec. Luctus nisi fermentum accumsan. Aptent vulputate dapibus morbi turpis justo taciti consequat donec. Luctus nisi fermentum accumsan; nunc, nam suspendisse eleifend lobortis curae nisi iaculis."
+  variable: 1
+  handlungsfeld: 2
+  optionen:
+   - "Gesamte Wirtschaft": "AND Region = 'Deutschland'  AND g_Sektor = 'Wirtschaftssektor' AND g_Wirtschaftszweig IS NULL AND g_Unternehmensgroesse IS NULL AND g_Forschungsintensitaet IS NULL AND g_Geschlecht IS NULL"
+   - "Sektoren": "AND Region = 'Deutschland'  AND g_Sektor = 'Wirtschaftssektor' AND g_Wirtschaftszweig IS NULL AND g_Unternehmensgroesse IS NULL AND g_Forschungsintensitaet IS NULL AND g_Geschlecht IS NULL"
+   - "Wirtschaftszweige": "AND Region = 'Deutschland'  AND g_Sektor = 'Wirtschaftssektor' AND g_Wirtschaftszweig IS NOT NULL AND g_Unternehmensgroesse IS NULL AND g_Forschungsintensitaet IS NULL AND g_Geschlecht IS NULL"
+   - "Unternehmensgröße": "AND Region = 'Deutschland'  AND g_Sektor = 'Wirtschaftssektor' AND g_Wirtschaftszweig IS NULL AND g_Unternehmensgroesse IS NOT NULL AND g_Forschungsintensitaet IS NULL AND g_Geschlecht IS NULL"
+   - "Bundesländer": "AND Region IN ('Baden-Württemberg', 'Bayern', 'Berlin', 'Brandenburg', 'Bremen', 'Hamburg', 'Hessen', 'Mecklenburg-Vorpommern', 'Niedersachsen', 'Nordrhein-Westfalen', 'Rheinland-Pfalz', 'Saarland', 'Sachsen', 'Sachsen-Anhalt', 'Schleswig-Holstein', 'Thüringen') AND g_Sektor = 'Wirtschaftssektor' AND g_Wirtschaftszweig IS NULL AND g_Unternehmensgroesse IS NULL AND g_Forschungsintensitaet IS NULL AND g_Geschlecht IS NULL"
+   - "Regierungsbezirke": "AND Region IN ('Braunschweig', 'Hannover', 'Lüneburg', 'Weser-Ems', 'Düsseldorf', 'Köln', 'Münster', 'Detmold', 'Arnsberg', 'Darmstadt', 'Gießen', 'Kassel', 'Koblenz', 'Trier', 'Rheinhessen-Pfalz', 'Stuttgart', 'Karlsruhe', 'Freiburg', 'Tübingen', 'Oberbayern', 'Niederbayern', 'Oberpfalz', 'Oberfranken', 'Mittelfranken', 'Unterfranken', 'Schwaben', 'Brandenburg-Nordost', 'Brandenburg-Südwest', 'Chemnitz', 'Dresden', 'Leipzig')  AND g_Sektor = 'Wirtschaftssektor' AND g_Wirtschaftszweig IS NULL AND g_Unternehmensgroesse IS NULL AND g_Forschungsintensitaet IS NULL AND g_Geschlecht IS NULL"
+   - "Alle Daten": ""
+drittmittel_aggregiert:
+  label: "Drittmittel an Hochschulen (Aggregate)"
+  sql: datensatz_drittmittel_aggregiert
+  beschreibung: Datensatz zu den Drittmittel an Hochschule auf Aggregatebene, z.B. Bundesländer oder nach Trägern aggregiert.
+  variable: 1
+  handlungsfeld: 2
+  optionen:
+   - "Gesamtwerte": "AND Region = 'Deutschland'  AND g_Hochschultyp IS NULL AND g_Hochschultraeger IS NULL"
+   - "Bundesländer": "AND Region != 'Deutschland'  AND g_Hochschultyp IS NULL AND g_Hochschultraeger IS NULL"
+   - "Hochschultypen": "AND Region = 'Deutschland'  AND g_Hochschultyp IS NOT NULL AND g_Hochschultraeger IS NULL"
+   - "Hochschulträger": "AND Region = 'Deutschland'  AND g_Hochschultyp IS NULL AND g_Hochschultraeger IS NOT NULL"
+   - "Alle Daten": ""
 drittmittel_hochschule:
   label: "Drittmittel an Hochschulen (je Hochschule)"
   sql: datensatz_drittmittel_hochschule
   beschreibung: Datensatz zu den Drittmittel an Hochschule auf Ebene der Hochschule als Zeitreihe.
   variable: 1
   handlungsfeld: 2
-drittmittel_aggregate:
-  label: "Drittmittel an Hochschulen (Aggregate)"
-  sql: datensatz_drittmittel_aggregiert
-  beschreibung: Datensatz zu den Drittmittel an Hochschule auf Aggregatebene, z.B. Bundesländer oder nach Trägern aggregiert.
-  variable: 1
-  handlungsfeld: 2
-fue_erhebung:
-  label: "FuE-Erhebung in der Wirtschaft"
-  sql: datensatz_fue_erhebung
-  beschreibung: Aptent vulputate dapibus morbi turpis justo taciti consequat donec. Luctus nisi fermentum accumsan; nunc, nam suspendisse eleifend lobortis curae nisi iaculis..
-  variable: 1
-  handlungsfeld: 2
-hbr_report:
-  label: "Hochschul-Bildungs-Report"
-  sql: datensatz_hbr_report
-  beschreibung: Set aliquet pretium eleifend lacinia ac montes maecenas ultrices aptent. Et elementum aliquet nascetur dictumst nam primis facilisis! Fames ut cras praesent.
-  variable: 1
-  handlungsfeld: 2
+  optionen:
+   - "Alle Daten": ""

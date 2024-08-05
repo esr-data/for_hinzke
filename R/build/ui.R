@@ -78,10 +78,8 @@ draw_ui <- function(){
           route("monitor",        module_monitor_ui()),
           route("monitor_inhalt", module_monitor_inhalt_ui()),
           route("explorer",       module_explorer_ui()),
-          #route("indikator",      module_indikator_ui()),
           route("suchen",         module_suchen_ui()),
           route("suchergebnisse", module_suche_ergebnis_ui()),
-          #route("vergleichen",    module_vergleichen_ui()),
           route("analysetool",    module_analysetool_ui()),
           route("datensaetze",    module_datensaetze_ui()),
           route("studies",        module_studies_ui()),
@@ -173,10 +171,8 @@ draw_sidebar <- function(){
         style = "background-color: white;",
         actionButton("sb_team",        label = "SV DATA",     class = "sidebar_button", icon = icon("user-group")),
         actionButton("sb_fdz",         label = "FDZ",         class = "sidebar_button", icon = icon("right-to-bracket")),
-        actionButton("sb_impressum",   label = "Impressum",   class = "sidebar_button"), #, icon = icon("circle-info")
-        actionButton("sb_datenschutz", label = "Datenschutz", class = "sidebar_button") #, icon = icon("shield-halved")
-        # actionButton("sb_ziviz",     label = "ZiviZ",       class = "sidebar_button", icon = icon("people-group")),
-        # actionButton("sb_ki",        label = "KI",          class = "sidebar_button", icon = icon("brain")),
+        actionButton("sb_impressum",   label = "Impressum",   class = "sidebar_button"),
+        actionButton("sb_datenschutz", label = "Datenschutz", class = "sidebar_button")
       )
     ),
     div(style = "margin: 80px;")
@@ -203,7 +199,7 @@ draw_header <- function(){
         ),
         a(
           h5(
-            "SV DATENPORTAL",
+            "Data Explorer - SERI",
             id    = "header-left-title",
             style = "font-weight: 900; font-size: 26px; margin: auto 0;"
           ),

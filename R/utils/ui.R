@@ -119,3 +119,35 @@ create_callout_info <- function(text, titel = "Information"){
     )
   )
 }
+
+#' Missing description
+#' @export
+#'
+draw_save_and_share_buttons <- function(ns){
+  div(
+    tags$label(
+      class = "control-label",
+      "Speichern & Teilen",
+      div(
+        actionButton(
+          ns("speichern"),
+          icon  = icon("floppy-disk", class = "fa-solid"),
+          label = "",
+          class = "button_icon"
+        ),
+        actionButton(
+          ns("teilen"),
+          icon  = icon("share-nodes"),
+          label = "",
+          class = "button_icon"
+        ),
+        actionButton(
+          ns("bookmark"),
+          icon  = icon("bookmark", class = "fa-solid"),
+          label = "",
+          class = "button_icon"
+        )
+      )
+    )
+  )
+}

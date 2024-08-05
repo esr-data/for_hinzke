@@ -56,6 +56,13 @@ DBI::dbWriteTable(con_duck, 'middle_points_of_ger_federal_states',
 DBI::dbWriteTable(con_duck, 'chart_options_rules', chart_options_rules,
                   overwrite = TRUE, append = FALSE)
 
+# Datensätze
+for (i in grep("datensatz_", list.files("SQL"), value = TRUE)){
+  print(i)
+  try(DBI::dbRemoveTable(con_duck, gsub(".sql", "", i)))
+  DBI::dbWriteTable(con_duck, gsub(".sql", "", i), DBI::dbGetQuery(con_duck, paste(readLines(file.path("SQL", i)), collapse = " ")))
+}
+
 DBI::dbDisconnect(con_duck, shutdown = TRUE)
 rm(con_duck, DB_FILE, germany_choropleth_federal_states, middle_points_of_ger_federal_states,
    studierende, studierende_detailliert, kurse, chart_options_rules)
