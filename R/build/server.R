@@ -18,6 +18,7 @@ box::use(
   ../../R/utils/routing[get_hf_param],
   ../../R/pages/fdz[module_fdz_server],
   ../../R/pages/team[module_team_server],
+  ../../ R/utils/log[write_log],
 
   shiny[
     observeEvent, reactiveValues,
@@ -52,6 +53,8 @@ HF_FILTER         <- data.frame(id = 0:2, label = c("alle", "bildung", "forschun
 #' @export
 
 server <- function(input, output, session) {
+
+  timestamp <- Sys.time()
 
   # --- Routing ------------------------------------------------------------------------------------
 
@@ -270,6 +273,8 @@ server <- function(input, output, session) {
   module_monitor_inhalt_server()
   module_fdz_server()
   module_team_server()
+
+  write_log(Sys.time() - timestamp)
 
 }
 

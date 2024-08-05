@@ -10,14 +10,16 @@ WITH
   )
  )
 SELECT
- datenbasis.id AS daten_id,
- variable.beschr AS variable,
- date_part('year', datenbasis.zeit_ende) AS jahr,
- COALESCE(land.beschr, bundesland.beschr) AS bundesland,
- traeger.beschr AS traeger,
- hochschulart.beschr AS hochschulart,
- CAST(datenbasis.wert AS numeric) AS wert,
- wert_einheit.beschr AS wert_einheit
+ datenbasis.id AS id,
+ variable.beschr AS Variable,
+ date_part('year', datenbasis.zeit_ende) AS Jahr,
+ datenbasis.zeit_start AS Zeit,
+ COALESCE(land.beschr, bundesland.beschr) AS Region,
+ traeger.beschr AS g_Hochschultraeger,
+ hochschulart.beschr AS g_Hochschultyp,
+ CAST(datenbasis.wert AS numeric) AS Wert,
+ wert_einheit.beschr AS Einheit,
+ quelle.beschr AS Quelle
 FROM datenbasis
 LEFT JOIN (
  SELECT *
@@ -51,6 +53,12 @@ LEFT JOIN (
 ) land ON datenbasis.id = land.daten_id
 LEFT JOIN wert_einheit ON datenbasis.wert_einheit_id = wert_einheit.id
 LEFT JOIN variable ON datenbasis.variable_id = variable.id
+LEFT JOIN (
+  SELECT daten_quelle.daten_id as daten_id, string_agg(beschr, ', ' ORDER BY beschr DESC) AS beschr
+    FROM daten_quelle
+  LEFT JOIN quelle ON daten_quelle.quelle_id = quelle.id
+  GROUP BY daten_id
+) quelle ON datenbasis.id = quelle.daten_id
 WHERE datenbasis.id IS NOT NULL AND hochschule.beschr IS NULL
 ORDER BY
  jahr DESC,

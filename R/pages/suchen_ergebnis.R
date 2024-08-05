@@ -4,6 +4,7 @@ box::use(
   ../../R/utils/ui[draw_under_construction, draw_zurueck_button],
   ../../R/utils/database[get_query],
   ../../R/utils/string[preprocess_str],
+  ../../R/utils/reactable[get_reactable_lang, get_reactable_theme],
   ../../R/pkgs/svNum/numeric[roundFive],
   shiny[
     NS, moduleServer, observeEvent, observe,
@@ -20,7 +21,7 @@ box::use(
   ],
   shiny.router[get_query_param, get_page, change_page],
   shinyWidgets[switchInput, updateSwitchInput],
-  reactable[reactable, colDef, reactableLang, reactableTheme],
+  reactable[reactable, colDef],
   shinycssloaders[withSpinner],
   stats[aggregate],
   urltools[param_get, param_set]
@@ -434,41 +435,15 @@ draw_reactable <- function(view_daten, only_new = TRUE, reduce_data = TRUE, filt
 
   reactable(
     react_daten,
-    highlight  = TRUE,
-    filterable = filterable,
-    borderless = TRUE,
-    fullWidth = TRUE,
+    highlight       = TRUE,
+    filterable      = filterable,
+    borderless      = TRUE,
+    fullWidth       = TRUE,
     defaultPageSize = 25,
-    theme =
-      reactableTheme(
-        headerStyle =
-          list(
-            "&" = list(
-              "background-color" = "var(--blue)",
-              "border" = "none",
-              "color" = "white",
-              "font-family" = "var(--font-family-bold)",
-              "font-weight" = "400"
-            ),
-            "&:hover" =
-              list(
-                "background-color" = "var(--primary)"
-              )
-          ),
-        paginationStyle =
-          list(
-            "&" =
-              list(
-                "font-size" = "var(--font-size-small);",
-                "border-top" = "1.5px solid var(--blue);",
-                "border-bottom" = "1.5px solid var(--blue);",
-                "padding" = "6px;",
-                "margin-top" = "8px;"
-              )
-          )
-
-      ),
-    columns =
+    theme           = get_reactable_theme(),
+    language        = get_reactable_lang(),
+    rowClass        = "small-font",
+    columns         =
       list(
         variable = colDef(
           name     = "Indikator",
@@ -495,31 +470,13 @@ draw_reactable <- function(view_daten, only_new = TRUE, reduce_data = TRUE, filt
           name  = "Einheit",
           width = column_width$wert_einheit
         )
-      ),
-    language =
-      reactableLang(
-        pageInfo          = "{rowStart} bis {rowEnd} von {rows} Einträgen",
-        pagePreviousLabel = "Vorherige Seite",
-        pageNextLabel     = "Nächste Seite",
-        pageNext          = "weiter",
-        pagePrevious      = "zurück"
-    ),
-    rowClass = "small-font",
-    details = function(index){
-      datum <- view_daten[index,]
-      div(
-        draw_under_construction()
-        # class = "reactable-details",
-        # h3("Details"),
-        # p("Under Construction"),
-        # p("WERT"),
-        # p("WERTEINHEIT"),
-        # p("Erklärungen"),
-        # p("Gilt für"),
-        # p(paste("Quelle:", datum$quelle[1]))
-
       )
-    }
+    # ,details = function(index){
+    #   datum <- view_daten[index,]
+    #   div(
+    #     draw_under_construction()
+    #   )
+    # }
   )
 
 }

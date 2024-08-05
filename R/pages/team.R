@@ -45,6 +45,20 @@ module_team_ui <- function(id = "team", label = "m_team") {
       fluidRow(
         width = 12,
         create_team_member(
+          "Dr. Johannes Schmitt",
+          "johannes.schmitt@stifterverband.de",
+          "https://www.stifterverband.org/sites/default/files/styles/max_1300x1300/public/schmitt_johannes.jpg?itok=Hjqct1-Z",
+          "Co-Leitung",
+          "https://www.stifterverband.org/ueber_uns/mitarbeiter/schmitt_johannes"
+        ),
+        create_team_member(
+          "Eike Schröder",
+          "eike.schroeder@stifterverband.de",
+          "https://www.stifterverband.org/sites/default/files/styles/max_1300x1300/public/schroeder_eike.jpg?itok=EdvddyOg",
+          "Co-Leitung",
+          "https://www.stifterverband.org/ueber_uns/mitarbeiter/schroeder_eike"
+        ),
+        create_team_member(
           "Dr. Lukas Antoine",
           "lukas.antoine@stifterverband.de",
           "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
@@ -99,20 +113,6 @@ module_team_ui <- function(id = "team", label = "m_team") {
           "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
           "Teammitglied",
           "https://www.stifterverband.org/ueber_uns/mitarbeiter/micke_kim_elena"
-        ),
-        create_team_member(
-          "Dr. Johannes Schmitt",
-          "johannes.schmitt@stifterverband.de",
-          "https://www.stifterverband.org/sites/default/files/styles/max_1300x1300/public/schmitt_johannes.jpg?itok=Hjqct1-Z",
-          "Co-Leitung",
-          "https://www.stifterverband.org/ueber_uns/mitarbeiter/schmitt_johannes"
-        ),
-        create_team_member(
-          "Eike Schröder",
-          "eike.schroeder@stifterverband.de",
-          "https://www.stifterverband.org/sites/default/files/styles/max_1300x1300/public/schroeder_eike.jpg?itok=EdvddyOg",
-          "Co-Leitung",
-          "https://www.stifterverband.org/ueber_uns/mitarbeiter/schroeder_eike"
         )
       )
     )

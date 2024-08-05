@@ -494,6 +494,73 @@ button.driver-prev-btn:hover:active {
   color: white!important;
 }
 
+/* shinyWidgets: sliderTextInput -------------------------------------------- */
+
+span.irs-single, span.irs-to, span.irs-from {
+  background-color: var(--blue)!important;
+  font-size: 14px!important;
+  padding: 6px 6px!important;
+  top: -10px!important;
+  border-radius: 0px!important;
+}
+
+.irs-bar {
+  border-top: 1px solid var(--blue)!important;
+  border-bottom: 1px solid var(--blue)!important;
+  background: var(--blue)!important;
+}
+
+.irs--shiny .irs-line {
+  border-radius: 0px!important;
+}
+
+.irs-min, .irs-max {
+  font-size: 12px!important;
+  line-height: 1!important;
+  padding: 4px 4px;!important
+  top: -5px!important;
+  border-radius: 0px!important;
+  background-color: var(--light-grey)!important;
+}
+
+.irs--shiny {
+  margin-top: 10px!important;
+}
+
+/* shinyWidgets: radioGroupButtons ------------------------------------------- */
+
+.btn-group.btn-group-container-sw .btn-group .btn {
+    border-radius: 0px;
+    background-color: transparent;
+    border-color: transparent;
+	font-size: 16px;
+	transition: all .2s ease;
+}
+
+.btn-group.btn-group-container-sw .btn-group .btn:hover {
+    background-color: var(--grey);
+}
+
+.btn-group.btn-group-container-sw .btn-group .btn span i {
+  color: var(--blue)!important;
+  transition: all .2s ease;
+}
+
+.btn-group.btn-group-container-sw .btn-group .btn:active,
+.btn-group.btn-group-container-sw .btn-group .btn:active:focus,
+.btn-group.btn-group-container-sw .btn-group .btn:focus,
+.btn-group.btn-group-container-sw .btn-group .btn.radiobtn.btn-default.active {
+  background-color: var(--blue)!important;
+	color: white
+}
+
+.btn-group.btn-group-container-sw .btn-group .btn:active span i,
+.btn-group.btn-group-container-sw .btn-group .btn:active:focus span i,
+.btn-group.btn-group-container-sw .btn-group .btn:focus span i,
+.btn-group.btn-group-container-sw .btn-group .btn.radiobtn.btn-default.active span i {
+  color: white!important;
+}
+
 /* Boxen bei Studies -------------------------------------------------------- */
   
   .studies_box {
@@ -1236,6 +1303,22 @@ color: var(--red);
   font-size: 30px;
   line-height: 1;
 }
+/* FUNKTIONIERT NICHT SO
+.book.markiert::after{
+  content: "\f054";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+
+  color: var(--blue);
+  font-size: 30px;
+  line-height: 1;
+
+  position: absolute;
+  right: 10px;  Abstand vom rechten Rand des Buttons
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}*/
 
 .book:hover {
   border: 1px solid transparent;
@@ -1487,6 +1570,9 @@ font-weight: 900;
   transition: all .4s ease;
 }
 
+/* soriteren */
+
+
 
 /*Team-Cards -----------------------------------------------------------------*/
   
@@ -1571,4 +1657,22 @@ div#driver-popover-item {
   font-family: var(--font-family-bold);
   margin-top: 6px;
   color: var(--primary);
+}
+
+label.control-label {
+  font-family: var(--font-family-bold);
+  font-weight: 500;
+}
+
+.no_display {
+  display: none;
+}
+
+.no_opacity {
+  opacity: 0;
+}
+
+.bootstrap-switch.bootstrap-switch-off .bootstrap-switch-label,
+.bootstrap-switch.bootstrap-switch-inverse.bootstrap-switch-on .bootstrap-switch-label {
+  border-radius:0px!important;
 }

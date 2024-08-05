@@ -82,18 +82,18 @@ module_explorer_server <- function(id = "explorer") {
         ignoreNULL = FALSE
       )
 
-      network <- reactiveValues(data = get_network_data())
-
-      observeEvent(
-        network, {
-          if (!is.null(network)){
-            output$network <-
-              renderVisNetwork({
-                draw_network(reactiveValuesToList(network)$data, ns("current_node_id"), 1)
-              })
-          }
-        }
-      )
+      # # network <- reactiveValues(data = get_network_data())
+      #
+      # # observeEvent(
+      # #   network, {
+      # #     if (!is.null(network)){
+      # #       output$network <-
+      # #         renderVisNetwork({
+      # #           draw_network(reactiveValuesToList(network)$data, ns("current_node_id"), 1)
+      # #         })
+      # #     }
+      # #   }
+      # # )
 
 
     }
