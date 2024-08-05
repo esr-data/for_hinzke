@@ -2,7 +2,7 @@
 box::purge_cache()
 box::use(
   DBI,
-  . / prepare_functions[
+  ../prepare/prepare_functions[
     export_standard_tables,
     create_view_daten_link,
     create_view_daten_struktur,
@@ -55,7 +55,7 @@ DBI::dbWriteTable(con_duck, 'middle_points_of_ger_federal_states',
                   middle_points_of_ger_federal_states, overwrite = TRUE, append = FALSE)
 DBI::dbWriteTable(con_duck, 'chart_options_rules', chart_options_rules,
                   overwrite = TRUE, append = FALSE)
-
+stop()
 # Datensätze
 for (i in grep("datensatz_", list.files("SQL"), value = TRUE)){
   print(i)
