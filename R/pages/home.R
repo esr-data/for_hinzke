@@ -11,7 +11,8 @@ box::use(
     actionButton, tags, img, br
   ],
   slickR[slickROutput, renderSlickR, slickR, settings],
-  shiny.router[get_page, get_query_param]
+  shiny.router[get_page, get_query_param],
+  urltools[path]
 )
 
 #' Missing description
@@ -20,7 +21,7 @@ box::use(
 module_home_ui <- function(id = "home", label = "m_home") {
   ns <- NS(id)
   fluidPage(
-    draw_landing_page(ns)
+    uiOutput(ns("home"))
   )
 }
 
@@ -34,9 +35,11 @@ module_home_server <- function(id = "home") {
       ns <- session$ns
 
       observeEvent(
-        session$clientData$url_hash, {
-          if(session$clientData$url_hash == "#!/"){
-            #TODO LÖSCHEN? output$startseite <- renderUI({draw_landing_page(ns)})
+        get_page(), {
+
+          if(is.na(path(session$clientData$url_hash))){
+
+            output$home <- renderUI(draw_landing_page(ns))
             output$slick_output <- renderSlickR({
               slickR(
                 obj = paste0("img/projects/", grep("_alt.svg", list.files("www/img/projects"), value = TRUE)),

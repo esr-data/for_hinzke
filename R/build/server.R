@@ -3,7 +3,7 @@
 
 box::use(
   ../../R/pages/explorer[module_explorer_server, report_explorer_subpages],
-  ../../R/pages/analysetool[module_analysetool_server],
+  ../../R/pages/indikator[module_indikator_server = module_server],
   ../../R/pages/suchen[module_suchen_server],
   ../../R/pages/suchen_ergebnis[module_suche_ergebnis_server],
   ../../R/pages/datensaetze[module_datensaetze_server],
@@ -215,7 +215,7 @@ server <- function(input, output, session) {
   observeEvent(input$sb_fdz,         {change_page("fdz")})
 
   observeEvent(input$sbd_explorer_suche,     {change_page("suchen")})
-  observeEvent(input$sbd_explorer_analysetool, {change_page("analysetool")})
+  observeEvent(input$sbd_explorer_indikator, {change_page("indikator")})
   observeEvent(input$sbd_explorer_datensatz, {change_page("datensaetze")})
   observeEvent(input$sbd_explorer_karten,    {change_page("karten")})
 
@@ -261,7 +261,7 @@ server <- function(input, output, session) {
   # --- Server der Shiny-Modules -------------------------------------------------------------------
 
   module_explorer_server()
-  module_analysetool_server()
+  module_indikator_server()
   module_suchen_server()
   module_suche_ergebnis_server()
   module_datensaetze_server()

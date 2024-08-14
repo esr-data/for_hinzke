@@ -2,11 +2,10 @@
 
 box::use(
   ../../R/pages/home[module_home_ui],
-  #../../R/pages/indikator[module_indikator_ui],
   ../../R/pages/suchen[module_suchen_ui],
   ../../R/pages/suchen_ergebnis[module_suche_ergebnis_ui],
   #../../R/pages/vergleichen[module_vergleichen_ui],
-  ../../R/pages/analysetool[module_analysetool_ui],
+  ../../R/pages/indikator[module_indikator_ui = module_ui, indikator_globals = get_globals],
   ../../R/pages/datensaetze[module_datensaetze_ui],
   ../../R/pages/studies[module_studies_ui],
   ../../R/pages/stories[module_stories_ui],
@@ -30,7 +29,6 @@ box::use(
     column, div, h4, h5, br, a,
     uiOutput
   ],
-  bsplus[use_bs_tooltip],
   shiny.router[router_ui, route],
   shinyjs[useShinyjs],
   shinyWidgets[searchInput, radioGroupButtons],
@@ -53,6 +51,8 @@ draw_ui <- function(){
       tags$link(rel = "stylesheet", href = "default.css"),
       get_js("go_back_page"),
       get_js("select_dataset"),
+      get_js("select_tabset"),
+      get_js("activate_tooltips"),
       tags$link(rel = "apple-touch-icon-precomposed", sizes = "180x180", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/apple-touch-icon.png"),
       tags$link(rel = "icon",                         sizes = "192x192", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/touch-icon-192x192.png"),
       tags$link(rel = "shortcut icon",                                   href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/favicon.ico"),
@@ -60,7 +60,6 @@ draw_ui <- function(){
       tags$link(rel = "stylesheet", type = "text/css", href = "WebKit_bounding.css"),
       tags$title("SV Datenportal")
     ),
-    use_bs_tooltip(),
     title = NULL,
 
     # BODY
@@ -80,7 +79,7 @@ draw_ui <- function(){
           route("explorer",       module_explorer_ui()),
           route("suchen",         module_suchen_ui()),
           route("suchergebnisse", module_suche_ergebnis_ui()),
-          route("analysetool",    module_analysetool_ui()),
+          route(indikator_globals()$url_path, module_indikator_ui()),
           route("datensaetze",    module_datensaetze_ui()),
           route("studies",        module_studies_ui()),
           route("handlung1",      module_handlung_1_ui()),
@@ -136,13 +135,13 @@ draw_sidebar <- function(){
       h4("Formate", class = "sidebar_title"),
       div(
         style = "background-color: white;",
-        actionButton("sb_explorer", label = "Daten Explorer", class = "sidebar_button", icon = icon("magnifying-glass")),
+        actionButton("sb_explorer", label = "Daten",      class = "sidebar_button", icon = icon("chart-pie")),
         uiOutput("sidebar_dynamic_explorer"),
-        actionButton("sb_monitor",  label = "Monitoring",     class = "sidebar_button", icon = icon("chart-pie")),
+        actionButton("sb_monitor",  label = "Monitoring", class = "sidebar_button", icon = icon("magnifying-glass-chart")),
         uiOutput("sidebar_dynamic_monitor"),
-        actionButton("sb_stories",  label = "Analysen",       class = "sidebar_button", icon = icon("newspaper")),
+        actionButton("sb_stories",  label = "Analysen",   class = "sidebar_button", icon = icon("book-open")),
         uiOutput("sidebar_dynamic_stories"),
-        actionButton("sb_studies",  label = "Projekte",       class = "sidebar_button", icon = icon("square-poll-vertical")),
+        actionButton("sb_studies",  label = "Projekte",   class = "sidebar_button", icon = icon("diagram-project")),
         uiOutput("sidebar_dynamic_studies")
       )
     ),
@@ -199,9 +198,10 @@ draw_header <- function(){
         ),
         a(
           h5(
-            "Data Explorer - SERI",
+            "Daten-Explorer Magpie",
+            div("Test", class = "small-tag-box"),
             id    = "header-left-title",
-            style = "font-weight: 900; font-size: 26px; margin: auto 0;"
+            style = "font-weight: 900; font-size: 26px; margin: auto 0; display: flex"
           ),
           class = "header_link",
           href = "/#!/"
