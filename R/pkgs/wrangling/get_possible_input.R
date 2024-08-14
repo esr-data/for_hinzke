@@ -16,7 +16,6 @@ get_possible_input <- function(
     silent = FALSE,
     skip = skip
 ){
-browser()
   ## --- group -----------------------------------------------------------------
 
   if (!is.null(group)){
