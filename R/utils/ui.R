@@ -2,7 +2,10 @@
 box::use(
   shiny[div, icon, p, restoreInput, HTML, getCurrentTheme, actionButton],
   htmltools[tags, validateCssUnit, singleton],
-  shinyWidgets
+  shinyWidgets,
+  bsplus[
+    bs_embed_tooltip
+  ]
 )
 
 #' Missing description
@@ -140,14 +143,50 @@ draw_save_and_share_buttons <- function(ns){
           icon  = icon("share-nodes"),
           label = "",
           class = "button_icon"
-        ),
-        actionButton(
-          ns("bookmark"),
-          icon  = icon("bookmark", class = "fa-solid"),
-          label = "",
-          class = "button_icon"
         )
       )
     )
+  )
+}
+
+
+#' Missing description
+#' @export
+#'
+add_info <- function(content, id = "tip", placement = "top", style = NULL){
+  bs_embed_tooltip(
+    actionButton(
+      id,
+      label = "",
+      icon  = icon("circle-info", class = "fa-solid"),
+      class = "button_icon",
+      style = style
+    ),
+    title =
+      HTML(
+        sprintf(
+          "<h4>Hilfe</h4>%s",
+          content
+        )
+      ),
+    placement = placement
+  )
+}
+
+#' Missing description
+#' @export
+#'
+add_tooltip <- function(tag, content, placement = "top"){
+  bs_embed_tooltip(tag, title = HTML(content), placement = placement, delay = list(show = 650, hide = 100))
+}
+
+#' @export
+get_picker_options <- function(...){
+  list(
+    `none-selected-text` = "nichts ausgewählt",
+    `select-all-text`    = "alle auswählen",
+    `deselect-all-text`  = "nichts auswählen",
+    `live-search`        = TRUE,
+    ...
   )
 }

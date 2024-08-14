@@ -51,7 +51,7 @@
 }
 
 /* Fundamentale Elemente ---------------------------------------------------- */
-  
+
   .body, body {
     font-family: var(--font-family);
     font-size:   var(--font-size);
@@ -101,7 +101,7 @@ li {
 }
 
 /* Header ------------------------------------------------------------------- */
-  
+
   header.sticky {
     position: sticky;
     top: 0;
@@ -127,7 +127,7 @@ li {
 }
 
 /* Sidebar ------------------------------------------------------------------ */
-  
+
   .navbar {
     margin-bottom: 0;
   }
@@ -155,13 +155,13 @@ z-index: 105;
 }
 
 /* Sidebar-Title ------------------------------------------------------------ */
-  
+
   .sidebar_title {
     margin-top: 20px;
   }
 
 /* Sidebar-Buttons ---------------------------------------------------------- */
-  
+
   .sidebar_button,
 .sidebar_dynamic_button {
   color: black;
@@ -217,7 +217,7 @@ z-index: 105;
 }
 
 /* Sidebar-Checkbox --------------------------------------------------------- */
-  
+
   #sb_handlung div div button {
   display: flex;
 flex-direction: row;
@@ -258,7 +258,7 @@ button.active:has(input[value="forschung"]){
 
 
 /* Content-Panel ------------------------------------------------------------ */
-  
+
   .panel-content, panel-content {
     padding: 40px;
     background-color: white;
@@ -277,7 +277,7 @@ button.active:has(input[value="forschung"]){
 }
 
 /*  Standard-Buttons -------------------------------------------------------- */
-  
+
   .button-normal {
     font-weight: 700;
     padding: 8px 15px;
@@ -302,7 +302,7 @@ button.active:has(input[value="forschung"]){
 }
 
 /* Monitor-Buttons ---------------------------------------------------------- */
-  
+
   .back_button_monitor {
     color: white;
     border-radius: 0px;
@@ -370,7 +370,7 @@ button.active:has(input[value="forschung"]){
 }
 
 /* Zurück-Buttons ----------------------------------------------------------- */
-  
+
   .button_klein,
 .button_klein:active,
 .button_klein:focus {
@@ -439,7 +439,7 @@ button.active:has(input[value="forschung"]){
 
 
 /* Input-Switch ------------------------------------------------------------- */
-  
+
   .bootstrap-switch,
 .bootstrap-switch.bootstrap-switch-off,
 .bootstrap-switch-handle-on.bootstrap-switch-default,
@@ -459,7 +459,7 @@ button.active:has(input[value="forschung"]){
 }
 
 /* Tutorial ----------------------------------------------------------------- */
-  
+
   .driver-popover-title {
     color: var(--blue);
   }
@@ -562,7 +562,7 @@ span.irs-single, span.irs-to, span.irs-from {
 }
 
 /* Boxen bei Studies -------------------------------------------------------- */
-  
+
   .studies_box {
     background-color: white;
     max-width: 240px;
@@ -611,7 +611,7 @@ span.irs-single, span.irs-to, span.irs-from {
 }
 
 /* Tooltips ----------------------------------------------------------------- */
-  
+
   .tooltip.bottom .tooltip-arrow {
     border-bottom-color: var(--blue);
   }
@@ -623,9 +623,16 @@ span.irs-single, span.irs-to, span.irs-from {
   padding: 10px;
   box-shadow: 2px 2px 2px 0px var(--grey);
 }
+.tooltip-inner {
+  max-width: 408px;
+}
+
+.tooltip.in {
+  opacity: .98;
+}
 
 /* Widgets ------------------------------------------------------------------ */
-  
+
   label.control-label{
     font-weight: 700;
     color: var(--blue);
@@ -633,7 +640,7 @@ span.irs-single, span.irs-to, span.irs-from {
   }
 
 /* Sortable ----------------------------------------------------------------- */
-  
+
   .default-sortable .rank-list-item:hover:not(.disabled) {
     background-color: var(--light-primary);
   }
@@ -675,7 +682,7 @@ p.rank-list-title {
 }
 
 /* Link-Button -------------------------------------------------------------- */
-  
+
   .link_button {
     margin: 1%;
     padding: 30px 20px;
@@ -697,18 +704,18 @@ p.rank-list-title {
 #explorer-suche,
 #explorer_handlung1-suche,
 #explorer_handlung2-suche,
-#explorer-analysetool,
-#explorer_handlung1_analysetool,
-#explorer_handlung2-analysetool{
+#explorer-indikator,
+#explorer_handlung1_indikator,
+#explorer_handlung2_indikator{
 width: 100%;
 }
 
 /* lists / link-lists --------------------------------------------------------*/
-  
-  .custom-list {
-    list-style-type: none;
-    padding-left: 0;
-  }
+
+.custom-list {
+  list-style-type: none;
+  padding-left: 0;
+}
 
 .custom-list li {
   position: relative;
@@ -730,7 +737,7 @@ width: 100%;
 }
 
 /* Triangle-Handlung -------------------------------------------------------- */
-  
+
   .handlung1_triangle {
     /* content:  '';
     display:  block;
@@ -769,7 +776,7 @@ width: 100%;
 }
 
 /* Karrusel ----------------------------------------------------------------- */
-  
+
   #home-slick_output {
   margin: 0px!important;
 }
@@ -793,7 +800,7 @@ width: 100%;
 }
 
 /* Content-Box -------------------------------------------------------------- */
-  
+
   @media (max-width: 1400px){ /*767px*/
       #main-body {
       display: block!important;
@@ -889,12 +896,12 @@ flex-direction: column;
   }
 
 @media (min-width: 1000px) {
-  
+
   .navbar-header, navbar-header{
     font-size: 0px;
     width: 0px;
   }
-  
+
   ul[id="navigation_bar"]{
     width: 100%;
     display: flex;
@@ -905,26 +912,29 @@ flex-direction: column;
     .nav>li:has(a[data-value="Handlung 1"]){
       background-color: red;
     }
-  
-  
+
+
   .nav>li:has(a[data-value="Handlung 2"]){
     margin-right: 15%;
   }
-  
+
   .nav>li:has(a[data-value="Stories"]){
     margin-left: 15%;
   }
-  
+
   .nav>li:has(a[data-value="Studies"]){
     background-color: orange;
   }
 }
 */
-  
+
   /* TABSET ------------------------------------------------------------------- */
-  
-  .tabset-menu>div>div>.tabbable>.nav-tabs>li>a {
+
+  .tab_button,
+  .tabbable>.nav-tabs>li>a {
     background-color: var(--light-grey);
+    font-family: var(--font-family);
+    font-size: var(--font-size);
     color: var(--dark-grey);
     border: 1px solid transparent;
     transition: margin .3s ease;
@@ -932,46 +942,53 @@ flex-direction: column;
     margin: 0px 8px 16px 8px;
     min-width: 130px;
     text-align: center;
+    -webkit-box-shadow: none!important;
+    box-shadow: none!important;
+    border-color: transparent!important;
   }
 
-.tabset-menu>div>div>.tabbable>.nav-tabs>li>a:hover,
-.tabset-menu>div>div>.tabbable>.nav-tabs>li>a:active,
-.tabset-menu>div>div>.tabbable>.nav-tabs>li>a:focus {
-  background-color: var(--beige);
+.tab_button:hover,
+.tab_button:active,
+.tab_button:focus,
+.tabbable>.nav-tabs>li>a:hover,  /*.tabset-menu>div>div>*/
+.tabbable>.nav-tabs>li>a:active, /*.tabset-menu>div>div>*/
+.tabbable>.nav-tabs>li>a:focus { /*.tabset-menu>div>div>*/
+  background-color: var(--mint);
   color: white;
 }
 
-.tabset-menu>div>div>.tabbable>.nav-tabs>li>a[data-value="Tabelle"]:hover,
-.tabset-menu>div>div>.tabbable>.nav-tabs>li>a[data-value="Tabelle"]:active,
-.tabset-menu>div>div>.tabbable>.nav-tabs>li>a[data-value="Tabelle"]:focus {
+.tabbable>.nav-tabs>li>a[data-value="Tabelle"]:hover, /*.tabset-menu>div>div>*/
+.tabbable>.nav-tabs>li>a[data-value="Tabelle"]:active, /*.tabset-menu>div>div>*/
+.tabbable>.nav-tabs>li>a[data-value="Tabelle"]:focus { /*.tabset-menu>div>div>*/
   background-color: var(--primary);
   font-family: var(--font-family-bold);
   color: white;
 }
 
-.tabset-menu>div>div>.tabbable>.nav-tabs>li.active>a {
-  background-color: var(--dark-beige);
+ .tab_button.aktiv,
+.tabbable>.nav-tabs>li.active>a { /*.tabset-menu>div>div>*/
+  background-color: var(--mint);
   color: white;
   margin: 16px 8px 0px 8px;
   font-family: var(--font-family-bold);
 }
 
-.tabset-menu>div>div>.tabbable>.nav-tabs>li.active>a[data-value="Tabelle"] {
+.tabbable>.nav-tabs>li.active>a[data-value="Tabelle"] { /*.tabset-menu>div>div>*/
   background-color: var(--blue);
 }
 
-.tabset-menu>div>div>.tabbable>.nav-tabs {
+.tabbable>.nav-tabs { /*.tabset-menu>div>div>*/
   min-height: 64px;
   border-bottom: 2px solid var(--blue);
   margin-bottom: 24px;
 }
 
-.tabset-menu>div>div>.tabbable>.nav-tabs {
+.tabbable>.nav-tabs { /*.tabset-menu>div>div>*/
   border-bottom: 2px solid var(--dark-beige);
   animation: tabset-change-border-to-beige .3s forwards;
 }
 
-.tabset-menu>div>div>.tabbable>.nav-tabs:has(li.active>a[data-value="Tabelle"]) {
+.tabbable>.nav-tabs:has(li.active>a[data-value="Tabelle"]) { /*.tabset-menu>div>div>*/
   border-bottom: 2px solid var(--blue);
   animation: tabset-change-border-to-blue .3s forwards;
 }
@@ -989,7 +1006,7 @@ flex-direction: column;
 }
 
 /* STORY-PREVIEW-CARDS ------------------------------------------------------ */
-  
+
   .cards-in-box {
     display: flex;
     flex-direction: row;
@@ -1072,7 +1089,7 @@ img.thumbnail-image.card-img {
 }
 
 /* title -------------------------------------------------------------------- */
-  
+
   .subpage-title {
     position: relative;
     display: flex;
@@ -1131,7 +1148,7 @@ img.thumbnail-image.card-img {
 
 /* SUCHFELDER ----------------------------------------------------------------*/
   /* Es gibt zwei Suchfelder -> Beim Explorer (id: suchen-suchen) und im Header (id: suchen) */
-  
+
   #suchen-suchen_text,
   #suchen-suchen_reset,
   #suchen-suchen_search{
@@ -1147,7 +1164,7 @@ height: 40px;
 }
 
 /* SUCHE HEADER */
-  
+
   #nav_suchen{
   width: 100%;
 display: flex;
@@ -1335,7 +1352,7 @@ color: var(--red);
 }
 
 /* ---------------------------------------------------------------------------*/
-  
+
   #sb_help {
   padding: 0;
 border: none;
@@ -1364,7 +1381,7 @@ font-weight: 900;
 
 .header_link{
   margin: auto 0;
-  
+
 }
 
 .header_link:hover,
@@ -1374,8 +1391,26 @@ font-weight: 900;
   text-decoration: none;
 }
 
+/* Tooltip ------------------------------------------------------------------ */
+
+.tooltip-inner {
+  background-color: var(--color-background);
+  border-radius: 0px;
+  box-shadow: 2px 3px 5px var(--grey);
+}
+
+.tooltip.top .tooltip-arrow{
+  border-top-color: var(--color-background);
+  border-width: 6px 6px 0;
+}
+
+.tooltip {
+  font-size: var(--font-size-small);
+}
+
+
 /* Reactable in den Suchergebnisse ------------------------------------------ */
-  
+
   .suche-tabelle-treffer {
     display: flex;
     flex-wrap: nowrap;
@@ -1496,7 +1531,7 @@ font-weight: 900;
 }
 
 /*----------------------------------------------------------------------------*/
-  
+
   .suchergebnisse-fuer {
     padding: 8px;
     background-color: var(--color-background);
@@ -1575,7 +1610,7 @@ font-weight: 900;
 
 
 /*Team-Cards -----------------------------------------------------------------*/
-  
+
   .row .col, .row [class^="col-"] {
     padding-right: 0;
     padding-left: 0;
@@ -1626,6 +1661,19 @@ font-weight: 900;
 }
 
 
+.small-tag-box {
+  font-size: 15px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background-color: var(--mint);
+  height: 22px;
+  padding: 2px 6px;
+  line-height: 16px;
+  margin-left: 6px;
+  margin-top: -5px;
+  color: white;
+}
+
 .reactable-details {
   background-color: var(--color-background);
   padding: 12px;
@@ -1665,11 +1713,31 @@ label.control-label {
 }
 
 .no_display {
-  display: none;
+  display: none!important;
 }
 
 .no_opacity {
-  opacity: 0;
+  opacity: 0!important;
+}
+
+.dropdown-toggle,
+.dropdown-menu,
+.form-control,
+.rank-list-item {
+  border-radius: 0px!important;
+}
+
+div.router[data-path="indikator"]:hover #indikator-hilfe  {
+    opacity: .5 !important;
+}
+
+#indikator-select_filter .form-group {
+  margin-right: 15px;
+}
+
+.form-control:focus {
+border-color: var(--blue);
+box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(25, 83, 101, .6);
 }
 
 .bootstrap-switch.bootstrap-switch-off .bootstrap-switch-label,
