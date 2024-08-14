@@ -39,14 +39,14 @@ Inhalt:
   #   Variable:  studienanfanger_dual
   #   Auswahl:   Gliederung
   #   Darstellungen: Zeitverlauf, Tabelle, Karte
-  - ID:        bedingungen_universitaetsschulen
-    Titel:     Universitätsschulen
-    Frage:     Schaffen wir es, qualitativ gute Referandszeiten zu ermöglichen?
-    Ziel:      Gute Referandariatsbedingungen
-    Indikator: Anteil der Bundesländer mit Screening/Qualitätsstandards für Universitätsschulen
-    Variable:  studienanfanger_dual
-    Auswahl:   Gliederung
-    Darstellungen: Zeitverlauf, Tabelle, Karte
+  # - ID:        bedingungen_universitaetsschulen # warten auf Recherche durch Andreas Wormland
+  #   Titel:     Universitätsschulen
+  #   Frage:     Schaffen wir es, qualitativ gute Referandszeiten zu ermöglichen?
+  #   Ziel:      Gute Referandariatsbedingungen
+  #   Indikator: Anteil der Bundesländer mit Screening/Qualitätsstandards für Universitätsschulen
+  #   Variable:  studienanfanger_dual
+  #   Auswahl:   Gliederung
+  #   Darstellungen: Zeitverlauf, Tabelle, Karte
 
 Aktivitaet:
   - Label: Lehrkräftebildung für die Schule der Vielfalt

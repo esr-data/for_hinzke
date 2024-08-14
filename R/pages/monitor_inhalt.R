@@ -7,6 +7,7 @@ box::use(
   ../../R/pkgs/svVis/create_bar_grouped[create_bar_grouped_interactive],
   ../../R/pkgs/svVis/create_bar[create_bar],
   ../../R/pkgs/svVis/create_lineplot[create_lineplot],
+  ../../R/pkgs/svVis/create_funnel[create_funnel],
   ../../R/pkgs/svVis/create_flextable[create_flextable],
   ../../R/pkgs/svVis/create_choropleth_map_germany[create_choropleth_map_germany],
   ../../R/pkgs/wrangling/get_data[get_data],
@@ -23,7 +24,12 @@ box::use(
     give_df_teilhabe_mint_stundentafeln,
     give_df_teilhabe_mint_lehrkraefte,
     give_df_teilhabe_mint_pflichtfach_inf,
-    give_df_lehrkraefte_fs_medienkompetenz
+    give_df_lehrkraefte_fs_medienkompetenz,
+    give_df_praxisbezug,
+    give_df_experimentierklausel,
+    give_df_haws,
+    give_df_einfach_bachelor,
+    give_df_lehrkraefte_trichter
   ],
   ggplot2[
     theme,
@@ -431,17 +437,7 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
 
          df <- give_df_bildung_ganztag_kooperation()
 
-         if (input$Auswahl_ganztag_kooperation_schulform == "insgesamt") {
-           df <- df %>% filter(Schulform == "insgesamt")
-         } else if (input$Auswahl_ganztag_kooperation_schulform == "Grundschule") {
-           df <- df %>% filter(Schulform == "Grundschule")
-         } else if (input$Auswahl_ganztag_kooperation_schulform == "Haupt-/ Real-/ Gesamtschule") {
-           df <- df %>% filter(Schulform == "Haupt-/ Real-/ Gesamtschule")
-         } else if (input$Auswahl_ganztag_kooperation_schulform == "Gymnasium") {
-           df <- df %>% filter(Schulform == "Gymnasium")
-         } else {
-           df <- df %>% filter(Schulform == "Förder-/ Sonderschule")
-         }
+         df <- df %>% filter(Schulform == input$Auswahl_ganztag_kooperation_schulform)
 
          df
        })
@@ -592,6 +588,12 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
        # })
 
        # mint ----
+
+       #### stem ----
+
+       #####1 stem-veranstaltungen ----
+
+       #####2 mixed studierende ----
 
        #### minternational ----
 
@@ -2009,11 +2011,201 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
          )
        })
 
+       #### lehrkraefte bedingungen ----
+
+       #####1 praxisbzeug ----
+
+       output$Auswahlmoeglichkeiten_bedingungen_praxis <- renderUI({
+         tagList(
+           fluidRow(
+             selectInput(
+               inputId = ns("Auswahl_var_bedingungen_praxis"),
+               label = "Variable",
+               choices = c(
+                 "Vorgaben über Praxisphasen und insbesondere Praxissemester",
+                 "Verpflichtende Vorbereitungs-, Begleit- und Nachbereitungsveranstaltungen in der Praxiszeit",
+                 "Verpflichtende außerschulische Praktika",
+                 "Vorgaben zur Führung eines Portfolios"
+               ),
+              selected = "Vorgaben über Praxisphasen und insbesondere Praxissemester"
+             ),
+             selectInput(
+               inputId = ns("Auswahl_jahr_bedingungen_praxis"),
+               label = "Jahr",
+               choices = c(2015:2017, 2020, 2022),
+               selected = 2022
+             )
+           )
+         )
+       })
+       
+       observeEvent(input$Auswahl_var_bedingungen_praxis, {
+         r$Auswahl_var_bedingungen_praxis <- input$Auswahl_var_bedingungen_praxis
+       })
+       
+       observeEvent(input$Auswahl_jahr_bedingungen_praxis, {
+         r$Auswahl_jahr_bedingungen_praxis <- input$Auswahl_jahr_bedingungen_praxis
+       })
+       # df_lehrkraefte_bedingungen_praxis <- reactive({
+       #   req(input$Auswahl_var_bedingungen_praxis)
+       #   req(input$Auswahl_jahr_bedingungen_praxis)
+       # 
+       #   df <- give_df_praxisbezug()
+       # 
+       #   df <-
+       #     df %>%
+       #     filter(
+       #       Variable == Auswahl_var_bedingungen_praxis,
+       #       Jahr == Auswahl_jahr_bedingungen_praxis
+       #     )
+       # 
+       #   df
+       # })
+
+       output$Grafik_leahramt_bedingungen_praxis <- renderPlotly({
+         
+         var <- r$Auswahl_var_bedingungen_praxis
+         jahr <- r$Auswahl_jahr_bedingungen_praxis
+         
+         df <- give_df_praxisbezug()
+         
+         if(!is.null(var) & !is.null(jahr)){
+           df <-
+             df %>%
+             filter(
+               Variable == var,
+               Jahr == jahr
+             ) %>%
+             rename(Region = Bundesland)
+         
+          
+         create_choropleth_map_germany(
+           df,
+           #df_lehrkraefte_bedingungen_praxis(),
+           Wert,
+           plot_title = "",
+           plot_subtitle = "",
+           custom_caption = "Quelle: Lehrkräftemonitor.",
+           interactive = TRUE
+         )
+         }
+
+       })
+
+       output$Anmerkungen_lehrkraefte_bedingungen_praxis <- renderUI({
+         p(class = "anmerkungen",
+           "Methodische Ergänzungen sowie weitere Statistiken zum Thema Praxisbezug im Lehramt finden Sie ",
+           tags$a(href = "https://www.monitor-lehrkraeftebildung.de/themen/praxisbezug/", "hier", target = "_blank"),
+           "."
+         )
+       })
+
+       #####2 experimentierklausel ----
+
+       output$Grafik_leahramt_bedingungen_experimentierklauseln <- renderPlotly({
+         create_choropleth_map_germany(
+           give_df_experimentierklausel(),
+           Wert,
+           plot_title = "",
+           plot_subtitle = "",
+           custom_caption = "Quelle: Eigene Recherche/Stifterverband",
+           interactive = TRUE
+         )
+       })
+
+       output$Anmerkungen_lehrkraefte_bedingungen_experimentierklauseln <- renderUI({
+         p(class = "anmerkungen",
+           "Methodische Ergänzungen sowie weitere Statistiken zum Thema Experimentierklauseln im Lehramt finden Sie ",
+           tags$a(href = "https://www.monitor-lehrkraeftebildung.de/themen", "hier", target = "_blank"),
+           "."
+         )
+       })
+
+       #####3 universiaetsschulen ----
+
+       # Hier liegen aktuell noch keine Daten vor
+
+       #### lehrkraefte flexibilisierung ----
+
+       #####1 haws ----
+
+       output$Grafik_leahramt_flexibilisieurng_haws <- renderPlotly({
+         create_choropleth_map_germany(
+           give_df_haws(),
+           Wert,
+           plot_title = "",
+           plot_subtitle = "",
+           custom_caption = "Quelle: Stifterverband/Eigene Recherche.",
+           interactive = TRUE
+         )
+       })
+
+       output$Anmerkungen_lehrkraefte_flexibilisieurng_haws <- renderUI({
+         p(class = "anmerkungen",
+           "Ergänzungen zum Thema finden Sie in dem Masterplan Lehrkräftebildung vom Stifterverband ",
+           tags$a(href = "https://www.stifterverband.org/sites/default/files/2023-11/masterplan_lehrkraeftebildung_neu_gestalten.pdf", "hier", target = "_blank"),
+           "."
+         )
+       })
+
+       #####2 einfach-bachelor ----
+
+       output$Grafik_leahramt_flexibilisieurng_einfach_bachelor <- renderPlotly({
+         create_choropleth_map_germany(
+           give_df_einfach_bachelor(),
+           Wert,
+           plot_title = "",
+           plot_subtitle = "",
+           custom_caption = "Quelle: Stifterverband/Eigene Recherche.",
+           interactive = TRUE
+         )
+       })
+
+       output$Anmerkungen_lehrkraefte_flexibilisieurng_einfach_bachelor <- renderUI({
+         p(class = "anmerkungen",
+           "Ergänzungen zum Thema finden Sie in dem Masterplan Lehrkräftebildung vom Stifterverband ",
+           tags$a(href = "https://www.stifterverband.org/sites/default/files/2023-11/masterplan_lehrkraeftebildung_neu_gestalten.pdf", "hier", target = "_blank"),
+           "."
+         )
+       })
+
+       #####3 trichter ----
+
+       output$Grafik_lehrkraefte_flexibilisierung_trichter <- renderHighchart({
+         create_funnel(
+           give_df_lehrkraefte_trichter(),
+           x_var,
+           y_var,
+           plot_title = "Von Studienbeginn bis zur Lehrkraft in Zahlen",
+           plot_subtitle = "Durchschnittliche jährliche Anzahl von Personen über die Studienjahre 2017-2021",
+           custom_caption = "Quellen: Destatis (Fachserien 11 4.1/4.2) 2017-2021, Destatis (Sonderauswertung) 2021, KMK (Einstellung von Lehrkräften) 2017-2021",
+           plot_type = "highcharter"
+         )
+       })
+
+       output$Anmerkungen_lehrkraefte_flexibilisieurng_trichter <- renderUI({
+         p(class = "anmerkungen",
+           "Ergänzungen zum Thema Lehrkräftetrichter finden Sie ",
+           tags$a(href = "https://www.stifterverband.org/lehrkraeftetrichter", "hier", target = "_blank"),
+           "."
+         )
+       })
+
+       # fs ----
+
+       #### ki ----
+
+       #####1 ki-studiengaenge ----
+
+       #####2 ki-veranstaltungen ----
+
+       #####3 ki-einschaetzung ----
+
+       #### verankern ----
+
+       #####1 tech skills ----
+
     }
-
-
-
-
   )
 }
 
@@ -2303,6 +2495,22 @@ draw_table_row_content <- function(indikator_ID, ns) {
     }
 
 # mint ----
+
+    ##### stem ----
+
+  } else if (startsWith(indikator_ID, "interdisziplinaritaet")){
+
+    #####1 stem-veranstaltungen ----
+
+    if (inidikator_ID == "interdisziplinaritaet_einschaetzung_angebote") {
+
+    }
+
+    #####1 mixed studierende ----
+
+    else if (inidikator_ID == "") {
+
+    }
 
   } else if (startsWith(indikator_ID, "minternational")){
 
@@ -2762,11 +2970,11 @@ draw_table_row_content <- function(indikator_ID, ns) {
         fluidRow(
           column(
             width = 3,
-            renderUI(ns("Auswahlmoeglichkeiten_bedingungen_praxis"))
+            uiOutput(ns("Auswahlmoeglichkeiten_bedingungen_praxis"))
           ),
           column(
             width = 9,
-            renderPlotly(ns("Grafik_leahramt_bedingungen_praxis"))
+            plotlyOutput(ns("Grafik_leahramt_bedingungen_praxis"))
           )
         ),
         p("Anmerkungen:", class = "anmerkungen"),
@@ -2805,37 +3013,38 @@ draw_table_row_content <- function(indikator_ID, ns) {
       )
 
 
-    } else if (indikator_ID == "bedingungen_universitaetsschulen") {
+    # } else if (indikator_ID == "bedingungen_universitaetsschulen") {
 
       #####3 universitaetsschulen -----
 
-      fluidPage(
-        p(
-          "Die praktische Ausbildung angehender Medizinerinnen und Mediziner
-          erfolgt im Wesentlichen an Universitätskliniken, die für eine
-          Hochleistungsmedizin stehen, beziehungsweise an Akademischen
-          Lehrkrankenhäusern, die dafür bestimmte Qualitätsstandards erfüllen
-          müssen. Analog dazu sollten gemäß des Masterplans Lehrkräfte auch für
-          angehende Lehrkräfte Universitätsschulen errichtet werden, die
-          pädagogische und didaktische Innovationen entwickeln und dafür sorgen,
-          dass wissenschaftliche Erkenntnisse möglichst schnell in der Praxis
-          ankommen. Universitätsschulen bieten der Wissenschaft umgekehrt ein
-          „Reallabor“ für die Forschung. Beispiele hierfür sind die Laborschule
-          Bielefeld, die Universitätsschule Dresden oder die Heliosschule in
-          Köln. Bislang gibt es jedoch lediglich XX solcher Schulen, bei XXX
-          Universitäten mit Lehramtsausbildung."
-        ),
-        fluidRow(
-          column(
-            width = 12,
-            plotlyOutput(ns("Grafik_leahramt_bedingungen_universitaetsschulen"))
-          )
-        ),
-        p("Anmerkungen:", class = "anmerkungen"),
-        uiOutput(ns("Anmerkungen_lehrkraefte_bedingungen_universitaetsschulen"))
-      )
-
+    #   fluidPage(
+    #     p(
+    #       "Die praktische Ausbildung angehender Medizinerinnen und Mediziner
+    #       erfolgt im Wesentlichen an Universitätskliniken, die für eine
+    #       Hochleistungsmedizin stehen, beziehungsweise an Akademischen
+    #       Lehrkrankenhäusern, die dafür bestimmte Qualitätsstandards erfüllen
+    #       müssen. Analog dazu sollten gemäß des Masterplans Lehrkräfte auch für
+    #       angehende Lehrkräfte Universitätsschulen errichtet werden, die
+    #       pädagogische und didaktische Innovationen entwickeln und dafür sorgen,
+    #       dass wissenschaftliche Erkenntnisse möglichst schnell in der Praxis
+    #       ankommen. Universitätsschulen bieten der Wissenschaft umgekehrt ein
+    #       „Reallabor“ für die Forschung. Beispiele hierfür sind die Laborschule
+    #       Bielefeld, die Universitätsschule Dresden oder die Heliosschule in
+    #       Köln. Bislang gibt es jedoch lediglich XX solcher Schulen, bei XXX
+    #       Universitäten mit Lehramtsausbildung."
+    #     ),
+    #     fluidRow(
+    #       column(
+    #         width = 12,
+    #         plotlyOutput(ns("Grafik_leahramt_bedingungen_universitaetsschulen"))
+    #       )
+    #     ),
+    #     p("Anmerkungen:", class = "anmerkungen"),
+    #     uiOutput(ns("Anmerkungen_lehrkraefte_bedingungen_universitaetsschulen"))
+    #   )
+    #
     }
+
   } else if (startsWith(indikator_ID, "flexibilisierung")){
 
     ###### flexibilisierung ----
@@ -2865,7 +3074,7 @@ draw_table_row_content <- function(indikator_ID, ns) {
           Lehramtsausbildung gesetzlich umgesetzt"
         ),
         fluidRow(
-          plotlyOutput("Grafik_leahramt_flexibilisieurng_haws")
+          plotlyOutput(ns("Grafik_leahramt_flexibilisieurng_haws"))
         ),
         p("Anmerkungen:", class = "anmerkungen"),
         uiOutput(ns("Anmerkungen_lehrkraefte_flexibilisieurng_haws"))
@@ -2897,8 +3106,7 @@ draw_table_row_content <- function(indikator_ID, ns) {
           keinem Bundesland umgesetzt.")
         ),
         fluidRow(
-          plotlyOutput(Grafik_leahramt_flexibilisieurng_einfach_bachelor)
-
+          plotlyOutput(ns("Grafik_leahramt_flexibilisieurng_einfach_bachelor"))
         ),
         p("Anmerkungen:", class = "anmerkungen"),
         uiOutput(ns("Anmerkungen_lehrkraefte_flexibilisieurng_einfach_bachelor"))
@@ -2929,7 +3137,7 @@ draw_table_row_content <- function(indikator_ID, ns) {
           28.300 Menschen das Referendariat beenden.")
         ),
         fluidRow(
-          uiOutput(ns("UI_lehrkraefte_flexibilisierung_trichter"))
+          highchartOutput(ns("Grafik_lehrkraefte_flexibilisierung_trichter"))
         ),
         p("Anmerkungen:", class = "anmerkungen"),
         uiOutput(ns("Anmerkungen_lehrkraefte_flexibilisieurng_trichter"))
