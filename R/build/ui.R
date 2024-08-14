@@ -212,7 +212,8 @@ draw_header <- function(){
         a(
           HTML("<img class='brand__logo' src='https://stifterverband.org//themes/custom/cake/res/logo_stifterverband_wide.svg' alt='Logo Stifterverband'>"),
           class = "header_link",
-          href = "/#!/"
+          href = "https://www.stifterverband.org/",
+          target="_blank"
         )
       ),
       div(
