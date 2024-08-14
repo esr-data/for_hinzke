@@ -47,7 +47,7 @@ read_markdown <- function(slug, to_cache = TRUE){
   }
 
   if (is.null(md_text)){
-    md_text <- curl_earthworm(slug)
+    md_text <- "" #md_text <- curl_earthworm(slug)
   }
 
   if (is.null(md_text) & !use_cache_first){

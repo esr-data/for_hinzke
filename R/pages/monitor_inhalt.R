@@ -11,7 +11,7 @@ box::use(
   ../../R/pkgs/svVis/create_flextable[create_flextable],
   ../../R/pkgs/svVis/create_choropleth_map_germany[create_choropleth_map_germany],
   ../../R/pkgs/wrangling/get_data[get_data],
-  ../../prepare/data_monitor_zwischenloesung[
+  ../../R/utils/data_monitor_zwischenloesung[
     give_df_ganztag_vielfalt_primar,
     give_df_ganztag_vielfalt_sek_I,
     give_df_ganztag_vielfalt_gym,
@@ -2038,37 +2038,37 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
            )
          )
        })
-       
+
        observeEvent(input$Auswahl_var_bedingungen_praxis, {
          r$Auswahl_var_bedingungen_praxis <- input$Auswahl_var_bedingungen_praxis
        })
-       
+
        observeEvent(input$Auswahl_jahr_bedingungen_praxis, {
          r$Auswahl_jahr_bedingungen_praxis <- input$Auswahl_jahr_bedingungen_praxis
        })
        # df_lehrkraefte_bedingungen_praxis <- reactive({
        #   req(input$Auswahl_var_bedingungen_praxis)
        #   req(input$Auswahl_jahr_bedingungen_praxis)
-       # 
+       #
        #   df <- give_df_praxisbezug()
-       # 
+       #
        #   df <-
        #     df %>%
        #     filter(
        #       Variable == Auswahl_var_bedingungen_praxis,
        #       Jahr == Auswahl_jahr_bedingungen_praxis
        #     )
-       # 
+       #
        #   df
        # })
 
        output$Grafik_leahramt_bedingungen_praxis <- renderPlotly({
-         
+
          var <- r$Auswahl_var_bedingungen_praxis
          jahr <- r$Auswahl_jahr_bedingungen_praxis
-         
+
          df <- give_df_praxisbezug()
-         
+
          if(!is.null(var) & !is.null(jahr)){
            df <-
              df %>%
@@ -2077,8 +2077,8 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
                Jahr == jahr
              ) %>%
              rename(Region = Bundesland)
-         
-          
+
+
          create_choropleth_map_germany(
            df,
            #df_lehrkraefte_bedingungen_praxis(),

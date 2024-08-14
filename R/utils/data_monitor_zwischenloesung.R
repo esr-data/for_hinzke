@@ -14,8 +14,8 @@ box::use(
   magrittr[
     `%>%`
   ],
-  ../R/pkgs/svVis/give_ger_federal_states[give_ger_federal_states],
-  ../R/pkgs/wrangling/get_data[get_data],
+  ../../R/pkgs/svVis/give_ger_federal_states[give_ger_federal_states],
+  ../../R/pkgs/wrangling/get_data[get_data],
 )
 
 # Indikator ganztag_vielfalt
