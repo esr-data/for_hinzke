@@ -1707,6 +1707,18 @@ div#driver-popover-item {
   color: var(--primary);
 }
 
+.progress-bar {
+  background-color: var(--mint)!important;
+}
+
+.progress {
+  border-radius: 0px!important;
+}
+
+.waiter-overlay {
+ background-color: var(--primary)!important;
+}
+
 label.control-label {
   font-family: var(--font-family-bold);
   font-weight: 500;

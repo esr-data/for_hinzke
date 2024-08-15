@@ -4,7 +4,6 @@ box::use(
   ../../R/pages/home[module_home_ui],
   ../../R/pages/suchen[module_suchen_ui],
   ../../R/pages/suchen_ergebnis[module_suche_ergebnis_ui],
-  #../../R/pages/vergleichen[module_vergleichen_ui],
   ../../R/pages/indikator[module_indikator_ui = module_ui, indikator_globals = get_globals],
   ../../R/pages/datensaetze[module_datensaetze_ui],
   ../../R/pages/studies[module_studies_ui],
@@ -32,7 +31,8 @@ box::use(
   shiny.router[router_ui, route],
   shinyjs[useShinyjs],
   shinyWidgets[searchInput, radioGroupButtons],
-  cicerone[use_cicerone]
+  cicerone[use_cicerone],
+  waiter[useWaiter, useAttendant]
 )
 
 #' Missing description
@@ -41,9 +41,11 @@ box::use(
 draw_ui <- function(){
   fluidPage(
     style = "padding: 0px;",
+
     useShinyjs(),
     use_cicerone(),
-
+    useWaiter(),
+    useAttendant(),
 
     # HEAD AND STYLE
     tags$head(

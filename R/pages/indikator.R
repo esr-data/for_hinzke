@@ -1,6 +1,11 @@
 box::use(
   ../../R/utils/database[get_query, get_sql],
-  ../../R/utils/ui[draw_zurueck_button, draw_save_and_share_buttons, add_info, add_tooltip, get_picker_options],
+  ../../R/utils/ui[
+    draw_zurueck_button, draw_save_and_share_buttons,
+    add_info, add_tooltip,
+    get_picker_options,
+    draw_progress, get_progress, get_waiter
+  ],
   ../../R/utils/charts[produce_plot],
   ../../R/utils/reactable[get_reactable_lang, get_reactable_theme],
   ../../R/pkgs/wrangling/get_data[get_data],
@@ -9,7 +14,8 @@ box::use(
     NS, moduleServer, observeEvent,
     HTML, tagList, div, h2, h3, p, icon, tags,
     reactiveVal, reactiveValues, reactiveValuesToList,
-    fluidPage, actionButton, uiOutput, renderUI
+    fluidPage, actionButton, uiOutput, renderUI,
+    span
   ],
   shinyWidgets[pickerInput, updatePickerInput, sliderTextInput],
   shiny.router[get_query_param, change_page, get_page],
@@ -46,6 +52,7 @@ module_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m")) {
 
       # 1. Kopf ________________________________________________________________________________________________________
       div(
+        id = ns("kopf"),
         style = "display: flex; flex-direction: row; justify-content: space-between;",
         div(
           id    = ns("triangle"),
@@ -61,6 +68,7 @@ module_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m")) {
 
       #2. Menü__________________________________________________________________________________________________________
       div(
+        id = ns("menu"),
         style = "padding: 10px; display: flex; margin: 0; min-height: 500px;",
         div(
           class = "content-box",
@@ -137,10 +145,14 @@ module_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m")) {
           div(draw_balken(), style = "position: absolute; right: 10px; top: 150px;")
         )
       ),
+      div(
+        style = "padding: 0 20px;",
+        draw_progress(ns)
+      ),
       #3. Inhalt__________________________________________________________________________________________________________
       div(
         id    = ns("ergebnis_box"),
-        style = "margin-top: 24px; min-height: 1000px;",
+        style = "margin-top: 24px; min-height: 1000px; min-height = 600px",
         class = c("tabset-menu", "no_display"),
         div(
           style = "display: flex; flex-direction: row; justify-content: space-between; border-bottom: 3px solid var(--mint);",
@@ -150,7 +162,7 @@ module_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m")) {
           ),
           draw_save_and_share_buttons(ns)
         ),
-        withSpinner(uiOutput(ns("ergebnisse")))
+        uiOutput(ns("ergebnisse"))
       ),
       draw_hilfe(ns)
     )
@@ -178,6 +190,9 @@ module_server <- function(id = URL_PATH, type = "all"){
         )
       filter_aenderung <- reactiveVal(1)
 
+      waiter   <- get_waiter(ns, "ergebnis_box")
+      progress <- get_progress(ns)
+
       # - Das zentrale Event bezieht sich auf die URL-Parameter;
       #   auf dieser Basis werden alle Anpassungen vorgenommen
 
@@ -185,6 +200,9 @@ module_server <- function(id = URL_PATH, type = "all"){
         get_query_param(), {
 
           if (get_page() %in% URL_PATH){
+
+            progress$set(0)
+            waiter$show()
 
             current_url <- session$clientData$url_hash
             aenderung   <- c()
@@ -205,6 +223,7 @@ module_server <- function(id = URL_PATH, type = "all"){
               output$ueberschrift <- render_head(parameter_hf)
               aenderung           <- c(aenderung, "hf")
             }
+            if (length(aenderung) > 0) progress$set(1)
 
             # PARAMETER tag - Update der Tags ______________________________________________________
 
@@ -230,6 +249,7 @@ module_server <- function(id = URL_PATH, type = "all"){
               }
               rm(tags)
             }
+            if (length(aenderung) > 0) progress$set(2)
 
             # PARAMETER variable - Update der Variablen ____________________________________________
 
@@ -274,6 +294,7 @@ module_server <- function(id = URL_PATH, type = "all"){
               aenderung          <- c(aenderung, "variable")
               rm(selected, variables)
             }
+            if (length(aenderung) > 0) progress$set(3)
 
             # PARAMETER variable2 - Update der Variablen zum Vergleich _____________________________
 
@@ -314,6 +335,7 @@ module_server <- function(id = URL_PATH, type = "all"){
               aenderung           <- c(aenderung, "variable2")
               rm(choices, selected)
             }
+            if (length(aenderung) > 0) progress$set(4)
 
             # PARAMETER zeit - Update des Zeit-Sliders _____________________________________________
 
@@ -337,6 +359,7 @@ module_server <- function(id = URL_PATH, type = "all"){
               parameter$zeit <- parameter_zeit
               aenderung      <- c(aenderung, "zeit")
             }
+            if (length(aenderung) > 0) progress$set(5)
 
             # PARAMETER gruppe - Update der Gruppenauswahl / "Eimer" _______________________________
 
@@ -396,6 +419,7 @@ module_server <- function(id = URL_PATH, type = "all"){
               parameter$filter <- parameter_filter
               aenderung <- c(aenderung, "filter")
             }
+            if (length(aenderung) > 0) progress$set(6)
 
             # PARAMETER der Tabsets ________________________________________________________________
 
@@ -472,7 +496,7 @@ module_server <- function(id = URL_PATH, type = "all"){
               }
               aenderung <- c(aenderung, "tab")
             }
-
+            if (length(aenderung) > 0) progress$set(7)
 
             if (length(aenderung) > 0 & "tab" %in% aenderung & !(parameter_variable %in% "")){
 
@@ -517,6 +541,7 @@ module_server <- function(id = URL_PATH, type = "all"){
 
               }
             }
+            if (length(aenderung) > 0) progress$set(9)
 
             if ("variable" %in% aenderung | start){
               if (parameter_variable %in% ""){
@@ -527,7 +552,7 @@ module_server <- function(id = URL_PATH, type = "all"){
             }
 
             if (("tab" %in% aenderung | start) & parameter_variable != ""){
-              runjs('document.getElementById("indikator-variable").scrollIntoView();')
+              runjs('document.getElementById("indikator-ergebnis_box").scrollIntoView();')
             }
 
             ##### 3. Schritt: URL auf aktuelle Parameter-Set anpassen                    ###########
@@ -547,6 +572,9 @@ module_server <- function(id = URL_PATH, type = "all"){
               change_page(new_url)
             }
 
+            if (length(aenderung) > 0) progress$set(10)
+            waiter$hide()
+            progress$close()
           }
         },
         ignoreNULL = FALSE

@@ -3,6 +3,7 @@
 box::use(
   ../../R/utils/routing[get_hf_param],
   ../../R/utils/network[get_network_data, draw_network],
+  ../../R/utils/ui[with_loader],
   shiny[
     NS, moduleServer, observeEvent,
     reactiveValuesToList, reactiveValues,
@@ -31,7 +32,12 @@ module_explorer_ui <- function(id = "explorer", label = "m_explorer") {
         actionButton(ns("indikator"), label = "Indikatoren", class = "link_button", icon = icon("chart-bar")),
         actionButton(ns("datensatz"), label = "Datensätze",  class = "link_button", icon = icon("database")),
         actionButton(ns("karten"),    label = "Karten",      class = "link_button", icon = icon("earth-europe"))
-      )#,
+      ),
+      div(
+        "adasd",
+        with_loader(uiOutput(ns("intro2")))
+      )
+      #,
       # div(
       #   class = "network-panel",
       #   style = "height: 500px; width: 800px; background-color: var(--very-light-grey); margin: 20px; padding: 2px; box-shadow: 0px 0px 5px 0px var(--grey);",
