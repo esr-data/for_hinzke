@@ -1,11 +1,13 @@
 
 box::use(
-  shiny[div, icon, p, restoreInput, HTML, getCurrentTheme, actionButton],
+  shiny[div, icon, p, restoreInput, HTML, getCurrentTheme, actionButton, singleton, tags, tagList, includeHTML, span],
   htmltools[tags, validateCssUnit, singleton],
   shinyWidgets,
   bsplus[
     bs_embed_tooltip
-  ]
+  ],
+  shinycssloaders[withSpinner],
+  waiter[attendantBar, Attendant, Waiter, spin_solar]
 )
 
 #' Missing description
@@ -110,7 +112,7 @@ create_callout_info <- function(text, titel = "Information"){
     class = "callout-info",
     div(
       class = "callout-info-head",
-      shiny::icon("circle-info"),
+      icon("circle-info"),
       div(
         class = "callout-info-h",
         titel
@@ -188,5 +190,52 @@ get_picker_options <- function(...){
     `deselect-all-text`  = "nichts auswählen",
     `live-search`        = TRUE,
     ...
+  )
+}
+
+#' @export
+with_loader <- function(...){ #ui_element, type = "html", loader = "dnaspin", proxy.height = if (grepl("height:\\s*\\d", ui_element)) NULL else "400px"
+  # proxy_element <- tagList()
+  # if (!is.null(proxy.height))
+  #   proxy_element <- div(style = glue::glue("height:{ifelse(is.null(proxy.height),'100%',proxy.height)}"), class = "shiny-loader-placeholder")
+  #
+  # loader <- "dnaspin"
+  # htmlfile <- system.file(package = "shinycustomloader", paste0("css-loaders/html/", loader, ".html"))
+  #
+  # tagList(
+  #   singleton(tags$head(tags$link(rel = "stylesheet", href = "assets/imgcustom-loader.css"))),
+  #   singleton(tags$script(src = "assets/imgcustom-loader.js")),
+  #   singleton(tags$head(tags$link(rel = "stylesheet", href = "css-loaders/css/imgcustom-fallback.css"))),
+  #   singleton(tags$head(tags$link(rel = "stylesheet", href = "dnaspin.css" ))),
+  #   div(class = "shiny-loader-output-container", div(class = "load-container", includeHTML(htmlfile)), proxy_element, ui_element)
+  # )
+  withSpinner(..., type = 8, color = "#195365")
+}
+
+#' @export
+draw_progress <- function(ns, id = "progress-bar"){
+  attendantBar(
+    ns(id),
+    max      = 10,
+    striped  = TRUE,
+    animated = TRUE,
+    color    = "success",
+    hidden   = TRUE
+  )
+}
+
+#' @export
+get_progress <- function(ns, id = "progress-bar"){
+  Attendant$new(ns(id), hide_on_max = TRUE)
+}
+
+#' @export
+get_waiter <- function(ns, id){
+  Waiter$new(
+    id = ns(id),
+    html = tagList(
+      spin_solar(),
+      span("Lade Daten...", style = "margin-top: 24px; color:white; font-size: 32px; font-family: var(--font-family-bold);")
+    )
   )
 }
