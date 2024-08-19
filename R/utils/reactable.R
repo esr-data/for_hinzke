@@ -41,6 +41,8 @@ get_reactable_lang <- function(){
     pagePreviousLabel = "Vorherige Seite",
     pageNextLabel     = "Nächste Seite",
     pageNext          = "weiter",
-    pagePrevious      = "zurück"
+    pagePrevious      = "zurück",
+    searchPlaceholder = "Suche",
+    searchLabel       = "Suche"
   )
 }

@@ -43,6 +43,48 @@ create_view_daten_link <- function(con_duck){
   return(invisible(NULL))
 }
 
+create_view_tag_link <- function(con_duck){
+
+  tag <- svMagpie::get_query("SELECT * FROM tag")
+  tag[,paste0("eltern_id_", 0)] <- tag$id
+  tag[,paste0("eltern_id_", 1)] <- tag$eltern_id
+  i <- 1
+
+  tag$bez <- NULL
+  tag$bez_lang <- NULL
+  tag$descr <- NULL
+  tag$beschr_lang <- NULL
+
+  while (any(!is.na(tag[,paste0("eltern_id_", i)])) & i < 10) {
+    i <- i + 1
+    print(i)
+    tag[,paste0("eltern_id_", i)] <- tag[match(tag[,paste0("eltern_id_", i - 1)], tag[,paste0("eltern_id_", i - 2)]), paste0("eltern_id_", i - 1)]
+  }
+  tag[,paste0("eltern_id_", i)] <- NULL
+
+  view_tag_link <- data.frame()
+  n <- i
+  for (i in 1:n){
+    view_tag_link <-
+      view_tag_link |>
+      rbind(
+        data.frame(
+          tag_id      = tag$id,
+          tag_link_id = tag[,paste0("eltern_id_", i - 1)],
+          ebene       = i
+        )
+      )
+  }
+  view_tag_link <- view_tag_link[!is.na(view_tag_link$tag_link_id),]
+
+  # con  <- svMagpie::connect_magpie()
+  # tag_link <- DBI::dbGetQuery(con, paste(readLines("SQL/tag_link.sql"), collapse = " "))
+  # DBI::dbDisconnect(con)
+  # for (i in 1:3) tag_link[,i] <- as.integer(tag_link[,i])
+  DBI::dbWriteTable(con_duck, "view_tag_link", view_tag_link)
+  return(invisible(NULL))
+}
+
 create_view_daten_struktur <- function(con_duck){
   daten_link <-
     "SELECT daten_id, reihe_id, tabelle_id, tabelle_id = (SELECT id FROM tabelle WHERE bez = 'reichweite') as reichweite

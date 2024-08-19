@@ -2,7 +2,6 @@
 
 box::use(
   ../../R/utils/routing[get_hf_param],
-  ../../R/utils/network[get_network_data, draw_network],
   ../../R/utils/ui[with_loader],
   shiny[
     NS, moduleServer, observeEvent,
@@ -12,13 +11,10 @@ box::use(
     h2, div, icon,
     uiOutput, renderUI
   ],
-  shiny.router[change_page, get_query_param, get_page],
-  visNetwork[visNetworkOutput, renderVisNetwork]
+  shiny.router[change_page, get_query_param, get_page]
 )
 
-#' Missing description
 #' @noRd
-
 module_explorer_ui <- function(id = "explorer", label = "m_explorer") {
   ns <- NS(id)
   fluidPage(
@@ -37,19 +33,11 @@ module_explorer_ui <- function(id = "explorer", label = "m_explorer") {
         "adasd",
         with_loader(uiOutput(ns("intro2")))
       )
-      #,
-      # div(
-      #   class = "network-panel",
-      #   style = "height: 500px; width: 800px; background-color: var(--very-light-grey); margin: 20px; padding: 2px; box-shadow: 0px 0px 5px 0px var(--grey);",
-      #   visNetworkOutput(ns("network"), width = "100%", height = "100%")
-      # )
     )
   )
 }
 
-#' Missing description
 #' @noRd
-
 module_explorer_server <- function(id = "explorer") {
   moduleServer(
     id,
@@ -57,7 +45,7 @@ module_explorer_server <- function(id = "explorer") {
       ns <- session$ns
 
       observeEvent(input$suche,     {change_explorer_page("suchen")})
-      observeEvent(input$indikator, {change_explorer_page("indikator")})
+      observeEvent(input$indikator, {change_explorer_page("indikator_auswahl")})
       observeEvent(input$datensatz, {change_explorer_page("datensaetze")})
       observeEvent(input$karten,    {change_explorer_page("karten")})
 
@@ -81,20 +69,6 @@ module_explorer_server <- function(id = "explorer") {
         },
         ignoreNULL = FALSE
       )
-
-      # # network <- reactiveValues(data = get_network_data())
-      #
-      # # observeEvent(
-      # #   network, {
-      # #     if (!is.null(network)){
-      # #       output$network <-
-      # #         renderVisNetwork({
-      # #           draw_network(reactiveValuesToList(network)$data, ns("current_node_id"), 1)
-      # #         })
-      # #     }
-      # #   }
-      # # )
-
 
     }
   )

@@ -7,7 +7,8 @@ box::use(
     create_view_daten_link,
     create_view_daten_struktur,
     create_view_daten_detailed,
-    create_view_daten_reichweite_menge
+    create_view_daten_reichweite_menge,
+    create_view_tag_link
   ]
 )
 
@@ -21,6 +22,7 @@ create_view_daten_link(con_duck)
 create_view_daten_struktur(con_duck)
 create_view_daten_detailed(con_duck)
 create_view_daten_reichweite_menge(con_duck)
+create_view_tag_link(con_duck)
 
 #data_pfad <- "https://stifterverband.sharepoint.com/:f:/s/DatenmenscheninSVundTchtern/EtSyfMRLh1pMi698TgLRWl0BWNRHHA586NEpFqQ5usdsXQ?e=Grgpts"
 #data_pfad <- "C:/Users/kbr/Desktop/temp"

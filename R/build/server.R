@@ -4,6 +4,7 @@
 box::use(
   ../../R/pages/explorer[module_explorer_server, report_explorer_subpages],
   ../../R/pages/indikator[module_indikator_server = module_server],
+  ../../R/pages/indikator_auswahl[module_indikator_auswahl_server = module_server],
   ../../R/pages/suchen[module_suchen_server],
   ../../R/pages/suchen_ergebnis[module_suche_ergebnis_server],
   ../../R/pages/datensaetze[module_datensaetze_server],
@@ -145,19 +146,20 @@ server <- function(input, output, session) {
     current$page, {
 
       test_none_explorer <- TRUE
+      explorer_urls <- c(EXPLORER_SUBPAGES$url, paste0(EXPLORER_SUBPAGES$url, "_auswahl"))
 
       if (
         current$page %in%
         c(
-          EXPLORER_SUBPAGES$url,
+          explorer_urls,
           "monitor", "monitor_inhalt",
           "stories", "stories_inhalt",
           "studies"
         )
       ){
-        if (current$page %in% EXPLORER_SUBPAGES$url){
+        if (current$page %in% explorer_urls){
           output$sidebar_dynamic_explorer <- renderUI({draw_sidebar_explorer(current$page)})
-          test_none_explorer <- FALSE
+          test_none_explorer              <- FALSE
         }
         removeCssClass("sidebar_group_filter", "div_hide")
       } else {
@@ -165,7 +167,7 @@ server <- function(input, output, session) {
       }
 
       page_category <- current$page
-      page_category <- ifelse(page_category %in% EXPLORER_SUBPAGES$url, "explorer", page_category)
+      page_category <- ifelse(page_category %in% explorer_urls, "explorer", page_category)
       page_category <- ifelse(page_category %in% "monitor_inhalt", "monitor", page_category)
       page_category <- ifelse(page_category %in% "stories_inhalt", "stories", page_category)
 
@@ -262,6 +264,7 @@ server <- function(input, output, session) {
 
   module_explorer_server()
   module_indikator_server()
+  module_indikator_auswahl_server()
   module_suchen_server()
   module_suche_ergebnis_server()
   module_datensaetze_server()
@@ -293,7 +296,7 @@ draw_sidebar_explorer <- function(url = NULL){
           class   =
             paste0(
               "sidebar_dynamic_button",
-              ifelse(x["url"] %in% url, " btn_selected", "")
+              ifelse(x["url"] %in% url | paste0(x["url"], "_auswahl") %in% url, " btn_selected", "")
             )
         )
       }

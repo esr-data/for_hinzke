@@ -1,13 +1,13 @@
 box::use(
   ../../R/utils/database[get_query],
-  visNetwork[visNetwork, visEvents, visNodes, visEdges, visLayout]
+  visNetwork[visNetwork, visEvents, visNodes, visEdges, visLayout, visInteraction, visPhysics, visOptions]
 )
 
 #' Missing description
 #' @export
 get_network_data <- function(){
 
-  tag <- get_query("SELECT * FROM tag WHERE NOT bez IN ('covid19')")
+  tag <- get_query("SELECT * FROM tag WHERE NOT bez IN ('covid19') AND NOT id IN (SELECT id FROM view_tag_baum WHERE beschr_pfad LIKE '%Zukunftsmission%' OR beschr_pfad LIKE '%Datensatz%')")
 
   #TODO Daten ergänzen; später auslagern!!
 
@@ -45,10 +45,10 @@ get_network_data <- function(){
       data.frame(
         id          = max(tag$id) + 1,
         eltern_id   = NA,
-        bez         = "portal",
-        bez_lang    = "sv_datenportal",
-        beschr      = "SV Datenportal",
-        beschr_lang = "Das Datenportal des Stifterverbandes",
+        bez         = "exp",
+        bez_lang    = "explorer",
+        beschr      = "Explorer",
+        beschr_lang = "Daten-Explorer Magpie",
         descr       = NA
       )
     )
@@ -72,8 +72,8 @@ get_network_data <- function(){
   tag$eltern_id[tag$bez_lang %in% c("wissenschaftler")] <- tag$id[tag$bez_lang == "wissenschaft"]
   tag$eltern_id[tag$bez_lang %in% c("fue")] <- tag$id[tag$bez_lang == "innovation"]
   tag$eltern_id[tag$bez_lang %in% c("informatik")] <- tag$id[tag$bez_lang == "mint"]
-  tag$eltern_id[tag$bez_lang %in% c("hochschulbildungsreport")] <- tag$id[tag$bez == "mintdl_daten"]
-  tag$eltern_id[tag$bez %in% c("wirt", "mint", "inter", "dtnstz", "wwie")] <- tag$id[tag$bez_lang == "sv_datenportal"]
+  # tag$eltern_id[tag$bez_lang %in% c("hochschulbildungsreport")] <- tag$id[tag$bez == "mintdl_daten"]
+  tag$eltern_id[tag$bez %in% c("wirt", "mint", "inter", "dtnstz", "wwie")] <- tag$id[tag$bez_lang == "explorer"]
 
   # ------
 
@@ -84,13 +84,13 @@ get_network_data <- function(){
 
   nodes[,"color.background"]           <- "#c5cdd2"
   nodes[,"color.border"]               <- "#195365"
-  nodes[,"font.size"]                  <- 12
+  nodes[,"font.size"]                  <- 20
   nodes[,"color.highlight.border"]     <- "#195365"
   nodes[,"color.highlight.background"] <- "#195365"
 
   nodes$shape <- "dot"
   nodes$shape[nodes$label %in% "Datensatz"]      <- "database"
-  nodes$shape[nodes$label %in% "SV Datenportal"] <- "box"
+  nodes$shape[nodes$label %in% "Explorer"] <- "box"
   nodes$shape[nodes$id %in% tag$id[tag$eltern_id %in% tag$id[tag$bez_lang %in% "datensatz"]]] <- "triangle"
   i <- c("Innovation", "Bildung", "Hochschule", "Wissen", "Forschung", "Forschung und Entwicklung", "Studium", "Wissenschaft")
   nodes$shape[nodes$label %in% i] <- "hexagon"
@@ -106,24 +106,24 @@ get_network_data <- function(){
   i <- nodes$label %in% tag$beschr[tag$id %in% i | tag$eltern_id %in% i]
   nodes$group[i] <- "daten"
 
-  i <- tag$id[tag$beschr %in% c("Innovation", "Forschung und Entwicklung", "Forschung", "FuE-Aufwendungen", "Wissenstransfer")]
+  i <- tag$id[tag$beschr %in% c("Innovation", "Forschung und Entwicklung", "Forschung", "FuE-Aufwendungen", "Wissenstransfer", "Finanzierung von FuE")]
   i <- nodes$label %in% tag$beschr[tag$id %in% i | tag$eltern_id %in% i]
-  nodes$group[i] <- "innovation"
+  nodes$group[i] <- "Forschung & Innovation"
 
-  i <- tag$id[tag$beschr %in% c("Hochschule", "Bildung", "Studium", "Studierende", "Lehre", "Lehrveranstaltungen")]
+  i <- tag$id[tag$beschr %in% c("Hochschule", "Bildung", "Studium", "Studierende", "Lehre", "Lehrveranstaltungen", "Schule", "Lehrkräfte")]
   i <- nodes$label %in% tag$beschr[tag$id %in% i | tag$eltern_id %in% i]
-  nodes$group[i] <- "bildung"
+  nodes$group[i] <- "Bildung & Kompetenzen"
 
   ebene_1 <- tag$id[tag$eltern_id %in% tag$id[tag$bez %in% "zmb"]]
   ebene_2 <- tag$id[tag$eltern_id %in% ebene_1]
   ebene_3 <- tag$id[tag$eltern_id %in% ebene_2]
   i <- nodes$label %in% tag$beschr[tag$id %in% c(ebene_1, ebene_2, ebene_3)]
-  nodes$group[i] <- "bildung"
+  nodes$group[i] <- "Bildung & Kompetenzen"
   rm(ebene_1, ebene_2, ebene_3)
 
-  i <- tag$id[tag$beschr %in% c("SV Datenportal", "Wirtschaft", "International", "MINT", "Wissen", "Informatik", "Wissenschaft", "Wissenschaftler")]
+  i <- tag$id[tag$beschr %in% c("Explorer", "Wirtschaft", "International", "MINT", "Wissen", "Informatik", "Wissenschaft", "Wissenschaftler")]
   i <- nodes$label %in% tag$beschr[tag$id %in% i]
-  nodes$group[i] <- "allgemein"
+  nodes$group[i] <- "Allgemein"
 
 
   i <- nodes$group %in% "daten"
@@ -133,24 +133,24 @@ get_network_data <- function(){
   nodes$color.highlight.background[i] <- nodes$color.highlight.border[i]
   rm(i)
 
-  i <- nodes$group %in% "innovation"
+  i <- nodes$group %in% "Forschung & Innovation"
   nodes$color.background[i] <- "#D5B9F6"
   nodes$color.border[i] <- "#48108D"
   nodes$color.highlight.border[i]     <- "#9650EB"
   nodes$color.highlight.background[i] <- nodes$color.highlight.border[i]
   rm(i)
 
-  i <- nodes$group %in% "bildung"
+  i <- nodes$group %in% "Bildung & Kompetenzen"
   nodes$color.background[i] <- "#E9FE89"
   nodes$color.border[i] <- "#83A100"
   nodes$color.highlight.border[i]     <- "#AFD700"
   nodes$color.highlight.background[i] <- nodes$color.highlight.border[i]
   rm(i)
 
-  i <- nodes$group %in% "allgemein"
-  nodes$color.background[i] <- "#DFDBD1"
-  nodes$color.border[i] <- "#5C5640"
-  nodes$color.highlight.border[i]     <- "#AEA68B"
+  i <- nodes$group %in% "Allgemein"
+  nodes$color.background[i] <- "#d0d4da"
+  nodes$color.border[i] <- "#195365"
+  nodes$color.highlight.border[i]     <- "#8d9ca9"
   nodes$color.highlight.background[i] <- nodes$color.highlight.border[i]
   rm(i)
 
@@ -159,8 +159,8 @@ get_network_data <- function(){
   nodes$font.face <- "calibri"
   #nodes$value <- 1
 
-  i <- c("SV Datenportal")
-  nodes$font.size[nodes$label %in% i] <- 32
+  i <- c("Explorer")
+  nodes$font.size[nodes$label %in% i] <- 28
   nodes$value[nodes$label %in% i]     <- 40
   rm(i)
 
@@ -170,7 +170,7 @@ get_network_data <- function(){
   rm(i)
 
   i <- c("Hochschule", "Forschung", "Forschung und Entwicklung", "Studium", "Wissenschaft")
-  nodes$font.size[nodes$label %in% i] <- 20
+  nodes$font.size[nodes$label %in% i] <- 24
   nodes$value[nodes$label %in% i]     <- 22
   rm(i)
 
@@ -230,7 +230,13 @@ get_network_data <- function(){
   edges[(i + 1):nrow(edges), "dashes"] <- TRUE
   edges$color <- "#b5bfc5"
 
-  nodes$label <- paste0("<b>", nodes$label, "</b>") # style = 'padding: 20px;'
+  position <- rlist::list.rbind(yaml::read_yaml("yml/explorer/network_positions.yml"))
+  position[,1] <- unlist(position[,1])
+  position[,2] <- unlist(position[,2])
+  nodes$x <- position[match(nodes$label, rownames(position)),1]
+  nodes$y <- position[match(nodes$label, rownames(position)),2]
+  nodes$x[is.na(nodes$x)] <- 0
+  nodes$y[is.na(nodes$y)] <- 0
 
   return(
     list(
@@ -243,15 +249,33 @@ get_network_data <- function(){
 #' Missing description
 #' @export
 
-draw_network <- function(daten, event_id = "none", randomSeed = 1){
+draw_network <- function(daten, event_id = "none", randomSeed = 38){
   visNetwork(
     nodes  = daten$nodes,
     edges  = daten$edges,
-    height = "500px",
+    height = "400px",
     width  = "1000px"
   ) |>
     visEvents(select = sprintf("function(nodes) {Shiny.onInputChange('%s', nodes);;}", event_id)) |>
-    visNodes(font = list(multi = "html"))  |>
+    visNodes(font = list(multi = "html"), x = daten$nodes$x, y = daten$nodes$y)  |>
     visEdges(scaling = list(min = 3.5, max = 3.5)) |>
-    visLayout(randomSeed = randomSeed)
+    visLayout(randomSeed = randomSeed) |>
+    visInteraction(dragNodes = TRUE, navigationButtons = TRUE, dragView = FALSE, keyboard = TRUE) |>
+    visPhysics(
+      enabled = FALSE,
+      stabilization = TRUE,
+      barnesHut = list(
+        "springLength"   = 90,
+        "springConstant" = 0.25,
+        "avoidOverlap"   = 0.15
+      )
+    ) |>
+    visOptions(selectedBy = "group",
+               highlightNearest = TRUE,
+               nodesIdSelection =
+                 list(
+                   enabled = TRUE,
+                   useLabels = "asdsad"
+                 ))
+
 }
