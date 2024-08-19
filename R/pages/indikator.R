@@ -170,7 +170,7 @@ module_ui <- function(id = URL_PATH, label = paste0(URL_PATH, "_m")) {
 }
 
 #' @export
-module_server <- function(id = URL_PATH, type = "all"){
+module_server <- function(id = URL_PATH){
   moduleServer(
     id,
     function(input, output, session) {
