@@ -11,6 +11,12 @@ Einfuehrungstext:
   steigert. Zudem fördern Future Skills die Entwicklung von innovativen Lösungsansätzen für komplexe
   Probleme und tragen somit zu einer nachhaltigen gesellschaftlichen und wirtschaftlichen Entwicklung bei.
 
+Top_News:
+  - t: Min. X,X %
+    sub: der Universitätskurse vermitteln expliziet technische Future Skills, 2017 waren es noch X,X %
+  - t: Min. X,X %
+    sub: der Universitätskurse vermitteln expliziet den Future Skill Data Analytics, 2017 waren es noch X,X %
+
 Inhalt:
   - ID:        verankern_tech_skills
     Titel:     Tech-Future Skills in Hochschulveranstaltungen

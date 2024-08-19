@@ -1081,3 +1081,51 @@ give_df_lehrkraefte_trichter <- function() {
     y_var = c(52500, 32300, 10300, 9400, 8300, 4300)
   )
 }
+
+# Indikator verankerung tech skills
+# Quelle: HEX/Stifterverband
+
+#' Missing description
+#' @export
+
+give_df_tech_skills <- function() {
+  tribble(
+    ~name, ~jahr, ~N, ~Total, ~Anteil,
+    "Data Analytics & KI", 2016, 1038, 106311, 0.98,
+    "Data Analytics & KI", 2017, 1196, 107224, 1.12,
+    "Data Analytics & KI", 2018, 1383, 112234, 1.23,
+    "Data Analytics & KI", 2019, 1694, 115575, 1.47,
+    "Data Analytics & KI", 2020, 1896, 112683, 1.68,
+    "Data Analytics & KI", 2021, 2323, 120085, 1.93,
+    "IT-Architektur", 2016, 1462, 106311, 1.38,
+    "IT-Architektur", 2017, 1550, 107224, 1.45,
+    "IT-Architektur", 2018, 1678, 112234, 1.50,
+    "IT-Architektur", 2019, 1751, 115575, 1.52,
+    "IT-Architektur", 2020, 1722, 112683, 1.53,
+    "IT-Architektur", 2021, 1807, 120085, 1.50,
+    "Nutzerzentriertes Design", 2016, 238, 106311, 0.22,
+    "Nutzerzentriertes Design", 2017, 227, 107224, 0.21,
+    "Nutzerzentriertes Design", 2018, 266, 112234, 0.24,
+    "Nutzerzentriertes Design", 2019, 327, 115575, 0.28,
+    "Nutzerzentriertes Design", 2020, 346, 112683, 0.31,
+    "Nutzerzentriertes Design", 2021, 349, 120085, 0.29,
+    "Quantencomputing", 2016, 52, 106311, 0.05,
+    "Quantencomputing", 2017, 61, 107224, 0.06,
+    "Quantencomputing", 2018, 65, 112234, 0.06,
+    "Quantencomputing", 2019, 86, 115575, 0.07,
+    "Quantencomputing", 2020, 117, 112683, 0.10,
+    "Quantencomputing", 2021, 140, 120085, 0.12,
+    "Softwareentwicklung", 2016, 2139, 106311, 2.01,
+    "Softwareentwicklung", 2017, 2246, 107224, 2.09,
+    "Softwareentwicklung", 2018, 2520, 112234, 2.25,
+    "Softwareentwicklung", 2019, 2772, 115575, 2.40,
+    "Softwareentwicklung", 2020, 2806, 112683, 2.49,
+    "Softwareentwicklung", 2021, 3039, 120085, 2.53,
+    "Gesamt Tech-Future-Skills", 2016, 4929, 106311, 4.64,
+    "Gesamt Tech-Future-Skills", 2017, 5280, 107224, 4.92,
+    "Gesamt Tech-Future-Skills", 2018, 5912, 112234, 5.27,
+    "Gesamt Tech-Future-Skills", 2019, 6630, 115575, 5.74,
+    "Gesamt Tech-Future-Skills", 2020, 6887, 112683, 6.11,
+    "Gesamt Tech-Future-Skills", 2021, 7658, 120085, 6.38
+  )
+}

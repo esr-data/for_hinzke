@@ -12,6 +12,18 @@ Einfuehrungstext:
     Ganztagsangebote sind eine Chance Schule neu zu denken und auch andere gesellschaftliche
     Akteure sinnstiftend einzubinden.
 
+Top_News:
+  - t: 73 %
+    sub: aller allgemeinbildenden Schulen in Primar- und Sekundarbereich 1 sind Ganztagsschulen
+  - t: 1/3
+    sub: aller Schulen bieten Technik-Angebote im Ganztag an
+  - t: 86 %
+    sub: aller Schulen Kooperieren mit außerschulischen Bildungsakteuren
+  - t: 6 bis 19 %
+    sub: der Schulen - je nach Schultyp - haben IT-Fachkräfte angestellt
+  - t: 83 %
+    sub: der Schulleitungen üben ihren Job (sehr) gerne aus
+
 Inhalt:
   - ID:        ganztag_quantitativ
     Titel:     Ausbau der Ganztagsangebote

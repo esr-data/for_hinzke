@@ -13,6 +13,14 @@ Einfuehrungstext:
   Kompetenzen und unterstützt die Entwicklung innovativer Lehr- und Lernmethoden, die zur Bewältigung
   zukünftiger gesellschaftlicher Herausforderungen beitragen.
 
+Top_News:
+  - t: XXX
+    sub: Studienangebote im Bereich Data Science und KI gibt es
+  - t: X,X %
+    sub: der Universitätskurse gehen behandeln KI
+  - t: XX,X %
+    sub: der Bevölkerung geben an, dass sie sich gut mit KI auskennen
+
 Inhalt:
   # - ID:        ki_strategie  # Alle Laender haben sowas - daher rausgenommen
   #   Titel:     KI-Strategien der Bundesländer
