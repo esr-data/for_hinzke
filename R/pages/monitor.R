@@ -126,7 +126,7 @@ module_monitor_server <- function(id = "monitor", con) {
                 )
               })
 
-              output$monitor_svg <- renderUI({HTML(readLines("www/img/Test_Monitor_ak.svg"))})
+              output$monitor_svg <- renderUI({HTML(readLines("www/img/Monitor_ak.svg"))})
 
             } else {
 
