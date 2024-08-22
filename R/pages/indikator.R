@@ -455,9 +455,9 @@ module_server <- function(id = URL_PATH){
                 #daten <- suppressWarnings(try(get_data(variable, group, filter, (time_period[1]):(time_period[2]))))
                 daten <- suppressWarnings(try(get_data(c(parameter_variable, parameter_variable2), parameter_gruppe, parameter_filter, time_period)))
 
-                if (!(class(daten) %in% "try-error") & nrow(daten$df) > 1){
+                if (!(class(daten) %in% "try-error") & nrow(daten) > 1){
                   
-                  anzahl_abbildung <- count_possible_plots(daten$df)
+                  anzahl_abbildung <- count_possible_plots(daten)
                  
 
                   if (parameter_tab %in% 1 | (parameter_tab - 1) > anzahl_abbildung){
@@ -471,7 +471,7 @@ module_server <- function(id = URL_PATH){
                     if (is.na(anzahl_abbildung)){
                       abbildungen <- list()
                     }else{
-                      abbildungen <- suppressWarnings(try(produce_plot(daten$df, 
+                      abbildungen <- suppressWarnings(try(produce_plot(daten, 
                                                                        chart_options_rules_dir = "chart_options_rules",
                                                                        tab = parameter_tab - 1)))
                     }
@@ -537,7 +537,7 @@ daten_versuch_2 <<- daten
                 output$ergebnisse <- renderUI(vergleichen_draw_reactable(daten))
               } else {
                 
-               anzahl_abbildung <- count_possible_plots(daten$df)
+               anzahl_abbildung <- count_possible_plots(daten)
 
 
                 if ((parameter_tab - 1) %in% 1:anzahl_abbildung){
