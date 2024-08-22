@@ -10,9 +10,55 @@ box::use(
 )
 
 
+# return number of plots
+count_possible_plots <- function(df, 
+                                 chart_options_rules_dir = "chart_options_rules"){
+
+    chart_options_rules <- get_query(paste0("SELECT * FROM ", chart_options_rules_dir))
+    
+    stopifnot("Dataframe has only one row. Change data selection to include some sort of variation to receive chart options." = nrow(df) != 1)
+    
+    time <- names(df)[grepl("Zeit", names(df))]
+    variable <- "Variable/n"
+    value <- names(df)[grepl("Wert", names(df))]
+    regional <- "Bundesland" # TODO: welche regionalen Einheiten sind auch relevant für maps?
+    other <- names(df)[!names(df) %in% c(time, variable, value, regional)]
+    
+    variation_check <-
+      sapply(df, function(column) length(unique(column)) > 1)
+    
+    variation_time <- variation_check[time]
+    variation_variable <- variation_check[variable]
+    variation_else <- any(variation_check[other])
+    
+    all_federal_states <-
+      ifelse(
+        !is.element(regional, names(df)),
+        FALSE,
+        ifelse(
+          length(unique(df[[regional]])) == 16,
+          TRUE,
+          FALSE
+        )
+      )
+    
+    result_fct <-
+      stri_split(
+        chart_options_rules$result_fct[
+          chart_options_rules$variation_time == variation_time &
+            chart_options_rules$variation_variable == variation_variable &
+            chart_options_rules$variation_else == variation_else &
+            chart_options_rules$all_federal_states == all_federal_states],
+        fixed = ", "
+      )[[1]]
+    
+    return(length(result_fct))
+  }
+
 
 get_chart_options <-
-  function(df, chart_options_rules_dir = "chart_options_rules"){ #browser()
+  function(df, 
+           chart_options_rules_dir = "chart_options_rules"){ #browser()
 
     #chart_options_rules <- read_excel(chart_options_rules_dir)
     chart_options_rules <- get_query(paste0("SELECT * FROM ", chart_options_rules_dir))
@@ -52,7 +98,9 @@ get_chart_options <-
             chart_options_rules$all_federal_states == all_federal_states],
         fixed = ", "
       )[[1]]
-
+    
+    length(result_fct)
+    
     result_message <-
       chart_options_rules$result_text[
         chart_options_rules$variation_time == variation_time &
@@ -425,7 +473,9 @@ get_choropleth_params_from_df <- # TODO: Unterscheidung für metr. vs. kategoris
 # --- produce plot -------------------------------------------------------------
 # TODO: erweitern zur Ausgabe mehrerer Plots/einer Liste an plots
 produce_plot <-
-  function(df, chart_options_rules_dir){ #browser()
+  function(df, 
+           chart_options_rules_dir = "chart_options_rules",
+           tab){ 
 
     # get possible chart options for data input
     results <-
@@ -434,9 +484,9 @@ produce_plot <-
         chart_options_rules_dir
       )
 
-    result_plots <- list()
+    i <- tab
 
-    for (i in 1:length(results$result_fct)) {
+   # for (i in 1:length(results$result_fct)) {
 
       # define plot params for determined plot options
       params <-
@@ -460,7 +510,7 @@ produce_plot <-
 
         if (!any(grepl("group_color", names(params$df)))){
 
-          result_plots[[i]] <-
+          result_plots <-
             create_lineplot(
               df = params$df,
               x_var = x_var,
@@ -473,7 +523,7 @@ produce_plot <-
 
         } else {
 
-          result_plots[[i]] <-
+          result_plots <-
             create_lineplot(
               df = params$df,
               x_var = x_var,
@@ -489,7 +539,7 @@ produce_plot <-
 
       } else if (results$result_fct[i] == "create_bar"){
 
-        result_plots[[i]] <-
+        result_plots <-
           create_bar(
             df = params$df,
             x_var = x_var,
@@ -502,7 +552,7 @@ produce_plot <-
 
       } else if (results$result_fct[i] == "create_bar_grouped"){
 
-        result_plots[[i]] <-
+        result_plots <-
           create_bar_grouped(
             df = params$df,
             x_var = x_var,
@@ -517,7 +567,7 @@ produce_plot <-
 
       } else if (results$result_fct[i] == "create_choropleth_map_germany"){
 
-        result_plots[[i]] <-
+        result_plots <-
           create_choropleth_map_germany(
             df = params$df,
             var = var,
@@ -528,7 +578,7 @@ produce_plot <-
 
       }
 
-    }
+   # }
 
     return(result_plots)
 
