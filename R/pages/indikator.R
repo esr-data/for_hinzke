@@ -6,10 +6,9 @@ box::use(
     get_picker_options,
     draw_progress, get_progress, get_waiter
   ],
-  ../../R/utils/charts[produce_plot],
+  ../../R/utils/charts[produce_plot, count_possible_plots],
   ../../R/utils/reactable[get_reactable_lang, get_reactable_theme],
   ../../R/pkgs/wrangling/get_data[get_data],
-  ../../R/pkgs/wrangling/get_comparison_variables[get_comparison_variables],
   shiny[
     NS, moduleServer, observeEvent,
     HTML, tagList, div, h2, h3, p, icon, tags,
@@ -454,28 +453,36 @@ module_server <- function(id = URL_PATH){
 
                 daten <- suppressWarnings(try(get_data(variable, group, filter, (time_period[1]):(time_period[2]))))
 
-                if (!(class(daten) %in% "try-error")){
+                if (!(class(daten) %in% "try-error") & nrow(daten$df) > 1){
+                  
+                  anzahl_abbildung <- count_possible_plots(daten$df)
+                 
 
-                  abbildungen <- suppressWarnings(try(produce_plot(daten$df, chart_options_rules_dir = "chart_options_rules")))
-                  if (class(abbildungen) %in% "try-error"){
-                    abbildungen <- list()
-                  }
-
-                  if (parameter_tab %in% 1 | (parameter_tab - 1) > length(abbildungen)){
+                  if (parameter_tab %in% 1 | (parameter_tab - 1) > anzahl_abbildung){
                     output$ergebnisse <- renderUI(vergleichen_draw_reactable(daten$df))
                     parameter_tab     <- 1
                     parameter$tab     <- 1
                   } else {
-                    output$ergebnisse <- renderUI(abbildungen[[parameter_tab - 1]])
+                    
+                    if (is.na(anzahl_abbildung)){
+                      abbildungen <- list()
+                    }else{
+                      abbildungen <- suppressWarnings(try(produce_plot(daten$df, 
+                                                                       chart_options_rules_dir = "chart_options_rules",
+                                                                       tab = parameter_tab - 1)))
+                    }
+                   
+                    output$ergebnisse <- renderUI(abbildungen)
                   }
 
                   aenderung <- aenderung[aenderung != "tab"]
                 } else {
+                  anzahl_abbildung <- 0
                   abbildungen <- list()
                 }
-
+          
                 for (i in 1:6){
-                  if (i > (length(abbildungen) + 1)){
+                  if (i > (anzahl_abbildung + 1)){
                     addCssClass(paste0("tab", i), "no_display")
                   } else {
                     removeCssClass(paste0("tab", i), "no_display")
@@ -524,15 +531,15 @@ module_server <- function(id = URL_PATH){
               if (parameter_tab %in% 1){
                 output$ergebnisse <- renderUI(vergleichen_draw_reactable(daten$df))
               } else {
+                
+               anzahl_abbildung <- count_possible_plots(daten$df)
 
-                abbildungen <-
-                  produce_plot(
-                    daten$df,
-                    chart_options_rules_dir = "chart_options_rules"
-                  )
-
-                if ((parameter_tab - 1) %in% 1:length(abbildungen)){
-                  output$ergebnisse <- renderUI(abbildungen[[parameter_tab - 1]])
+                if ((parameter_tab - 1) %in% 1:anzahl_abbildung){
+                  abbildungen <- suppressWarnings(try(produce_plot(daten$df, 
+                                                                   chart_options_rules_dir = "chart_options_rules",
+                                                                   tab = parameter_tab - 1)))
+                   
+                  output$ergebnisse <- renderUI(abbildungen) #hier direkt abbildung entsprechend Tab nur laden
                 } else {
                   parameter_tab <- 1
                   parameter$tab <- 1
@@ -1097,20 +1104,62 @@ diverge_two_vectors <- function(vector_1, vector_2){
   return(!no_difference)
 }
 
+get_comparison_variables <- function(start_variable_id){
+ 
+   # timestamp <- Sys.time()
+    
+    vergleichs_variablen <-
+      get_query(
+        paste0(
+          "WITH 
+          VAR_START AS (
+          SELECT DISTINCT d.wert_einheit_id, d.zeit_einheit_id, d.zeit_start, d.zeit_ende, r.reichweite_typ_id
+            FROM daten d
+            LEFT JOIN daten_reichweite dr ON d.id = dr.daten_id
+            LEFT JOIN reichweite r ON dr.reichweite_id = r.id
+            WHERE d.variable_id = ", start_variable_id, "),
+          
+          VERGLEICH AS (
+          SELECT d.variable_id, d.wert_einheit_id, d.zeit_einheit_id, d.zeit_start, d.zeit_ende, r.reichweite_typ_id
+          FROM daten d
+          LEFT JOIN daten_reichweite dr ON d.id = dr.daten_id
+          LEFT JOIN reichweite r ON dr.reichweite_id = r.id
+          WHERE variable_id != ", start_variable_id, ")
+          
+          SELECT DISTINCT VERGLEICH.variable_id
+          FROM VERGLEICH
+          INNER JOIN VAR_START
+          ON VAR_START.wert_einheit_id = VERGLEICH.wert_einheit_id 
+          AND VAR_START.zeit_einheit_id = VERGLEICH.zeit_einheit_id 
+          AND VAR_START.zeit_start = VERGLEICH.zeit_start 
+          AND VAR_START.zeit_ende = VERGLEICH.zeit_ende
+          AND VAR_START.reichweite_typ_id = VERGLEICH.reichweite_typ_id"
+       )
+      )
+    
+   # message(paste("Timestamp_Vergleich:", round(difftime(Sys.time(), timestamp, units = "secs"), 2), "Sekunden"))
+    
+    return(vergleichs_variablen)
+    
+  }
+
+
 get_possible_variable2 <- function(variable_id, parameter_hf, parameter_tag){
-  vergleichsvariable <- get_comparison_variables(get_value_by_id(variable_id, "variable"), skip = TRUE)
+
+  vergleichsvariable <- get_comparison_variables(variable_id)
   if (length(parameter_tag) < 1){
     variables <- get_variables(get_tags_by_hfs(hf = parameter_hf)$id)
   } else {
     variables <- get_variables(parameter_tag)
   }
-  vergleichsvariable <- vergleichsvariable[vergleichsvariable$variable_beschr %in% variables$beschr,1]
+  vergleichsvariable <- vergleichsvariable$variable_id[vergleichsvariable$variable_id %in% variables$id]
+    
   if (length(vergleichsvariable) < 1){
     return(vergleichsvariable)
   }
 
   return(
-    "SELECT id, beschr FROM variable WHERE beschr IN (%s)" |>
+    "SELECT id, beschr FROM variable WHERE id IN (%s)" |>
       sprintf(
         paste(
           paste0("'", vergleichsvariable, "'"),

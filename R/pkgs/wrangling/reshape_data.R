@@ -106,8 +106,9 @@ reshape_data <- function(df) {
       mutate(wert = as.character(wert))
   }
 
-
   #sortieren für Umbenennung und final
+  df <- df[with(df, order(zeit, decreasing = FALSE)),]
+  
   name_wert <- paste0("Wert (", paste(unique(df$wert_einheit), collapse = ", "), ")")
   name_zeit <- paste0("Zeit (", paste(unique(df$zeit_einheit), collapse = ", "), ")")
 
@@ -117,6 +118,7 @@ reshape_data <- function(df) {
   colnames(df)[1] <- name_wert
   colnames(df)[2] <- name_zeit
   colnames(df)[3] <- "Variable/n"
+
 
   df <- df |>
     select(-1, -2, everything(), 1:2)
