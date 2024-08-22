@@ -451,7 +451,9 @@ module_server <- function(id = URL_PATH){
                   parameter_zeit |>
                   recode_parameter()
 
-                daten <- suppressWarnings(try(get_data(variable, group, filter, (time_period[1]):(time_period[2]))))
+
+                #daten <- suppressWarnings(try(get_data(variable, group, filter, (time_period[1]):(time_period[2]))))
+                daten <- suppressWarnings(try(get_data(c(parameter_variable, parameter_variable2), parameter_gruppe, parameter_filter, time_period)))
 
                 if (!(class(daten) %in% "try-error") & nrow(daten$df) > 1){
                   
@@ -459,7 +461,9 @@ module_server <- function(id = URL_PATH){
                  
 
                   if (parameter_tab %in% 1 | (parameter_tab - 1) > anzahl_abbildung){
-                    output$ergebnisse <- renderUI(vergleichen_draw_reactable(daten$df))
+                    #output$ergebnisse <- renderUI(vergleichen_draw_reactable(daten$df))
+                    output$ergebnisse <- renderUI(vergleichen_draw_reactable(daten))
+
                     parameter_tab     <- 1
                     parameter$tab     <- 1
                   } else {
@@ -526,24 +530,27 @@ module_server <- function(id = URL_PATH){
                 parameter_zeit |>
                 recode_parameter()
 
-              daten <- suppressWarnings(try(get_data(variable, group, filter, (time_period[1]):(time_period[2]))))
-
+            #daten <- suppressWarnings(try(get_data(variable, group, filter, (time_period[1]):(time_period[2]))))
+              daten <- suppressWarnings(try(get_data(c(parameter_variable, parameter_variable2), parameter_gruppe, parameter_filter, time_period)))
+daten_versuch_2 <<- daten
               if (parameter_tab %in% 1){
-                output$ergebnisse <- renderUI(vergleichen_draw_reactable(daten$df))
+                output$ergebnisse <- renderUI(vergleichen_draw_reactable(daten))
               } else {
                 
                anzahl_abbildung <- count_possible_plots(daten$df)
 
+
                 if ((parameter_tab - 1) %in% 1:anzahl_abbildung){
-                  abbildungen <- suppressWarnings(try(produce_plot(daten$df, 
+                  abbildungen <- suppressWarnings(try(produce_plot(daten,#daten$df, 
                                                                    chart_options_rules_dir = "chart_options_rules",
                                                                    tab = parameter_tab - 1)))
                    
                   output$ergebnisse <- renderUI(abbildungen) #hier direkt abbildung entsprechend Tab nur laden
+
                 } else {
                   parameter_tab <- 1
                   parameter$tab <- 1
-                  output$ergebnisse <- renderUI(vergleichen_draw_reactable(daten$df))
+                  output$ergebnisse <- renderUI(vergleichen_draw_reactable(daten))
                 }
 
               }
@@ -890,12 +897,12 @@ vergleichen_draw_reactable <- function(daten){
           h3(paste0("Details zu der Variable '", datum$`Variable/n`, "'")),
           div(class = "reactable-details-label", "Beschreibung"),
           div(class = "reactable-details", p("kommt noch...")),
-          div(class = "reactable-details-label", "Verfügbare Einheiten"),
-          div(class = "reactable-details", p(datum$meta_info_einheiten)),
-          div(class = "reactable-details-label", "Verfügbare Jahre"), # TODO: dynamisch für versch. Zeiteinheiten!
-          div(class = "reactable-details", p(datum$meta_info_zeit)),
-          div(class = "reactable-details-label", "Quellenangabe"),
-          div(class = "reactable-details", p(datum$meta_info_quellen))
+     #     div(class = "reactable-details-label", "Verfügbare Einheiten"),
+      #    div(class = "reactable-details", p(datum$meta_info_einheiten)),
+      #    div(class = "reactable-details-label", "Verfügbare Jahre"), # TODO: dynamisch für versch. Zeiteinheiten!
+      #    div(class = "reactable-details", p(datum$meta_info_zeit)),
+     #     div(class = "reactable-details-label", "Quellenangabe"),
+    #      div(class = "reactable-details", p(datum$meta_info_quellen)) # wieder aufnehmen, wenn get_data umstrukturiert ist
 
         )
       }
