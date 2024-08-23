@@ -2,6 +2,7 @@
 
 box::use(
   ../../R/utils/database[get_query, search_database, get_cache_labels, get_search_data],
+  ../../R/pages/suchen_auswahl[get_globals],
   ../../R/utils/ui[draw_search],
   ../../R/utils/string[preprocess_str],
   ../../R/pkgs/svNum/numeric[formatNumeric],
@@ -449,7 +450,8 @@ extract_mehrfach_treffer <- function(suche){
 
 recode_treffer_id_in_link <- function(treffer_id){
   sprintf(
-    "<a class = 'treffer-link' href = '#!/suchergebnisse?input=%s'><i class='fa-solid fa-arrow-up-right-from-square'></i><div>Ergebnisse anzeigen</div></a>",
+    "<a class = 'treffer-link' href = '#!/%s?input=%s'><i class='fa-solid fa-arrow-up-right-from-square'></i><div>Ergebnisse anzeigen</div></a>",
+    get_globals()$url_path,
     treffer_id
   )
 }

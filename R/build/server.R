@@ -6,6 +6,7 @@ box::use(
   ../../R/pages/indikator[module_indikator_server = module_server],
   ../../R/pages/indikator_auswahl[module_indikator_auswahl_server = module_server],
   ../../R/pages/suchen[module_suchen_server],
+  ../../R/pages/suchen_auswahl[module_suchen_auswahl_server = module_server],
   ../../R/pages/suchen_ergebnis[module_suche_ergebnis_server],
   ../../R/pages/datensaetze[module_datensaetze_server],
   ../../R/pages/home[module_home_server],
@@ -266,6 +267,7 @@ server <- function(input, output, session) {
   module_indikator_server()
   module_indikator_auswahl_server()
   module_suchen_server()
+  module_suchen_auswahl_server()
   module_suche_ergebnis_server()
   module_datensaetze_server()
   module_home_server()

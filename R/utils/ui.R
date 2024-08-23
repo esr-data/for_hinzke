@@ -7,6 +7,7 @@ box::use(
     bs_embed_tooltip
   ],
   shinycssloaders[withSpinner],
+  shinytoastr[toastr_info],
   waiter[attendantBar, Attendant, Waiter, spin_solar]
 )
 
@@ -235,7 +236,16 @@ get_waiter <- function(ns, id){
     id = ns(id),
     html = tagList(
       spin_solar(),
-      span("Lade Daten...", style = "margin-top: 24px; color:white; font-size: 32px; font-family: var(--font-family-bold);")
+      span("Lade Daten...", style = "margin-top: 24px; color: var(--blue); font-size: 32px; font-family: var(--font-family-bold);")
     )
+  )
+}
+
+#' @export
+send_message <- function(msg){
+  toastr_info(
+    message     = msg,
+    closeButton = TRUE,
+    progressBar = TRUE
   )
 }

@@ -369,6 +369,22 @@ button.active:has(input[value="forschung"]){
   justify-content: space-around;
 }
 
+/* Auswahl-Buttons ---------------------------------------------------------- */
+
+.auswahl_button {
+  color: black;
+  min-width: 160px;
+  margin: 5px;
+  border-radius: 0px;
+  font-size: var(--font-size-small);
+}
+
+.btn-warning.auswahl_button {
+  color: white;
+  background-color: var(--blue);
+  border-color: var(--blue);
+}
+
 /* Zurück-Buttons ----------------------------------------------------------- */
 
   .button_klein,
@@ -1651,6 +1667,57 @@ font-weight: 900;
   color:        var(--blue);
 }
 
+/* toaster ------------------------------------------------------------------------------- */
+
+#toast-container>.toast-info {
+    background-image: none !important;
+}
+
+#toast-container>div {
+  opacity: 0.95!important;
+  padding: 15px!important;
+}
+
+.toast-message {
+  display: flex!important;
+}
+
+.toast-message:before {
+    content: "\f05a";
+    font-family: "FontAwesome";
+    display: inline-block;
+    margin-right: 5px;
+    color: white;
+    font-size: 32px;
+    line-height: 1;
+    margin: auto 0px;
+    padding-right: 12px;
+}
+
+.toast.toast-info:hover {
+    box-shadow: 0 0 8px var(--light-grey);
+    box-shadow: 0 0 10px 2px var(--grey) !important;
+}
+.toast.toast-info {
+    border-radius: 0px !important;
+    background-color: var(--primary);
+    font-family: var(--font-family);
+}
+
+/* waiter ------------------------------------------------------------------------------- */
+
+.waiter-overlay {
+  background-color: white!important;
+}
+
+.sun, .planet {
+  background-color: var(--blue)!important;;
+}
+
+.orbit {
+  border: 1px solid var(--primary)!important;;
+}
+
 /* soriteren */
 
 .rt-search {
@@ -1763,9 +1830,7 @@ div#driver-popover-item {
   border-radius: 0px!important;
 }
 
-.waiter-overlay {
- background-color: var(--primary)!important;
-}
+
 
 label.control-label {
   font-family: var(--font-family-bold);
