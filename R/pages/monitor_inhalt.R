@@ -29,7 +29,8 @@ box::use(
     give_df_experimentierklausel,
     give_df_haws,
     give_df_einfach_bachelor,
-    give_df_lehrkraefte_trichter
+    give_df_lehrkraefte_trichter,
+    give_df_tech_skills
   ],
   ggplot2[
     theme,
@@ -116,7 +117,7 @@ box::use(
   shinycssloaders[withSpinner],
   dplyr[rename, filter, select, tbl, collect, case_when, across, mutate,
         arrange, show_query, group_by],
-  purrr[map2],
+  purrr[map, map2],
   DT[datatable, JS, renderDataTable, dataTableOutput, renderDT],
   shinyjs[
     removeCssClass,
@@ -154,7 +155,6 @@ module_monitor_inhalt_ui <- function(id = "monitor_inhalt", label = "m_monitor_i
         href = paste0("monitor_styles.css?version=", Sys.time())
       )
     ),
-    fluidPage(
       div(
         class = "panel-content",
         div(
@@ -196,14 +196,13 @@ module_monitor_inhalt_ui <- function(id = "monitor_inhalt", label = "m_monitor_i
               )
             ),
             div(
-              class = "content-ask-aim-ind",
+              class = "content-ask-aim-ind-main",
               reactableOutput(ns("content_table"))
             )
           )
         )
       )
     )
-  )
 }
 
 # Server-Modul -------------------------------------------------------------------------------------
@@ -592,6 +591,22 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
        #### stem ----
 
        #####1 stem-veranstaltungen ----
+
+       output$UI_stem_veranstaltungen <- renderUI({
+         fluidRow(
+           br(),
+           br(),
+           icon(
+             style = "margin-left: 50px; color: var(--red); font-size: 50px;",
+             "screwdriver-wrench"
+           ),
+           p(
+             style = "margin-left: 50px; color: var(--red);",
+             tags$b("Hier wird noch gebaut:"),
+             "Interne Notiz - Hierzu muss erst HEX mit dem Matching der Fachbereiche raus fertig sein, da sind Felix, Malte und Yannic gerade dran."
+           )
+         )
+       })
 
        #####2 mixed studierende ----
 
@@ -2205,6 +2220,27 @@ module_monitor_inhalt_server <- function(id = "monitor_inhalt") {
 
        #####1 tech skills ----
 
+       output$Grafik_fs_verankern_tech_skills <- renderPlotly({
+         create_lineplot(
+           give_df_tech_skills(),
+           jahr,
+           value,
+           group_color = ,
+           plot_title = "Anteil Kurse, die sich dezidiert mit der Vermittlung technischer Future Skills beschäftigen",
+           plot_subtitle = "Datensatz des Higher Education Explorers (HEX), aktuell 22 große staatliche Universitäten. Anteile in Prozent.",
+           custom_caption = "Technische Future Skills gemäß Future Skill Framework von Stifterverband und McKinsey, Kursidentifikation mittels SetFit-Clustering im Few Shot Modell. Limitationen der Datenbasis, beachten. Quelle: HEX/Stifterverband.",
+           plot_type = "plotly"
+         )
+       })
+
+       output$Anmerkungen_fs_verankern_tech_skills <- renderUI({
+         p(class = "anmerkungen",
+           "Ergänzungen zum Higher Education Explorer (HEX) finden Sie ",
+           tags$a(href = "https://stifterverband-hex-methodenbericht.netlify.app/", "hier", target = "_blank"),
+           "."
+         )
+       })
+
     }
   )
 }
@@ -2280,11 +2316,11 @@ draw_table_row_content <- function(indikator_ID, ns) {
       fluidPage(
         p("Das Bildungsangebot in den Ganztagsschulen sollte möglichst vielfältig sein und sollte im Idealfall die folgenden Angebotsbereiche umfassen:"),
         tags$ul(
-          tags$li("- lernunterstützende Angebote,"),
-          tags$li("- MINT-Angebote,"),
-          tags$li("- sprachliche und geisteswissenschaftliche Angebote,"),
-          tags$li("- musisch-kulturelle, lebenspraktische und berufsorientierende Angebote sowie"),
-          tags$li("- Angebote zu Freizeit, Bewegung, Gesundheit und sozialem Lernen.")
+          tags$li("lernunterstützende Angebote,"),
+          tags$li("MINT-Angebote,"),
+          tags$li("sprachliche und geisteswissenschaftliche Angebote,"),
+          tags$li("musisch-kulturelle, lebenspraktische und berufsorientierende Angebote sowie"),
+          tags$li("Angebote zu Freizeit, Bewegung, Gesundheit und sozialem Lernen.")
         ),
         br(),
         p(
@@ -2502,13 +2538,17 @@ draw_table_row_content <- function(indikator_ID, ns) {
 
     #####1 stem-veranstaltungen ----
 
-    if (inidikator_ID == "interdisziplinaritaet_einschaetzung_angebote") {
+    if (indikator_ID == "interdisziplinaritaet_einschaetzung_angebote") {
+
+      fluidPage(
+        uiOutput(ns("UI_stem_veranstaltungen"))
+      )
 
     }
 
     #####1 mixed studierende ----
 
-    else if (inidikator_ID == "") {
+    else if (indikator_ID == "interdisziplinaritaet_einschaetzung") {
 
     }
 
@@ -3344,26 +3384,27 @@ draw_information_box <- function(content){
 
 draw_main_content <- function(content){
   tagList(
-    div(
-      class = "intro-text-monitor-subsite",
-      h3(content[["Untertitel"]]),
-      content[["Einfuehrungstext"]]
-    ),
-    div(
-      class = "info-box-data",
-      tags$i(class = "fa fa-info-circle"),
-      markdown(readLines("md/monitor_hinweis_datenportal_projektstand.md"))
-    ),
+    h3(class = "intro-text-monitor-subsite", content[["Untertitel"]]),
     br(),
-    h4("Das Wichtigste in Kürze:"),
-    div( # TODO - function/flex für Imagegenerierung anhand der gefilterten Liste
+    div(
       class = "important-values-graph",
-      img(
-        src = "img/4er_Ganztag.svg",
-        alt = "Wichtige Kennzahlen zum Ausbau der Ganztagsschule in Deutschland"
+      map(
+        seq_along(content$Top_News),
+        ~ div(
+            class = "value-box",
+            style = "border: 4px solid; border-color: #91bea0;",
+            shinydashboard::valueBox(
+              content$Top_News[[.]]$t,
+              content$Top_News[[.]]$sub
+            )
+        )
       )
     ),
-    br()
+    br(),
+    div(
+      class = "intro-text-monitor-subsite",
+      content[["Einfuehrungstext"]]
+    ),
   )
 }
 

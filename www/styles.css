@@ -324,7 +324,7 @@ button.active:has(input[value="forschung"]){
 .monitor_hf1_button {
   font-size: 20px;
   width: 45%;
-  height: 150px;
+  min-height: 150px;
   white-space: normal;
   border-radius: 0px;
   border-color: var(--color-bildung);
@@ -335,7 +335,7 @@ button.active:has(input[value="forschung"]){
 .monitor_hf2_button {
   font-size: 20px;
   width: 45%;
-  height: 150px;
+  min-height: 150px;
   white-space: normal;
   border-radius: 0px;
   border-color: var(--color-forschung);

@@ -11,6 +11,14 @@ Einfuehrungstext:
     Zudem fördert sie Innovation und Kreativität, indem sie Raum für unterschiedliche Perspektiven und Herangehensweisen
     schafft.
 
+Top_News:
+  - t: 27 von 100
+    sub: Grundschulkindern aus Nichtakademikerfamilien nehmen ein Studium auf, in Akademikerfamilien sind es 78 von 100
+  - t: Bundeslandvergleich
+    sub: In Bayern und Sachsen hat der sozioökonomische Status der Eltern den stärksten EInfluss auf die Schullaufbahn, in Berlin und Brandenburg den geringsten
+  - t: 2 von 100
+    sub: Grundschulkindern aus Nichtakademikerfamilien promovieren, in Akademikerfamilien sind es 6 von 100
+
 Inhalt:
   - ID:        bildungsgerechtigkeit_trichter
     Titel:     Bildungstrichter - Vom Arbeiterkind zum Doktor

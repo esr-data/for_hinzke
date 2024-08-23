@@ -140,6 +140,8 @@ ul li {
 .intro-text-monitor-subsite{
   text-align: center;
   margin-bottom: 25px;
+  padding-left: 25px;
+  padding-right: 25px;
 }
 
 .intro-text-monitor-subsite h3{
@@ -151,7 +153,6 @@ ul li {
 }
 
 .info-box-data{
-  background-color: #BED9C7;
   border: 2px solid;
   border-color: #91bea0;
   text-align: left;
@@ -230,6 +231,10 @@ ul li {
 
 #back_button:hover {
   background-color: #3D8656;
+}
+
+.content-ask-aim-ind-main {
+  padding: 10px;
 }
 
 .content-ask-aim-ind {
@@ -324,4 +329,66 @@ ul li {
   font-style: italic;
   font-size: 0.8em;
   margin-bottom: 0px;
+}
+
+/*monitor value boxes---------------------------------------------------------*/
+
+.important-values-graph {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.important-values-graph .value-box {
+  flex: 1 1 calc(33.333% - 40px);
+  max-width: calc(33.333% - 40px);
+  min-width: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.important-values-graph .value-box .inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  white-space: normal;
+}
+
+.important-values-graph .value-box .inner h4 {
+  font-size: 16px;
+  margin-bottom: 5px;
+  width: 100%;
+  max-width: 100%;
+  white-space: normal;
+}
+
+.important-values-graph .value-box .inner p {
+  font-size: 14px;
+  width: 100%;
+  max-width: 100%;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.important-values-graph .col-sm-4 {
+  width: 100% !important;
+  max-width: 100%;
+  flex: none;
+}
+
+# customise reactables
+
+.rt-th {
+    /* border-bottom: 2px solid #e6e6e6; */
+    border-left-color: rgba(0,0,0,.05);
+    border-left-width: 1px;
 }

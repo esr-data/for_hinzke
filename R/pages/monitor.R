@@ -79,6 +79,11 @@ module_monitor_server <- function(id = "monitor", con) {
                   div(
                     style = "color: #195365; margin: 0;",
                     markdown(readLines("md/information_monitor.md"))
+                  ),
+                  div(
+                    class = "info-box-data",
+                    tags$i(class = "fa fa-info-circle"),
+                    markdown(readLines("md/monitor_hinweis_datenportal_projektstand.md"))
                   )
                 )
               })
@@ -121,7 +126,7 @@ module_monitor_server <- function(id = "monitor", con) {
                 )
               })
 
-              output$monitor_svg <- renderUI({HTML(readLines("www/img/Test_Monitor.svg"))})
+              output$monitor_svg <- renderUI({HTML(readLines("www/img/Monitor_ak.svg"))})
 
             } else {
 
@@ -171,7 +176,8 @@ module_monitor_server <- function(id = "monitor", con) {
 
       observeEvent(
         input$mon, {
-          new_url <- paste0("monitor_inhalt?hf=1&ind=1&tp=", gsub("circle_", "", input$mon))
+          new_url <- paste0("monitor_inhalt?hf=1&ind=1&tp=", gsub("^(circle_|text_)", "", input$mon))
+          print(new_url)
           change_page(new_url)
         }
       )
