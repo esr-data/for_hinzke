@@ -3,6 +3,7 @@
 box::use(
   ../../R/pages/home[module_home_ui],
   ../../R/pages/suchen[module_suchen_ui],
+  ../../R/pages/suchen_auswahl[module_suchen_auswahl_ui = module_ui, suchen_auswahl_globals = get_globals],
   ../../R/pages/suchen_ergebnis[module_suche_ergebnis_ui],
   ../../R/pages/indikator[module_indikator_ui = module_ui, indikator_globals = get_globals],
   ../../R/pages/indikator_auswahl[module_indikator_auswahl_ui = module_ui, indikator_auswahl_globals = get_globals],
@@ -32,6 +33,7 @@ box::use(
   shiny.router[router_ui, route],
   shinyjs[useShinyjs],
   shinyWidgets[searchInput, radioGroupButtons],
+  shinytoastr[useToastr],
   cicerone[use_cicerone],
   waiter[useWaiter, useAttendant]
 )
@@ -47,6 +49,7 @@ draw_ui <- function(){
     use_cicerone(),
     useWaiter(),
     useAttendant(),
+    useToastr(),
 
     # HEAD AND STYLE
     tags$head(
@@ -55,6 +58,7 @@ draw_ui <- function(){
       get_js("go_back_page"),
       get_js("select_dataset"),
       get_js("select_tabset"),
+      get_js("select_search"),
       get_js("activate_tooltips"),
       tags$link(rel = "apple-touch-icon-precomposed", sizes = "180x180", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/apple-touch-icon.png"),
       tags$link(rel = "icon",                         sizes = "192x192", href = "https://www.stifterverband.org/themes/custom/cake/res/favicons/touch-icon-192x192.png"),
@@ -81,6 +85,7 @@ draw_ui <- function(){
           route("monitor_inhalt", module_monitor_inhalt_ui()),
           route("explorer",       module_explorer_ui()),
           route("suchen",         module_suchen_ui()),
+          route(suchen_auswahl_globals()$url_path, module_suchen_auswahl_ui()),
           route("suchergebnisse", module_suche_ergebnis_ui()),
           route(indikator_globals()$url_path, module_indikator_ui()),
           route(indikator_auswahl_globals()$url_path, module_indikator_auswahl_ui()),

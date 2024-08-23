@@ -3,4 +3,4 @@ setTimeout(function(){
   var optionElement2 = document.querySelector('#selectedByindikator_auswahl-network option[value=""]');
   optionElement1.textContent = 'Wähle ein Thema';
   optionElement2.textContent = 'Wähle ein Handlungsfeld';
-}, 250);
+}, 1000);
